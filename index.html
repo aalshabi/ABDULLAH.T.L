@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سافر بوعي — أعلّمك كيف تسافر بذكاء، وكيف لا تنخدع</title>
+<meta name="description" content="قناة تعليمية تكشف خدع السفر — الفنادق، الطيران، الترانزيت الوهمي، التقييمات المزيفة. مع عبدالله الشابي.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --ink:#0a1628;
+  --ink-deep:#050d1c;
+  --paper:#f5f1e8;
+  --paper-warm:#ede7d6;
+  --alarm:#e8401e;
+  --alarm-deep:#c5331a;
+  --gold:#d4a44a;
+  --muted:#5a6478;
+  --line:rgba(10,22,40,.12);
+  --line-strong:rgba(10,22,40,.35);
+
+  --font-display:'Tajawal',sans-serif;
+  --font-body:'IBM Plex Sans Arabic',sans-serif;
+  --font-num:'Cairo',sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--ink);
+  font-size:17px;
+  line-height:1.7;
+  overflow-x:hidden;
+  font-weight:400;
+}
+
+/* ===== شريط الكشف العلوي ===== */
+.alert-bar{
+  background:var(--ink-deep);
+  color:var(--paper);
+  padding:10px 0;
+  font-size:13px;
+  font-weight:300;
+  letter-spacing:.3px;
+  border-bottom:1px solid var(--alarm);
+  position:relative;
+  overflow:hidden;
+}
+.alert-bar::before{
+  content:'';
+  position:absolute;
+  top:0;right:0;
+  width:4px;height:100%;
+  background:var(--alarm);
+}
+.alert-track{
+  display:flex;
+  gap:60px;
+  white-space:nowrap;
+  animation:slide 35s linear infinite;
+}
+.alert-track span{display:inline-flex;align-items:center;gap:10px}
+.alert-track span::before{
+  content:'';width:6px;height:6px;
+  background:var(--alarm);border-radius:50%;
+  display:inline-block;
+}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ===== الناف ===== */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:rgba(245,241,232,.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  max-width:1280px;margin:0 auto;
+  padding:18px 32px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.brand{
+  font-family:var(--font-display);
+  font-size:22px;
+  font-weight:900;
+  color:var(--ink);
+  display:flex;align-items:center;gap:12px;
+  text-decoration:none;
+  letter-spacing:-.5px;
+}
+.brand-mark{
+  width:32px;height:32px;
+  background:var(--ink);
+  color:var(--paper);
+  display:grid;place-items:center;
+  font-family:var(--font-num);
+  font-weight:900;font-size:18px;
+  transform:rotate(-4deg);
+}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{
+  color:var(--ink);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:500;
+  position:relative;
+  transition:.3s;
+}
+.nav-links a:hover{color:var(--alarm)}
+.nav-links a::after{
+  content:'';position:absolute;
+  bottom:-6px;right:0;
+  width:0;height:2px;
+  background:var(--alarm);
+  transition:.4s;
+}
+.nav-links a:hover::after{width:100%}
+.nav-cta{
+  background:var(--ink);
+  color:var(--paper);
+  padding:11px 22px;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:700;
+  transition:.3s;
+}
+.nav-cta:hover{background:var(--alarm)}
+
+@media(max-width:768px){.nav-links{display:none}}
+
+/* ===== الهيرو ===== */
+.hero{
+  padding:80px 32px 100px;
+  max-width:1280px;margin:0 auto;
+  position:relative;
+}
+.hero-meta{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:40px;
+  font-family:var(--font-body);
+  font-size:12px;
+  letter-spacing:2px;
+  color:var(--muted);
+  font-weight:500;
+}
+.hero-meta::before{
+  content:'';width:50px;height:1px;
+  background:var(--alarm);
+}
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(48px,8vw,108px);
+  font-weight:900;
+  line-height:.95;
+  color:var(--ink);
+  margin-bottom:32px;
+  letter-spacing:-2.5px;
+}
+.hero-title .accent{
+  color:var(--alarm);
+  position:relative;
+  display:inline-block;
+}
+.hero-title .accent::after{
+  content:'';position:absolute;
+  bottom:8px;right:0;
+  width:100%;height:8px;
+  background:var(--alarm);
+  opacity:.15;
+  z-index:-1;
+}
+.hero-sub{
+  font-family:var(--font-body);
+  font-size:21px;
+  font-weight:300;
+  max-width:680px;
+  margin-bottom:48px;
+  color:#1a2438;
+  line-height:1.6;
+}
+.hero-sub strong{font-weight:600;color:var(--ink)}
+
+.hero-actions{
+  display:flex;gap:20px;flex-wrap:wrap;
+  align-items:center;margin-bottom:80px;
+}
+.btn-primary{
+  background:var(--ink);
+  color:var(--paper);
+  padding:18px 36px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  display:inline-flex;align-items:center;gap:12px;
+  transition:.3s;
+  border:2px solid var(--ink);
+  font-family:var(--font-body);
+}
+.btn-primary:hover{
+  background:var(--alarm);
+  border-color:var(--alarm);
+  transform:translate(-3px,-3px);
+  box-shadow:6px 6px 0 var(--ink);
+}
+.btn-secondary{
+  background:transparent;
+  color:var(--ink);
+  padding:18px 36px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  border:2px solid var(--ink);
+  transition:.3s;
+  font-family:var(--font-body);
+}
+.btn-secondary:hover{background:var(--ink);color:var(--paper)}
+
+.hero-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:0;
+  border-top:1px solid var(--line-strong);
+  border-bottom:1px solid var(--line-strong);
+}
+.stat{
+  padding:32px 24px;
+  border-left:1px solid var(--line);
+}
+.stat:last-child{border-left:none}
+.stat-num{
+  font-family:var(--font-num);
+  font-size:48px;
+  font-weight:900;
+  color:var(--ink);
+  line-height:1;
+  margin-bottom:8px;
+  letter-spacing:-1px;
+}
+.stat-num .unit{font-size:24px;color:var(--alarm)}
+.stat-label{
+  font-size:13px;
+  color:var(--muted);
+  font-weight:500;
+}
+
+@media(max-width:768px){
+  .stat{border-left:none;border-bottom:1px solid var(--line)}
+  .stat:last-child{border-bottom:none}
+}
+
+/* ===== قسم الفرضية ===== */
+.thesis{
+  background:var(--ink-deep);
+  color:var(--paper);
+  padding:120px 32px;
+  position:relative;
+  overflow:hidden;
+}
+.thesis::before{
+  content:'01';
+  position:absolute;
+  top:40px;left:60px;
+  font-family:var(--font-num);
+  font-size:200px;
+  font-weight:900;
+  color:rgba(255,255,255,.04);
+  line-height:1;
+}
+.thesis-inner{max-width:1080px;margin:0 auto;position:relative}
+.section-tag{
+  font-size:12px;
+  letter-spacing:3px;
+  color:var(--alarm);
+  margin-bottom:24px;
+  font-weight:600;
+}
+.thesis-quote{
+  font-family:var(--font-display);
+  font-size:clamp(34px,4.8vw,60px);
+  font-weight:700;
+  line-height:1.3;
+  margin-bottom:40px;
+  letter-spacing:-1px;
+}
+.thesis-quote .strike{
+  position:relative;
+  color:rgba(245,241,232,.35);
+  font-weight:500;
+}
+.thesis-quote .strike::after{
+  content:'';position:absolute;
+  top:50%;right:0;
+  width:100%;height:3px;
+  background:var(--alarm);
+}
+.thesis-quote em{
+  color:var(--alarm);
+  font-style:normal;
+  font-weight:900;
+}
+.thesis-author{
+  display:flex;align-items:center;gap:20px;
+  padding-top:40px;
+  border-top:1px solid rgba(255,255,255,.15);
+}
+.author-mark{
+  width:60px;height:60px;
+  background:var(--alarm);
+  color:var(--paper);
+  display:grid;place-items:center;
+  font-family:var(--font-num);
+  font-weight:900;font-size:24px;
+}
+.author-info strong{display:block;font-size:18px;margin-bottom:4px;font-weight:600}
+.author-info span{font-size:14px;opacity:.7}
+
+/* ===== قسم الخدع ===== */
+.exposes{
+  padding:120px 32px;
+  max-width:1280px;margin:0 auto;
+}
+.exposes-header{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;align-items:end;
+  margin-bottom:80px;
+}
+.exposes-title{
+  font-family:var(--font-display);
+  font-size:clamp(40px,5.5vw,76px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-1.5px;
+}
+.exposes-title em{
+  color:var(--alarm);
+  font-style:normal;
+  font-weight:900;
+}
+.exposes-intro{
+  font-size:17px;
+  color:#3a4458;
+  max-width:480px;
+  font-weight:300;
+}
+
+.expose-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+}
+.expose{
+  background:var(--paper);
+  padding:48px 40px;
+  position:relative;
+  transition:.4s;
+  cursor:pointer;
+}
+.expose:hover{background:var(--paper-warm)}
+.expose-num{
+  font-family:var(--font-num);
+  font-size:14px;
+  font-weight:900;
+  color:var(--alarm);
+  letter-spacing:2px;
+  margin-bottom:16px;
+}
+.expose-title{
+  font-family:var(--font-display);
+  font-size:30px;
+  font-weight:800;
+  margin-bottom:14px;
+  line-height:1.2;
+  letter-spacing:-.5px;
+}
+.expose-hook{
+  font-size:15px;
+  color:#1a2438;
+  margin-bottom:24px;
+  font-weight:300;
+  line-height:1.7;
+  border-right:3px solid var(--alarm);
+  padding-right:16px;
+}
+.expose-meta{
+  display:flex;justify-content:space-between;
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:1px;
+  padding-top:20px;
+  border-top:1px dashed var(--line-strong);
+  font-weight:500;
+}
+.expose-meta .pillar{color:var(--alarm);font-weight:700}
+
+@media(max-width:768px){
+  .exposes-header{grid-template-columns:1fr;gap:24px}
+  .expose-grid{grid-template-columns:1fr}
+}
+
+/* ===== المقارنة الكبرى ===== */
+.battle{
+  background:var(--ink);
+  color:var(--paper);
+  padding:120px 32px;
+  position:relative;
+  overflow:hidden;
+}
+.battle-inner{max-width:1280px;margin:0 auto}
+.battle-tag{
+  font-size:12px;
+  letter-spacing:3px;
+  color:var(--gold);
+  margin-bottom:24px;
+  font-weight:600;
+}
+.battle-title{
+  font-family:var(--font-display);
+  font-size:clamp(36px,5vw,64px);
+  font-weight:800;
+  line-height:1.15;
+  margin-bottom:16px;
+  letter-spacing:-1px;
+}
+.battle-sub{
+  font-size:18px;
+  opacity:.7;
+  margin-bottom:64px;
+  max-width:600px;
+  font-weight:300;
+}
+
+.vs-grid{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:0;
+  align-items:stretch;
+}
+.vs-side{
+  padding:40px;
+  border:1px solid rgba(255,255,255,.15);
+}
+.vs-side.left{background:rgba(212,164,74,.06)}
+.vs-side.right{background:rgba(232,64,30,.06)}
+.vs-flag{
+  font-size:14px;
+  letter-spacing:2px;
+  margin-bottom:8px;
+  opacity:.6;
+  font-weight:500;
+}
+.vs-name{
+  font-family:var(--font-display);
+  font-size:34px;
+  font-weight:900;
+  margin-bottom:32px;
+  line-height:1.1;
+  letter-spacing:-.5px;
+}
+.vs-name.alt{color:var(--alarm)}
+.vs-row{
+  display:flex;justify-content:space-between;
+  padding:16px 0;
+  border-bottom:1px dashed rgba(255,255,255,.1);
+  font-size:15px;
+  font-weight:300;
+}
+.vs-row:last-child{border-bottom:none}
+.vs-row strong{font-weight:700}
+.vs-divider{
+  display:grid;place-items:center;
+  width:80px;
+  font-family:var(--font-num);
+  font-weight:900;
+  font-size:32px;
+  color:var(--alarm);
+}
+.battle-quote{
+  margin-top:64px;
+  padding:40px;
+  border-right:4px solid var(--alarm);
+  background:rgba(232,64,30,.05);
+  font-family:var(--font-display);
+  font-size:24px;
+  line-height:1.5;
+  font-weight:500;
+}
+.battle-quote .who{
+  display:block;
+  margin-top:16px;
+  font-size:13px;
+  letter-spacing:2px;
+  color:var(--gold);
+  font-family:var(--font-body);
+  font-weight:500;
+}
+
+@media(max-width:768px){
+  .vs-grid{grid-template-columns:1fr;gap:16px}
+  .vs-divider{width:auto;padding:8px 0}
+}
+
+/* ===== الركائز ===== */
+.pillars{
+  padding:120px 32px;
+  max-width:1280px;margin:0 auto;
+}
+.pillars-head{margin-bottom:80px;max-width:760px}
+.pillars-title{
+  font-family:var(--font-display);
+  font-size:clamp(40px,5.5vw,76px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-1.5px;
+  margin-bottom:24px;
+}
+.pillars-sub{
+  font-size:18px;color:#3a4458;font-weight:300;
+}
+
+.pillar-list{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+  border-top:1px solid var(--line-strong);
+}
+.pillar-item{
+  display:grid;
+  grid-template-columns:80px 1fr 2fr 200px;
+  gap:32px;
+  padding:32px 0;
+  border-bottom:1px solid var(--line-strong);
+  align-items:center;
+  transition:.3s;
+  cursor:pointer;
+}
+.pillar-item:hover{
+  background:var(--paper-warm);
+  padding-right:24px;
+}
+.pillar-num{
+  font-family:var(--font-num);
+  font-size:36px;
+  font-weight:900;
+  color:var(--alarm);
+}
+.pillar-name{
+  font-family:var(--font-display);
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-.3px;
+}
+.pillar-desc{
+  font-size:15px;
+  color:#3a4458;
+  font-weight:300;
+}
+.pillar-tag{
+  text-align:left;
+  font-size:12px;
+  letter-spacing:1.5px;
+  color:var(--muted);
+  font-weight:600;
+}
+.pillar-tag.hot{color:var(--alarm)}
+
+@media(max-width:768px){
+  .pillar-item{grid-template-columns:60px 1fr;gap:16px}
+  .pillar-desc,.pillar-tag{grid-column:2;margin-top:8px}
+}
+
+/* ===== الكاتب ===== */
+.author-section{
+  background:var(--paper-warm);
+  padding:120px 32px;
+  position:relative;
+  overflow:hidden;
+}
+.author-inner{
+  max-width:1080px;margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1.2fr;
+  gap:80px;
+  align-items:center;
+}
+.author-portrait{
+  aspect-ratio:3/4;
+  background:var(--ink);
+  position:relative;
+  overflow:hidden;
+}
+.author-portrait::before{
+  content:'';position:absolute;
+  inset:0;
+  background:
+    linear-gradient(135deg,rgba(232,64,30,.2) 0%,transparent 50%),
+    linear-gradient(45deg,rgba(212,164,74,.15) 0%,transparent 60%);
+}
+.portrait-text{
+  position:absolute;
+  inset:0;
+  display:flex;flex-direction:column;
+  justify-content:flex-end;
+  padding:32px;
+  color:var(--paper);
+}
+.portrait-text .label{
+  font-size:11px;
+  letter-spacing:3px;
+  margin-bottom:8px;
+  color:var(--gold);
+  font-weight:600;
+}
+.portrait-text .name{
+  font-family:var(--font-display);
+  font-size:46px;
+  font-weight:900;
+  line-height:1;
+  margin-bottom:8px;
+  letter-spacing:-1px;
+}
+.portrait-text .role{
+  font-size:14px;
+  opacity:.7;
+}
+.portrait-mark{
+  position:absolute;
+  top:32px;right:32px;
+  width:60px;height:60px;
+  border:2px solid rgba(245,241,232,.3);
+  display:grid;place-items:center;
+  color:var(--paper);
+  font-family:var(--font-num);
+  font-weight:900;
+  transform:rotate(8deg);
+}
+
+.author-text h3{
+  font-family:var(--font-display);
+  font-size:50px;
+  font-weight:900;
+  line-height:1.1;
+  margin-bottom:24px;
+  letter-spacing:-1px;
+}
+.author-text p{
+  font-size:17px;
+  margin-bottom:20px;
+  color:#1a2438;
+  line-height:1.8;
+  font-weight:300;
+}
+.author-creds{
+  list-style:none;
+  margin-top:32px;
+  padding-top:32px;
+  border-top:1px solid var(--line-strong);
+  counter-reset:cred;
+}
+.author-creds li{
+  padding:10px 0;
+  font-size:15px;
+  display:flex;align-items:center;gap:14px;
+  counter-increment:cred;
+  font-weight:400;
+}
+.author-creds li::before{
+  content:counter(cred,decimal-leading-zero);
+  font-family:var(--font-num);
+  font-size:11px;
+  font-weight:900;
+  color:var(--alarm);
+  background:var(--paper);
+  padding:4px 8px;
+  letter-spacing:1px;
+}
+
+@media(max-width:900px){
+  .author-inner{grid-template-columns:1fr;gap:48px}
+}
+
+/* ===== المنهج ===== */
+.method{
+  padding:120px 32px;
+  max-width:1280px;margin:0 auto;
+}
+.method-head{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:60px;
+  margin-bottom:80px;
+  align-items:end;
+}
+.method-title{
+  font-family:var(--font-display);
+  font-size:clamp(40px,5.5vw,76px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-1.5px;
+}
+.method-intro{
+  font-size:17px;color:#3a4458;max-width:440px;font-weight:300;
+}
+
+.timeline{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:0;
+  position:relative;
+}
+.timeline::before{
+  content:'';
+  position:absolute;
+  top:30px;right:0;left:0;
+  height:1px;
+  background:var(--line-strong);
+}
+.tl-step{
+  padding:0 16px;
+  border-left:1px dashed var(--line);
+  position:relative;
+}
+.tl-step:last-child{border-left:none}
+.tl-dot{
+  width:14px;height:14px;
+  background:var(--paper);
+  border:2px solid var(--alarm);
+  margin-top:23px;
+  position:relative;z-index:2;
+}
+.tl-step.active .tl-dot{background:var(--alarm)}
+.tl-time{
+  font-family:var(--font-num);
+  font-size:13px;
+  font-weight:900;
+  color:var(--alarm);
+  margin-top:20px;
+  letter-spacing:1px;
+}
+.tl-label{
+  margin-top:8px;
+  font-family:var(--font-display);
+  font-size:19px;
+  font-weight:800;
+  line-height:1.3;
+  letter-spacing:-.3px;
+}
+.tl-desc{
+  margin-top:8px;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.5;
+  font-weight:300;
+}
+
+@media(max-width:900px){
+  .method-head{grid-template-columns:1fr;gap:24px}
+  .timeline{grid-template-columns:1fr;gap:24px}
+  .timeline::before{display:none}
+  .tl-step{border-left:none;border-right:2px solid var(--alarm);padding:8px 16px 8px}
+  .tl-dot{display:none}
+}
+
+/* ===== CTA ===== */
+.cta-section{
+  background:var(--alarm);
+  color:var(--paper);
+  padding:120px 32px;
+  position:relative;
+  overflow:hidden;
+}
+.cta-section::before{
+  content:'?';
+  position:absolute;
+  top:-80px;left:-40px;
+  font-family:var(--font-num);
+  font-size:600px;
+  font-weight:900;
+  color:rgba(255,255,255,.06);
+  line-height:.8;
+}
+.cta-inner{
+  max-width:900px;margin:0 auto;
+  position:relative;
+  text-align:center;
+}
+.cta-tag{
+  font-size:13px;
+  letter-spacing:4px;
+  margin-bottom:32px;
+  opacity:.85;
+  font-weight:600;
+}
+.cta-title{
+  font-family:var(--font-display);
+  font-size:clamp(40px,6vw,84px);
+  font-weight:900;
+  line-height:1;
+  margin-bottom:32px;
+  letter-spacing:-2px;
+}
+.cta-sub{
+  font-size:20px;
+  font-weight:300;
+  margin-bottom:48px;
+  opacity:.95;
+  max-width:680px;
+  margin-right:auto;margin-left:auto;
+}
+.cta-actions{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+}
+.btn-cta{
+  background:var(--paper);
+  color:var(--ink);
+  padding:20px 40px;
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  display:inline-flex;align-items:center;gap:12px;
+  transition:.3s;
+}
+.btn-cta:hover{
+  background:var(--ink);
+  color:var(--paper);
+  transform:translate(-3px,-3px);
+  box-shadow:6px 6px 0 var(--ink-deep);
+}
+.btn-cta.alt{
+  background:transparent;
+  color:var(--paper);
+  border:2px solid var(--paper);
+}
+.btn-cta.alt:hover{background:var(--paper);color:var(--ink)}
+
+/* ===== الفوتر ===== */
+footer{
+  background:var(--ink-deep);
+  color:var(--paper);
+  padding:80px 32px 32px;
+}
+.foot-inner{
+  max-width:1280px;margin:0 auto;
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:60px;
+  margin-bottom:60px;
+}
+.foot-brand{
+  font-family:var(--font-display);
+  font-size:32px;
+  font-weight:900;
+  margin-bottom:16px;
+  letter-spacing:-.5px;
+}
+.foot-tag{
+  font-size:14px;
+  opacity:.6;
+  max-width:320px;
+  line-height:1.7;
+  font-weight:300;
+}
+.foot-col h4{
+  font-size:13px;
+  letter-spacing:2px;
+  margin-bottom:20px;
+  color:var(--gold);
+  font-weight:700;
+}
+.foot-col ul{list-style:none}
+.foot-col li{margin-bottom:10px}
+.foot-col a{
+  color:var(--paper);
+  opacity:.7;
+  text-decoration:none;
+  font-size:14px;
+  transition:.3s;
+}
+.foot-col a:hover{opacity:1;color:var(--alarm)}
+.foot-bottom{
+  padding-top:32px;
+  border-top:1px solid rgba(255,255,255,.1);
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  opacity:.5;
+  flex-wrap:wrap;gap:16px;
+  font-weight:300;
+}
+
+@media(max-width:768px){
+  .foot-inner{grid-template-columns:1fr 1fr;gap:40px}
+}
+
+/* ===== Animations ===== */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(30px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.hero-meta,.hero-title,.hero-sub,.hero-actions,.hero-stats{
+  animation:fadeUp .9s cubic-bezier(.2,.8,.2,1) backwards;
+}
+.hero-meta{animation-delay:.1s}
+.hero-title{animation-delay:.2s}
+.hero-sub{animation-delay:.4s}
+.hero-actions{animation-delay:.55s}
+.hero-stats{animation-delay:.7s}
+</style>
+</head>
+<body>
+
+<!-- شريط الكشف -->
+<div class="alert-bar">
+  <div class="alert-track">
+    <span>الترانزيت الوهمي يكلف المسافر تذكرة كاملة عند تأخر دقيقة واحدة</span>
+    <span>14% فقط ما يثقون بـ TripAdvisor — لكن يحجزون عبره</span>
+    <span>حافة العالم: ساعة من الرياض، صفر استثمار رسمي</span>
+    <span>39% من المسافرين يثقون بـ Booking أكثر من غيره</span>
+    <span>الترانزيت الوهمي يكلف المسافر تذكرة كاملة عند تأخر دقيقة واحدة</span>
+    <span>14% فقط ما يثقون بـ TripAdvisor — لكن يحجزون عبره</span>
+  </div>
+</div>
+
+<!-- الناف -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="brand">
+      <span class="brand-mark">س</span>
+      سافر بوعي
+    </a>
+    <ul class="nav-links">
+      <li><a href="#exposes">الخدع المكشوفة</a></li>
+      <li><a href="#battle">الكنز المنسي</a></li>
+      <li><a href="#pillars">الركائز</a></li>
+      <li><a href="#author">من نحن</a></li>
+    </ul>
+    <a href="#cta" class="nav-cta">احجز رحلتك</a>
+  </div>
+</nav>
+
+<!-- الهيرو -->
+<section class="hero">
+  <div class="hero-meta">
+    <span>قناة تعليمية · مكتبة كشف · 2026</span>
+  </div>
+  <h1 class="hero-title">
+    المسافر العربي<br>
+    <span class="accent">يُخدع يومياً</span><br>
+    ولا أحد يعلّمه.
+  </h1>
+  <p class="hero-sub">
+    سافر بوعي قناة تعليمية واحدة فقط: <strong>تكشف الخدعة قبل ما تدفعها</strong>. 
+    ترانزيت وهمي، تقييمات مزيفة، أسعار بخمسة شروط مخفية، فنادق بصور لا تشبه الواقع — كل فيديو يحميك من قرار خاطئ.
+  </p>
+  <div class="hero-actions">
+    <a href="#exposes" class="btn-primary">شوف الخدع المكشوفة ←</a>
+    <a href="#cta" class="btn-secondary">احجز رحلة محمية</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">9<span class="unit">+</span></div>
+      <div class="stat-label">سكريبت تحقيقي جاهز</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">ركائز تحريرية</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">60<span class="unit">%</span></div>
+      <div class="stat-label">معدل الاحتفاظ المستهدف</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100<span class="unit">%</span></div>
+      <div class="stat-label">معلومة موثّقة</div>
+    </div>
+  </div>
+</section>
+
+<!-- الفرضية -->
+<section class="thesis">
+  <div class="thesis-inner">
+    <div class="section-tag">— الفرضية الجوهرية —</div>
+    <h2 class="thesis-quote">
+      هذه ليست قناة <span class="strike">"اكتشف الوجهات"</span>. 
+      هذه قناة <em>تعلّمك كيف لا تنخدع</em> — قبل ما تدفع، قبل ما تطير، قبل ما تكتشف الفرق بين السعر المُعلَن وسعر التجربة.
+    </h2>
+    <div class="thesis-author">
+      <div class="author-mark">ع</div>
+      <div class="author-info">
+        <strong>عبدالله الشعبي</strong>
+        <span>محرر القناة · صاحب وكالة سفر · خبير سمعة رقمية</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- الخدع -->
+<section class="exposes" id="exposes">
+  <div class="exposes-header">
+    <h2 class="exposes-title">
+      ملف الخدع<br>
+      <em>المكشوفة</em>
+    </h2>
+    <p class="exposes-intro">
+      كل ملف هنا فيديو منشور أو سكريبت جاهز للتصوير. ليست نصائح عامة — كل واحد يكشف خدعة بعينها بمصدر موثّق وقاعدة عملية تطبّقها قبل الحجز التالي.
+    </p>
+  </div>
+
+  <div class="expose-grid">
+    <article class="expose">
+      <div class="expose-num">— ملف 01 —</div>
+      <h3 class="expose-title">الترانزيت الوهمي</h3>
+      <p class="expose-hook">"أكبر كذبة في الطيران؟ الترانزيت الوهمي... اللي يخليك تدفع مرتين إذا تأخرت دقيقة."</p>
+      <div class="expose-meta">
+        <span>2:30 — 2:45</span>
+        <span class="pillar">كشف خدع السفر</span>
+      </div>
+    </article>
+
+    <article class="expose">
+      <div class="expose-num">— ملف 02 —</div>
+      <h3 class="expose-title">نفس الفندق، نفس الغرفة</h3>
+      <p class="expose-hook">ثلاث خدع بصرية في صور الفنادق: الجو العام، الـ Lifestyle، وكذبة العدسة الواسعة. اختبار 10 ثواني للفنادق بدون صور نزلاء.</p>
+      <div class="expose-meta">
+        <span>2:20</span>
+        <span class="pillar">كشف خدع السفر</span>
+      </div>
+    </article>
+
+    <article class="expose">
+      <div class="expose-num">— ملف 03 —</div>
+      <h3 class="expose-title">خدعة السعر الرخيص</h3>
+      <p class="expose-hook">السعر الحقيقي ≠ سعر الحجز. السعر الحقيقي = سعر الحجز + قيوده + موقعه + وقتك.</p>
+      <div class="expose-meta">
+        <span>2:30 — 2:40</span>
+        <span class="pillar">كشف خدع السفر</span>
+      </div>
+    </article>
+
+    <article class="expose">
+      <div class="expose-num">— ملف 04 —</div>
+      <h3 class="expose-title">كيف تقرأ تقييمات الفنادق؟</h3>
+      <p class="expose-hook">سان دييغو — فندق 9+ لم أنم فيه. 6 قواعد: فكّك الرقم، اقرأ آخر 30، ابحث عن "كلمتك القاتلة"، الحقائق عند الزعلانين.</p>
+      <div class="expose-meta">
+        <span>3:00 — 3:15</span>
+        <span class="pillar">تحليل السوق</span>
+      </div>
+    </article>
+
+    <article class="expose">
+      <div class="expose-num">— ملف 05 —</div>
+      <h3 class="expose-title">فخ نفس الفندق غير موسم</h3>
+      <p class="expose-hook">فيينا في الصيف ≠ فيينا في الشتاء. الفندق نفسه، التجربة مختلفة كلياً. لا تعد لمكان أحببته في موسم مختلف.</p>
+      <div class="expose-meta">
+        <span>2:25 — 2:35</span>
+        <span class="pillar">كشف خدع السفر</span>
+      </div>
+    </article>
+
+    <article class="expose">
+      <div class="expose-num">— ملف 06 —</div>
+      <h3 class="expose-title">موسكو 25- بدون ثرمال</h3>
+      <p class="expose-hook">1500 ريال على ملابس ثرمال؟ تجربة شخصية تثبت: الشتاء = موقع، وليس ملابس باهظة.</p>
+      <div class="expose-meta">
+        <span>2:25 — 2:35</span>
+        <span class="pillar">الحجز الذكي</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- المعركة الكبرى -->
+<section class="battle" id="battle">
+  <div class="battle-inner">
+    <div class="battle-tag">— الملف الخاص ·  ساعة من الرياض —</div>
+    <h2 class="battle-title">
+      جراند كانيون لقى روزفلت حقّه سنة 1903.<br>
+      حافة العالم في 2026 لسّا تنتظر.
+    </h2>
+    <p class="battle-sub">
+      موقع يقدر يدر مليار دولار سنوياً — ساعة من عاصمة فيها ملايين. اسم أقوى. قصة أعمق. لكن ما عنده الطريق اللي يوصّلك له. حرفياً ومجازياً.
+    </p>
+
+    <div class="vs-grid">
+      <div class="vs-side left">
+        <div class="vs-flag">🇺🇸 ARIZONA</div>
+        <div class="vs-name">جراند كانيون</div>
+        <div class="vs-row"><span>الزوار / السنة</span><strong>4.92 مليون</strong></div>
+        <div class="vs-row"><span>إنفاق الزوار</span><strong>905$ مليون</strong></div>
+        <div class="vs-row"><span>الوظائف</span><strong>10,100</strong></div>
+        <div class="vs-row"><span>الطرق</span><strong>معبّدة + شاتل</strong></div>
+        <div class="vs-row"><span>المسافة من العاصمة</span><strong>~400 كم</strong></div>
+      </div>
+
+      <div class="vs-divider">VS</div>
+
+      <div class="vs-side right">
+        <div class="vs-flag">🇸🇦 الرياض</div>
+        <div class="vs-name alt">حافة العالم</div>
+        <div class="vs-row"><span>الزوار / السنة</span><strong>لا إحصاء رسمي</strong></div>
+        <div class="vs-row"><span>إنفاق الزوار</span><strong>صفر</strong></div>
+        <div class="vs-row"><span>الوظائف</span><strong>صفر رسمية</strong></div>
+        <div class="vs-row"><span>الطرق</span><strong>ردمية غير معلّمة</strong></div>
+        <div class="vs-row"><span>المسافة من العاصمة</span><strong>~100 كم</strong></div>
+      </div>
+    </div>
+
+    <div class="battle-quote">
+      "Leave it as it is" — خمس كلمات قالها روزفلت سنة 1903. قرار واحد حوّل وادي صخري إلى 905 مليون دولار. السؤال الحقيقي: مين اللي بيكون روزفلت حقّها؟
+      <span class="who">— من سكريبت "حافة العالم — كنز ننام عليه"</span>
+    </div>
+  </div>
+</section>
+
+<!-- الركائز -->
+<section class="pillars" id="pillars">
+  <div class="pillars-head">
+    <h2 class="pillars-title">خمس ركائز.<br>لا سادسة.</h2>
+    <p class="pillars-sub">كل فيديو في القناة ينتمي لواحدة من هذه الركائز. أي موضوع لا يكشف خدعة، أو لا يفضح وهماً، أو لا يحمي قراراً — لا ينتمي للقناة، حتى لو كان جميلاً.</p>
+  </div>
+
+  <div class="pillar-list">
+    <div class="pillar-item">
+      <div class="pillar-num">01</div>
+      <div class="pillar-name">كشف خدع السفر</div>
+      <div class="pillar-desc">الفنادق، الطيران، الأسعار. القلب التحريري للقناة وأعلى ركيزة تفاعلاً.</div>
+      <div class="pillar-tag hot">الأعلى أداءً</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-num">02</div>
+      <div class="pillar-name">السياحة الداخلية</div>
+      <div class="pillar-desc">تطوير المواقع السعودية ضمن إطار رؤية 2030. حافة العالم نموذجاً.</div>
+      <div class="pillar-tag">رؤية 2030</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-num">03</div>
+      <div class="pillar-name">تحليل السمعة الرقمية</div>
+      <div class="pillar-desc">قراءة التقييمات، مقارنة المنصات، كشف المراجعات المزيفة.</div>
+      <div class="pillar-tag">معرفي / عميق</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-num">04</div>
+      <div class="pillar-name">الأخبار والأزمات</div>
+      <div class="pillar-desc">نشر سريع في نوافذ ضيقة. أزمة الطيران مارس 2026 نموذجاً.</div>
+      <div class="pillar-tag hot">عاجل / لحظي</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-num">05</div>
+      <div class="pillar-name">الحجز الذكي وأدواته</div>
+      <div class="pillar-desc">أسرار Google Flights، MCT، التذاكر القابلة للاسترداد.</div>
+      <div class="pillar-tag">عملي مباشر</div>
+    </div>
+  </div>
+</section>
+
+<!-- الكاتب -->
+<section class="author-section" id="author">
+  <div class="author-inner">
+    <div class="author-portrait">
+      <div class="portrait-mark">س</div>
+      <div class="portrait-text">
+        <div class="label">— محرر القناة —</div>
+        <div class="name">عبدالله الشعبي</div>
+        <div class="role">سافر بوعي · ترانيم / سكاي العالمية</div>
+      </div>
+    </div>
+    <div class="author-text">
+      <h3>"أنا عبدالله، أشتغل في السياحة."</h3>
+      <p>
+        الجملة المفتاحية في كل فيديو — ليست تعريفاً عابراً، بل أداة مصداقية تختصر طبقة من الشك في خمس ثوانٍ.
+      </p>
+      <p>
+        خبرة ميدانية بين وكالة سفر فعلية وتسويق فنادق. كل سكريبت في القناة مبني على معلومة موثّقة، تجربة شخصية، وقاعدة عملية يمكن للمشاهد تطبيقها قبل الحجز التالي.
+      </p>
+      <ul class="author-creds">
+        <li>صاحب وكالة سفر — ترانيم / سكاي العالمية</li>
+        <li>خلفية في تسويق الفنادق وقراءة السمعة الرقمية</li>
+        <li>تجارب موثّقة من سان دييغو · موسكو · حافة العالم · نيفيسكي</li>
+        <li>منهج تحريري مبني على البحث المعمّق لا الانطباع</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- المنهج -->
+<section class="method">
+  <div class="method-head">
+    <h2 class="method-title">بنية كل سكريبت.<br>لا فيديو واحد يخرج عنها.</h2>
+    <p class="method-intro">السر التحريري ليس "الموضوع الجيد" — بل البنية المُحكَمة. سبع محطات تحريرية مضبوطة بالثانية، تضمن أعلى معدل احتفاظ ممكن.</p>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-step active">
+      <div class="tl-dot"></div>
+      <div class="tl-time">0:00 — 0:07</div>
+      <div class="tl-label">Hook صدمة</div>
+      <div class="tl-desc">جملة قصيرة، مفارقة فورية، وقفة محسوبة.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-dot"></div>
+      <div class="tl-time">0:07 — 0:15</div>
+      <div class="tl-label">تعريف</div>
+      <div class="tl-desc">"أنا عبدالله، أشتغل في السياحة."</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-dot"></div>
+      <div class="tl-time">0:15 — 0:45</div>
+      <div class="tl-label">ألم تطبيقي</div>
+      <div class="tl-desc">قصة شخصية تحوّل المعلومة لتجربة.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-dot"></div>
+      <div class="tl-time">~0:50</div>
+      <div class="tl-label">Hook ثانٍ</div>
+      <div class="tl-desc">"والصدمة؟" يمنع التمرير في النقطة الحرجة.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-dot"></div>
+      <div class="tl-time">1:00 — 2:00</div>
+      <div class="tl-label">قواعد عملية</div>
+      <div class="tl-desc">3 إلى 6 قواعد مرقّمة قابلة للحفظ.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-dot"></div>
+      <div class="tl-time">2:00 — 2:30</div>
+      <div class="tl-label">قفل سلسلة</div>
+      <div class="tl-desc">"في الفيديو الجاي..." — لا فيديو منفرد.</div>
+    </div>
+    <div class="tl-step">
+      <div class="tl-dot"></div>
+      <div class="tl-time">النهاية</div>
+      <div class="tl-label">سؤال استفزازي</div>
+      <div class="tl-desc">يطلب تجربة شخصية، لا رأياً عاماً.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <div class="cta-inner">
+    <div class="cta-tag">— احمِ رحلتك القادمة —</div>
+    <h2 class="cta-title">
+      وفّرت بالسعر،<br>
+      وخسرت بالحماية؟<br>
+      أنت ما وفّرت.
+    </h2>
+    <p class="cta-sub">
+      لا تحجز رحلتك القادمة من Skyscanner لوحدك. احجز عبر سكاي العالمية / ترانيم — نفس المسار، حماية كاملة، استشارة قبل الحجز.
+    </p>
+    <div class="cta-actions">
+      <a href="#" class="btn-cta">احجز عبر واتساب ←</a>
+      <a href="#" class="btn-cta alt">تابعنا على تيك توك</a>
+    </div>
+  </div>
+</section>
+
+<!-- الفوتر -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-brand-col">
+      <div class="foot-brand">سافر بوعي</div>
+      <p class="foot-tag">قناة تعليمية مبنية على فرضية واحدة: المسافر العربي يُخدع يومياً، ولا أحد يعلّمه. أعلّمك كيف تسافر بذكاء — وكيف لا تنخدع.</p>
+    </div>
+    <div class="foot-col">
+      <h4>الركائز</h4>
+      <ul>
+        <li><a href="#">كشف خدع السفر</a></li>
+        <li><a href="#">السياحة الداخلية</a></li>
+        <li><a href="#">السمعة الرقمية</a></li>
+        <li><a href="#">الحجز الذكي</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>المنصات</h4>
+      <ul>
+        <li><a href="#">TikTok</a></li>
+        <li><a href="#">YouTube</a></li>
+        <li><a href="#">X / تويتر</a></li>
+        <li><a href="#">Instagram</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>تواصل</h4>
+      <ul>
+        <li><a href="#">واتساب الوكالة</a></li>
+        <li><a href="#">احجز استشارة</a></li>
+        <li><a href="#">للرعاية والشراكات</a></li>
+        <li><a href="#">دليل التجهيزات</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 سافر بوعي · Abdullah Travel Lab</span>
+    <span>صُمّم بنية تحريرية: كل بكسل له وظيفة احتفاظ.</span>
+  </div>
+</footer>
+
+</body>
+</html>
