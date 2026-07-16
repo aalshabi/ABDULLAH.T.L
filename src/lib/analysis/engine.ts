@@ -348,6 +348,211 @@ export function analyzeHotelDeep(name: string, city: string, _locale: Locale): H
   };
 }
 
+// ---- deep offer analysis (upload + extraction) ----------------------------
+
+type Bi = { ar: string; en: string };
+
+export interface ExtractedOffer {
+  destination: Bi;
+  nights: number;
+  travelers: number;
+  hotel: { name: Bi; stars: number; board: Bi };
+  flight: { airline: string; route: Bi; stops: number; baggage: Bi };
+  transfer: { included: boolean; type: Bi };
+  itinerary: { day: number; title: Bi }[];
+}
+
+export interface OfferDeepResult {
+  advertisedPrice: number | null;
+  realPrice: number;
+  extracted: ExtractedOffer;
+  scores: {
+    transparency: number;
+    priceFairness: number;
+    overallValue: number;
+    hotelQuality: number;
+    flights: number;
+    transfers: number;
+  };
+  travelRisk: { level: "low" | "medium" | "high"; score: number };
+  missingServices: Bi[];
+  hiddenCosts: { label: Bi; amount: number }[];
+  hotelNote: Bi;
+  flightNote: Bi;
+  transferNote: Bi;
+  itineraryNote: Bi;
+  recommendation: Bi;
+}
+
+const OFFER_DESTINATIONS: Bi[] = [
+  { ar: "إسطنبول، تركيا", en: "Istanbul, Turkey" },
+  { ar: "دبي، الإمارات", en: "Dubai, UAE" },
+  { ar: "كوالالمبور، ماليزيا", en: "Kuala Lumpur, Malaysia" },
+  { ar: "تبليسي، جورجيا", en: "Tbilisi, Georgia" },
+  { ar: "باكو، أذربيجان", en: "Baku, Azerbaijan" },
+  { ar: "القاهرة، مصر", en: "Cairo, Egypt" },
+];
+
+const OFFER_HOTELS: Bi[] = [
+  { ar: "فندق مرمرة بالاس", en: "Marmara Palace Hotel" },
+  { ar: "منتجع الواحة الذهبية", en: "Golden Oasis Resort" },
+  { ar: "فندق سيتي سنتر", en: "City Center Hotel" },
+  { ar: "منتجع بحيرة الزمرد", en: "Emerald Lake Resort" },
+];
+
+const OFFER_BOARDS: Bi[] = [
+  { ar: "بدون وجبات (RO)", en: "Room only (RO)" },
+  { ar: "إفطار فقط (BB)", en: "Bed & breakfast (BB)" },
+  { ar: "نصف إقامة (HB)", en: "Half board (HB)" },
+  { ar: "إقامة كاملة (FB)", en: "Full board (FB)" },
+];
+
+const OFFER_AIRLINES = ["Turkish Airlines", "flydubai", "Pegasus", "Saudia", "EgyptAir", "AJet"];
+
+const OFFER_BAGGAGE: Bi[] = [
+  { ar: "حقيبة ٢٠ كجم مشمولة", en: "20kg checked bag included" },
+  { ar: "حقيبة يد ٨ كجم فقط", en: "Cabin bag 8kg only" },
+  { ar: "بدون أمتعة مشمولة", en: "No baggage included" },
+];
+
+const OFFER_TRANSFERS: Bi[] = [
+  { ar: "استقبال وتوصيل خاص", en: "Private airport transfers" },
+  { ar: "توصيل جماعي (شتل)", en: "Shared shuttle transfer" },
+  { ar: "غير مشمول", en: "Not included" },
+];
+
+const OFFER_ITINERARY: Bi[] = [
+  { ar: "الوصول والاستقبال", en: "Arrival & welcome" },
+  { ar: "جولة المدينة التاريخية", en: "Historic city tour" },
+  { ar: "رحلة بحرية بانورامية", en: "Panoramic boat cruise" },
+  { ar: "زيارة المعالم الطبيعية", en: "Natural landmarks visit" },
+  { ar: "يوم حر للتسوق", en: "Free day for shopping" },
+  { ar: "يوم اختياري (رحلة إضافية)", en: "Optional day (paid excursion)" },
+  { ar: "المغادرة والتوصيل", en: "Departure & drop-off" },
+];
+
+const OFFER_MISSING: Bi[] = [
+  { ar: "تأمين سفر غير مشمول.", en: "Travel insurance not included." },
+  { ar: "رسوم دخول المعالم على حسابك.", en: "Attraction entry fees at your own cost." },
+  { ar: "لا يوجد مرشد ناطق بالعربية.", en: "No Arabic-speaking guide." },
+  { ar: "تأشيرة الدخول غير مشمولة.", en: "Entry visa not included." },
+  { ar: "وجبات الغداء والعشاء غير مذكورة.", en: "Lunch and dinner not specified." },
+  { ar: "المشروبات خارج الوجبات غير مشمولة.", en: "Drinks outside meals not included." },
+];
+
+const OFFER_HIDDEN: { label: Bi; amount: number }[] = [
+  { label: { ar: "ضريبة سياحة المدينة", en: "City tourism tax" }, amount: 0 },
+  { label: { ar: "رسوم منتجع إجبارية", en: "Mandatory resort fee" }, amount: 0 },
+  { label: { ar: "رسوم أمتعة إضافية", en: "Extra baggage fee" }, amount: 0 },
+  { label: { ar: "بقشيش السائق والمرشد", en: "Driver & guide tips" }, amount: 0 },
+  { label: { ar: "فرق ترقية المقعد", en: "Seat upgrade surcharge" }, amount: 0 },
+];
+
+export function analyzeOfferDeep(
+  seed: string,
+  advertised: number | null,
+  _locale: Locale
+): OfferDeepResult {
+  const rng = makeRng(hashString(`offer-deep:${seed.trim().toLowerCase().slice(0, 160)}:${advertised ?? 0}`));
+
+  const nights = 3 + Math.floor(rng() * 6); // 3-8
+  const travelers = 1 + Math.floor(rng() * 4); // 1-4
+  const stars = 3 + Math.floor(rng() * 3); // 3-5
+  const stops = Math.floor(rng() * 3); // 0-2
+  const board = OFFER_BOARDS[Math.floor(rng() * OFFER_BOARDS.length)];
+  const baggage = OFFER_BAGGAGE[Math.floor(rng() * OFFER_BAGGAGE.length)];
+  const transferType = OFFER_TRANSFERS[Math.floor(rng() * OFFER_TRANSFERS.length)];
+  const transferIncluded = transferType.en !== "Not included";
+  const destination = OFFER_DESTINATIONS[Math.floor(rng() * OFFER_DESTINATIONS.length)];
+  const airline = OFFER_AIRLINES[Math.floor(rng() * OFFER_AIRLINES.length)];
+  const hotelName = OFFER_HOTELS[Math.floor(rng() * OFFER_HOTELS.length)];
+
+  const routeText: Bi =
+    stops === 0
+      ? { ar: `رحلة مباشرة إلى ${destination.ar.split("،")[0]}`, en: `Direct flight to ${destination.en.split(",")[0]}` }
+      : { ar: `${stops} توقف عبر محطة ترانزيت`, en: `${stops} stop(s) via a transit hub` };
+
+  // Build a day-by-day itinerary sized to the trip.
+  const middle = pick(rng, OFFER_ITINERARY.slice(1, 6), Math.min(nights - 1, 4));
+  const itinerary = [
+    { day: 1, title: OFFER_ITINERARY[0] },
+    ...middle.map((t, i) => ({ day: i + 2, title: t })),
+    { day: nights, title: OFFER_ITINERARY[OFFER_ITINERARY.length - 1] },
+  ].filter((v, i, a) => a.findIndex((x) => x.day === v.day) === i);
+
+  const extracted: ExtractedOffer = {
+    destination,
+    nights,
+    travelers,
+    hotel: { name: hotelName, stars, board },
+    flight: { airline, route: routeText, stops, baggage },
+    transfer: { included: transferIncluded, type: transferType },
+    itinerary,
+  };
+
+  // Scores derived from the extracted facts for realism.
+  const hotelQuality = clamp(30 + stars * 11 + Math.floor(rng() * 12));
+  const noBag = baggage.en === "No baggage included";
+  const flightsScore = clamp(92 - stops * 22 - (noBag ? 16 : 0) + Math.floor(rng() * 8));
+  const transfersScore = transferIncluded ? clamp(72 + Math.floor(rng() * 24)) : clamp(28 + Math.floor(rng() * 14));
+
+  const missingServices = pick(rng, OFFER_MISSING, 2 + Math.floor(rng() * 3)); // 2-4
+  const hiddenCount = 1 + Math.floor(rng() * 3); // 1-3
+  const hiddenCosts = pick(rng, OFFER_HIDDEN, hiddenCount).map((h) => ({
+    label: h.label,
+    amount: Math.round(60 + rng() * 320),
+  }));
+
+  const transparency = clamp(96 - missingServices.length * 9 - hiddenCosts.length * 6 + Math.floor(rng() * 6));
+  const priceFairness = clamp(40 + rng() * 55);
+  const overallValue = Math.round((hotelQuality + flightsScore + transfersScore + priceFairness) / 4);
+
+  const base = advertised && advertised > 0 ? advertised : Math.round((1400 + rng() * 3800) * travelers);
+  const realPrice = base + hiddenCosts.reduce((s, c) => s + c.amount, 0);
+
+  const riskScore = clamp(Math.round((100 - transparency) * 0.6 + missingServices.length * 8 + (transferIncluded ? 0 : 12)));
+  const riskLevel: "low" | "medium" | "high" = riskScore >= 55 ? "high" : riskScore >= 30 ? "medium" : "low";
+
+  return {
+    advertisedPrice: advertised && advertised > 0 ? advertised : null,
+    realPrice,
+    extracted,
+    scores: { transparency, priceFairness, overallValue, hotelQuality, flights: flightsScore, transfers: transfersScore },
+    travelRisk: { level: riskLevel, score: riskScore },
+    missingServices,
+    hiddenCosts,
+    hotelNote: note(hotelQuality, {
+      hi: { ar: `فندق ${stars} نجوم بمستوى جيد ومطابق للوصف غالباً.`, en: `A solid ${stars}-star property, generally matching the description.` },
+      lo: { ar: `تصنيف ${stars} نجوم قد يكون محلياً لا دولياً — تحقّق من الصور الحديثة.`, en: `The ${stars}-star rating may be local, not international — verify recent photos.` },
+    }),
+    flightNote: note(flightsScore, {
+      hi: { ar: `رحلة عبر ${airline} بجودة مقبولة.`, en: `A reasonable-quality flight on ${airline}.` },
+      lo: { ar: `${stops} توقف${noBag ? " وبدون أمتعة مشمولة" : ""} — تحقّق من مدة الترانزيت.`, en: `${stops} stop(s)${noBag ? " and no baggage" : ""} — check the transit duration.` },
+    }),
+    transferNote: transferIncluded
+      ? { ar: "التنقلات من وإلى المطار مشمولة.", en: "Airport transfers are included." }
+      : { ar: "التنقلات غير مشمولة — أضِفها لحساب التكلفة الحقيقية.", en: "Transfers are not included — add them to the true cost." },
+    itineraryNote: note(overallValue, {
+      hi: { ar: "برنامج متوازن بين الجولات والأيام الحرة.", en: "A balanced program of tours and free days." },
+      lo: { ar: "برنامج فضفاض بأيام حرة كثيرة أو رحلات اختيارية مدفوعة.", en: "A loose program with many free days or paid optional trips." },
+    }),
+    recommendation:
+      overallValue >= 70 && transparency >= 65
+        ? { ar: "عرض عادل نسبياً — أكّد شمول الخدمات كتابياً قبل الدفع.", en: "A relatively fair offer — confirm inclusions in writing before paying." }
+        : transparency < 50
+          ? { ar: "شفافية منخفضة وتكاليف مخفية — تفاوض أو اطلب عرضاً مفصّلاً بديلاً.", en: "Low transparency and hidden costs — negotiate or request a detailed alternative." }
+          : { ar: "عرض متوسط — سُدّ الخدمات الناقصة واحسب السعر الحقيقي قبل القرار.", en: "An average offer — cover the missing services and compute the real price first." },
+  };
+}
+
+function clamp(n: number): number {
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function note(score: number, opts: { hi: Bi; lo: Bi }): Bi {
+  return score >= 60 ? opts.hi : opts.lo;
+}
+
 export function compareHotels(names: string[], locale: Locale) {
   const rows = names
     .filter((n) => n.trim().length > 0)
