@@ -23,6 +23,7 @@ export function Footer() {
       links: [
         { href: "/knowledge", label: t.nav.knowledge },
         { href: "/dashboard", label: t.nav.dashboard },
+        { href: "/admin", label: t.admin.title },
         { href: "/#about", label: t.footer.about },
         { href: "/#contact", label: t.footer.contact },
       ],
