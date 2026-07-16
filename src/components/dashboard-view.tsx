@@ -13,8 +13,10 @@ import {
   BarChart3,
   Trash2,
 } from "lucide-react";
+import { Info } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/provider";
 import { useAuth } from "@/hooks/use-auth";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getAnalyses, clearAnalyses, type SavedAnalysis, type AnalysisType } from "@/lib/storage";
 import { formatNumber, scoreColor } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -69,6 +71,12 @@ export function DashboardView() {
     <>
       <PageHeader icon={LayoutDashboard} title={`${td.welcome}، ${greeting}`} subtitle={td.subtitle} />
       <div className="container mt-10 space-y-8 pb-20">
+        {!isSupabaseConfigured && (
+          <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
+            <Info className="mt-0.5 size-5 shrink-0" />
+            <span>{td.localNotice}</span>
+          </div>
+        )}
         {/* stats */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((s) => (

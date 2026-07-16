@@ -344,6 +344,8 @@ export const dictionaries = {
       noActivity: "لا يوجد نشاط بعد. ابدأ بتحليلك الأول!",
       startAnalysis: "ابدأ تحليلاً",
       quickActions: "إجراءات سريعة",
+      localNotice:
+        "التخزين الحالي محلي في متصفحك ومؤقت — سيُربط بحسابك عند تفعيل قاعدة البيانات. في النسخة التجريبية البيانات المعروضة لا ترتبط بحساب حقيقي.",
     },
     admin: {
       title: "لوحة تحكم الإدارة",
@@ -735,6 +737,8 @@ export const dictionaries = {
       noActivity: "No activity yet. Start with your first analysis!",
       startAnalysis: "Start an analysis",
       quickActions: "Quick actions",
+      localNotice:
+        "Current storage is local to your browser and temporary — it will be linked to your account once the database is enabled. In the demo, the data shown is not tied to a real account.",
     },
     admin: {
       title: "Admin dashboard",
