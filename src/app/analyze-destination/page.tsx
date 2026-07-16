@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { DestinationAnalyzer } from "@/components/analyzers/destination-analyzer";
+import { DestinationAdvisor } from "@/components/analyzers/destination-advisor";
 
 export const metadata: Metadata = {
-  title: "تحليل وجهة — Analyze Destination",
+  title: "مستشار الوجهات — AI Destination Advisor",
   description:
-    "قيّم أي وجهة قبل السفر: السلامة، أفضل موسم، التكلفة الحقيقية والفخاخ السياحية. Rate safety, season, real cost and tourist traps.",
+    "أدخل الدولة والمدينة وتاريخ السفر والميزانية وعدد المسافرين، واحصل على الطقس والازدحام والأسعار والفعاليات والأمان وفنادق موصى بها ومتوسط التكلفة وبرنامج مقترح ودرجة من ١٠٠. Get weather, crowds, prices, events, safety, hotels, average cost and a recommended itinerary.",
   alternates: { canonical: "/analyze-destination" },
 };
 
 export default function Page() {
-  return <DestinationAnalyzer />;
+  return <DestinationAdvisor />;
 }

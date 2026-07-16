@@ -553,6 +553,224 @@ function note(score: number, opts: { hi: Bi; lo: Bi }): Bi {
   return score >= 60 ? opts.hi : opts.lo;
 }
 
+// ---- destination advisor --------------------------------------------------
+
+export interface DestinationAdviceInput {
+  country: string;
+  city: string;
+  month: number; // 0-11
+  budget: number | null;
+  adults: number;
+  children: number;
+}
+
+type Level = "low" | "medium" | "high";
+type WeatherIcon = "sun" | "cloud" | "rain" | "snow";
+
+export interface DestinationAdvice {
+  score: number;
+  weather: { tempC: number; icon: WeatherIcon; condition: Bi };
+  crowdLevel: { level: Level; note: Bi };
+  priceLevel: { level: Level; note: Bi };
+  safety: { score: number; note: Bi };
+  events: { name: Bi; when: Bi }[];
+  recommendedHotels: { name: Bi; stars: number; pricePerNight: number; area: Bi }[];
+  averageCost: {
+    perPersonPerDay: number;
+    days: number;
+    total: number;
+    breakdown: { label: Bi; amount: number }[];
+    budgetFit: "under" | "over" | "none";
+  };
+  itinerary: { day: number; title: Bi; detail: Bi }[];
+  summary: Bi;
+}
+
+const WEATHER_CONDITIONS: Record<WeatherIcon, Bi> = {
+  sun: { ar: "مشمس وصافٍ", en: "Sunny and clear" },
+  cloud: { ar: "غائم جزئياً", en: "Partly cloudy" },
+  rain: { ar: "أمطار متفرقة", en: "Scattered showers" },
+  snow: { ar: "بارد وثلجي", en: "Cold and snowy" },
+};
+
+const CROWD_NOTES: Record<Level, Bi> = {
+  low: { ar: "ازدحام منخفض — تجربة مريحة وأسعار أفضل.", en: "Low crowds — a relaxed experience and better prices." },
+  medium: { ar: "ازدحام معتدل — احجز الأنشطة الرئيسية مسبقاً.", en: "Moderate crowds — book key activities ahead." },
+  high: { ar: "موسم ذروة — ازدحام وأسعار مرتفعة.", en: "Peak season — crowded and pricey." },
+};
+
+const PRICE_NOTES: Record<Level, Bi> = {
+  low: { ar: "مستوى أسعار منخفض — قيمة ممتازة.", en: "Low price level — excellent value." },
+  medium: { ar: "مستوى أسعار معتدل.", en: "Moderate price level." },
+  high: { ar: "مستوى أسعار مرتفع — خطّط لميزانية أكبر.", en: "High price level — plan a larger budget." },
+};
+
+const DEST_EVENTS: Bi[] = [
+  { ar: "مهرجان الأضواء", en: "Festival of Lights" },
+  { ar: "سوق الحرف الشعبية", en: "Folk Crafts Market" },
+  { ar: "مهرجان الطعام العالمي", en: "World Food Festival" },
+  { ar: "عروض موسيقية في الهواء الطلق", en: "Open-air music nights" },
+  { ar: "معرض الفنون الحديثة", en: "Modern Art Expo" },
+  { ar: "ماراثون المدينة السنوي", en: "Annual City Marathon" },
+];
+
+const DEST_HOTELS: Bi[] = [
+  { ar: "فندق سنترال بارك", en: "Central Park Hotel" },
+  { ar: "منتجع الواجهة البحرية", en: "Waterfront Resort" },
+  { ar: "بوتيك الحي القديم", en: "Old Town Boutique" },
+  { ar: "أجنحة الأعمال الفاخرة", en: "Grand Business Suites" },
+  { ar: "نُزل الحديقة الهادئ", en: "Quiet Garden Inn" },
+];
+
+const DEST_AREAS: Bi[] = [
+  { ar: "وسط المدينة", en: "City center" },
+  { ar: "الحي التاريخي", en: "Historic quarter" },
+  { ar: "المنطقة الساحلية", en: "Waterfront district" },
+  { ar: "حي الأعمال", en: "Business district" },
+];
+
+const ITIN_GENERAL: Bi[] = [
+  { ar: "استكشاف وسط المدينة والمعالم الرئيسية", en: "Explore downtown and the main landmarks" },
+  { ar: "متحف وجولة ثقافية", en: "Museum visit and a cultural tour" },
+  { ar: "رحلة يوم إلى الطبيعة القريبة", en: "Day trip to nearby nature" },
+  { ar: "تسوّق وأسواق محلية", en: "Shopping and local markets" },
+  { ar: "مطاعم مميزة وجولة مسائية", en: "Notable restaurants and an evening stroll" },
+  { ar: "يوم استرخاء أو نشاط اختياري", en: "Relaxation or an optional activity" },
+];
+
+const ITIN_FAMILY: Bi[] = [
+  { ar: "مدينة ملاهي أو حديقة ألعاب", en: "Theme park or amusement center" },
+  { ar: "حديقة حيوان أو أكواريوم", en: "Zoo or aquarium" },
+  { ar: "شاطئ عائلي وأنشطة مائية", en: "Family beach and water activities" },
+  { ar: "متحف علوم تفاعلي للأطفال", en: "Interactive science museum for kids" },
+];
+
+const ITIN_DETAILS: Bi[] = [
+  { ar: "الأفضل صباحاً لتجنّب الزحام.", en: "Best in the morning to avoid crowds." },
+  { ar: "احجز التذاكر مسبقاً عبر الإنترنت.", en: "Book tickets online in advance." },
+  { ar: "خصّص نصف يوم على الأقل.", en: "Allow at least half a day." },
+  { ar: "قريب من المواصلات العامة.", en: "Close to public transport." },
+  { ar: "مناسب للميزانية مع خيارات مجانية.", en: "Budget-friendly with free options." },
+];
+
+const MONTH_TEMP = [8, 10, 14, 18, 23, 28, 31, 30, 26, 20, 14, 9]; // northern-hemisphere baseline
+
+function levelFromScore(n: number): Level {
+  return n >= 66 ? "high" : n >= 40 ? "medium" : "low";
+}
+
+export function adviseDestination(input: DestinationAdviceInput, _locale: Locale): DestinationAdvice {
+  const { country, city, month, budget, adults, children } = input;
+  const rng = makeRng(
+    hashString(`dest-advice:${country.trim().toLowerCase()}:${city.trim().toLowerCase()}:${month}`)
+  );
+
+  // Weather
+  const tempC = Math.round(MONTH_TEMP[month] + (rng() * 8 - 4));
+  const icon: WeatherIcon =
+    tempC <= 5 ? "snow" : rng() < 0.2 ? "rain" : tempC >= 24 ? "sun" : "cloud";
+
+  // Crowd — peak in summer (5-7) and December (11)
+  const peak = month >= 5 && month <= 7 ? 80 : month === 11 || month === 0 ? 68 : month >= 3 && month <= 9 ? 50 : 32;
+  const crowdScore = clamp(peak + Math.round(rng() * 20 - 10));
+  const crowdLevel = levelFromScore(crowdScore);
+
+  // Price roughly tracks crowd
+  const priceScoreRaw = clamp(crowdScore + Math.round(rng() * 24 - 12));
+  const priceLevel = levelFromScore(priceScoreRaw);
+
+  // Safety
+  const safetyScore = clamp(58 + Math.round(rng() * 40));
+
+  // Events (2-3), dated within the travel month
+  const monthNamesAr = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+  const monthNamesEn = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const events = pick(rng, DEST_EVENTS, 2 + Math.floor(rng() * 2)).map((e) => {
+    const day = 3 + Math.floor(rng() * 24);
+    return { name: e, when: { ar: `${day} ${monthNamesAr[month]}`, en: `${monthNamesEn[month]} ${day}` } };
+  });
+
+  // Recommended hotels (3)
+  const priceFactor = priceLevel === "low" ? 0.7 : priceLevel === "high" ? 1.6 : 1.0;
+  const hotelNames = pick(rng, DEST_HOTELS, 3);
+  const hotelAreas = pick(rng, DEST_AREAS, 3);
+  const recommendedHotels = hotelNames.map((n, i) => ({
+    name: n,
+    stars: 3 + Math.floor(rng() * 3),
+    pricePerNight: Math.round((220 + rng() * 520) * priceFactor),
+    area: hotelAreas[i % hotelAreas.length],
+  }));
+
+  // Average cost
+  const days = 4 + Math.floor(rng() * 3); // 4-6
+  const breakdown = [
+    { label: { ar: "الإقامة", en: "Accommodation" }, amount: Math.round(180 * priceFactor + rng() * 60) },
+    { label: { ar: "الطعام", en: "Food" }, amount: Math.round(90 * priceFactor + rng() * 40) },
+    { label: { ar: "التنقلات", en: "Local transport" }, amount: Math.round(45 * priceFactor + rng() * 30) },
+    { label: { ar: "الأنشطة", en: "Activities" }, amount: Math.round(70 * priceFactor + rng() * 50) },
+  ];
+  const perPersonPerDay = breakdown.reduce((s, b) => s + b.amount, 0);
+  const effectivePeople = Math.max(1, adults) + Math.max(0, children) * 0.7;
+  const total = Math.round(perPersonPerDay * days * effectivePeople);
+  const budgetFit: "under" | "over" | "none" =
+    budget && budget > 0 ? (total <= budget ? "under" : "over") : "none";
+
+  // Itinerary — weave in family activities when children are present
+  const withKids = children > 0;
+  const pool = withKids ? [...ITIN_FAMILY, ...ITIN_GENERAL] : ITIN_GENERAL;
+  const titles = pick(rng, pool, days);
+  const details = pick(rng, ITIN_DETAILS, Math.min(days, ITIN_DETAILS.length));
+  const itinerary = titles.map((title, i) => ({
+    day: i + 1,
+    title,
+    detail: details[i % details.length],
+  }));
+
+  // Composite score /100
+  const weatherComfort = clamp(100 - Math.abs(tempC - 23) * 4);
+  const valueScore = budgetFit === "under" ? 88 : budgetFit === "over" ? 45 : 70;
+  const crowdComfort = 100 - crowdScore;
+  const score = clamp(
+    Math.round(safetyScore * 0.3 + weatherComfort * 0.25 + valueScore * 0.25 + crowdComfort * 0.2)
+  );
+
+  const place = [city.trim(), country.trim()].filter(Boolean).join("، ");
+  const summary =
+    score >= 72
+      ? {
+          ar: `${place || "هذه الوجهة"} خيار ممتاز في هذا التوقيت — الطقس والقيمة والأمان في صفّك.`,
+          en: `${place || "This destination"} is an excellent pick for these dates — weather, value and safety are on your side.`,
+        }
+      : score >= 50
+        ? {
+            ar: `${place || "هذه الوجهة"} خيار جيد بشروط — راجع الازدحام والميزانية أدناه.`,
+            en: `${place || "This destination"} is a good option with caveats — check crowds and budget below.`,
+          }
+        : {
+            ar: `${place || "هذه الوجهة"} أقل ملاءمة في هذا التوقيت — فكّر في تغيير الموعد أو رفع الميزانية.`,
+            en: `${place || "This destination"} is less ideal for these dates — consider shifting the date or raising the budget.`,
+          };
+
+  return {
+    score,
+    weather: { tempC, icon, condition: WEATHER_CONDITIONS[icon] },
+    crowdLevel: { level: crowdLevel, note: CROWD_NOTES[crowdLevel] },
+    priceLevel: { level: priceLevel, note: PRICE_NOTES[priceLevel] },
+    safety: {
+      score: safetyScore,
+      note:
+        safetyScore >= 75
+          ? { ar: "وجهة آمنة عموماً مع احتياطات معتادة.", en: "Generally safe with the usual precautions." }
+          : { ar: "انتبه لمناطق محددة وتجنّب التنقّل ليلاً بمفردك.", en: "Mind certain areas and avoid solo travel at night." },
+    },
+    events,
+    recommendedHotels,
+    averageCost: { perPersonPerDay, days, total, breakdown, budgetFit },
+    itinerary,
+    summary,
+  };
+}
+
 export function compareHotels(names: string[], locale: Locale) {
   const rows = names
     .filter((n) => n.trim().length > 0)
