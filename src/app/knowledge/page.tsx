@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { KnowledgeGrid } from "@/components/knowledge-grid";
+import { KnowledgeEngine } from "@/components/knowledge-engine";
 
 export const metadata: Metadata = {
-  title: "معرفة السفر — Travel Knowledge",
+  title: "محرك معرفة السفر — Travel Knowledge Engine",
   description:
-    "مكتبة من الأدلة العملية لكشف كل خدعة سفر قبل أن تقع فيها. A library of practical guides to spot every travel trick.",
+    "قاعدة معرفة شاملة عن الفنادق والوجهات ونصائح السفر والتأشيرات والطيران والطقس والأنشطة، مع بحث دلالي بالذكاء الاصطناعي. A travel knowledge base covering hotels, destinations, tips, visas, flights, weather and activities with AI semantic search.",
   alternates: { canonical: "/knowledge" },
 };
 
 export default function Page() {
-  return <KnowledgeGrid />;
+  return <KnowledgeEngine />;
 }
