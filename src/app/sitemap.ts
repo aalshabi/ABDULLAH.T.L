@@ -11,6 +11,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/compare-hotels",
     "/knowledge",
     "/auth",
+    "/privacy",
+    "/terms",
   ];
   const now = new Date();
   return routes.map((route) => ({
