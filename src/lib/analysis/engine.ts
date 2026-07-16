@@ -219,6 +219,135 @@ export function analyzeOffer(text: string, advertised: number | null, _locale: L
   };
 }
 
+// ---- deep hotel analysis --------------------------------------------------
+
+export interface HotelDeepResult {
+  name: string;
+  overall: number;
+  categories: { key: string; score: number }[];
+  pros: { ar: string; en: string }[];
+  cons: { ar: string; en: string }[];
+  whoShouldBook: { ar: string; en: string }[];
+  whoShouldAvoid: { ar: string; en: string }[];
+  alternatives: { name: string; score: number; reason: { ar: string; en: string } }[];
+  summary: { ar: string; en: string };
+}
+
+const HOTEL_PROS = [
+  { ar: "غرف واسعة ونظيفة بمعايير عالية.", en: "Spacious, spotless rooms kept to a high standard." },
+  { ar: "طاقم استقبال ودود وسريع الاستجابة.", en: "Warm, responsive front-desk staff." },
+  { ar: "فطور بوفيه غني بخيارات محلية وعالمية.", en: "Generous breakfast buffet with local & global options." },
+  { ar: "موقع مركزي على مسافة مشي من أبرز المعالم.", en: "Central location, walking distance to top sights." },
+  { ar: "قيمة ممتازة مقابل السعر في فئته.", en: "Excellent value for money in its class." },
+  { ar: "مسبح سطح بإطلالة بانورامية.", en: "Rooftop pool with a panoramic view." },
+  { ar: "عزل صوتي جيد وهدوء ليلاً.", en: "Good sound insulation and quiet at night." },
+  { ar: "خدمة تسجيل دخول سريعة بلا انتظار.", en: "Fast, no-wait check-in." },
+  { ar: "مرافق عائلية: مسبح أطفال ونادٍ ترفيهي.", en: "Family amenities: kids' pool and activity club." },
+];
+
+const HOTEL_CONS = [
+  { ar: "جدران رفيعة تنقل الضجيج بين الغرف.", en: "Thin walls carry noise between rooms." },
+  { ar: "رسوم مواقف سيارات غير مشمولة.", en: "Parking fees not included." },
+  { ar: "حمامات صغيرة نسبياً في الغرف القياسية.", en: "Relatively small bathrooms in standard rooms." },
+  { ar: "واي فاي غير مستقر في الطوابق العليا.", en: "Inconsistent Wi-Fi on upper floors." },
+  { ar: "ازدحام المسبح في أوقات الذروة.", en: "Crowded pool during peak hours." },
+  { ar: "ديكور بعض الغرف يحتاج تجديداً.", en: "Décor in some rooms feels dated." },
+  { ar: "رسوم منتجع (resort fee) تُضاف عند الوصول.", en: "A resort fee is added on arrival." },
+  { ar: "خيارات طعام محدودة في المحيط القريب.", en: "Limited dining options in the immediate area." },
+];
+
+const HOTEL_BOOK = [
+  { ar: "الأزواج الباحثون عن أجواء رومانسية.", en: "Couples after a romantic atmosphere." },
+  { ar: "العائلات مع أطفال.", en: "Families traveling with kids." },
+  { ar: "المسافرون بغرض العمل ويحتاجون موقعاً مركزياً.", en: "Business travelers who need a central base." },
+  { ar: "الباحثون عن قيمة جيدة مقابل السعر.", en: "Value-conscious travelers." },
+  { ar: "محبو التصوير والإطلالات المدينية.", en: "Photographers and skyline lovers." },
+  { ar: "عشاق الطعام القريبون من الأسواق.", en: "Foodies who want markets nearby." },
+];
+
+const HOTEL_AVOID = [
+  { ar: "أصحاب النوم الخفيف الحسّاسون للضجيج.", en: "Light sleepers sensitive to noise." },
+  { ar: "المسافرون بلا سيارة إذا كانت المواصلات بعيدة.", en: "Car-less travelers if transit is far." },
+  { ar: "الميزانيات الضيقة عند مواسم الذروة.", en: "Tight budgets during peak season." },
+  { ar: "المجموعات الكبيرة التي تحتاج غرفاً متجاورة.", en: "Large groups needing adjacent rooms." },
+  { ar: "من يتوقع خدمة خمس نجوم كاملة.", en: "Guests expecting full five-star service." },
+  { ar: "الباحثون عن هدوء تام بعيداً عن المركز.", en: "Those wanting total quiet away from the center." },
+];
+
+const ALT_HOTELS = [
+  { ar: "منتجع اللؤلؤة", en: "The Pearl Resort" },
+  { ar: "فندق الأفق الأزرق", en: "Blue Horizon Hotel" },
+  { ar: "منتجع الواحة الملكية", en: "Royal Oasis Resort" },
+  { ar: "فندق المدينة الذهبية", en: "Golden City Hotel" },
+  { ar: "منتجع النخيل الساحلي", en: "Palm Coast Resort" },
+  { ar: "أجنحة سكاي لاين", en: "Skyline Suites" },
+];
+
+const ALT_REASONS = [
+  { ar: "أعلى في القيمة مقابل السعر.", en: "Higher value for money." },
+  { ar: "موقع أقرب للمعالم الرئيسية.", en: "Closer to the main attractions." },
+  { ar: "أنسب للعائلات والأطفال.", en: "Better suited to families." },
+  { ar: "أجواء أرقى لشهر العسل.", en: "A more romantic honeymoon vibe." },
+  { ar: "تجربة طعام أفضل داخل الفندق.", en: "A stronger in-house dining experience." },
+];
+
+const HOTEL_CATEGORY_KEYS = [
+  "valueForMoney",
+  "location",
+  "family",
+  "honeymoon",
+  "luxury",
+  "food",
+] as const;
+
+export function analyzeHotelDeep(name: string, city: string, _locale: Locale): HotelDeepResult {
+  const trimmed = name.trim();
+  const rng = makeRng(hashString(`hotel-deep:${trimmed.toLowerCase()}:${city.trim().toLowerCase()}`));
+
+  const categories = HOTEL_CATEGORY_KEYS.map((key) => ({ key, score: metricScore(rng, 30) }));
+  const overall = Math.round(categories.reduce((s, c) => s + c.score, 0) / categories.length);
+
+  const strongCount = overall >= 75 ? 5 : overall >= 55 ? 4 : 3;
+  const weakCount = overall >= 75 ? 2 : overall >= 55 ? 3 : 4;
+
+  // Alternatives: two distinct illustrative options, each beating one strength.
+  const altNames = pick(rng, ALT_HOTELS, 3);
+  const altReasons = pick(rng, ALT_REASONS, 3);
+  const alternatives = altNames.map((n, i) => ({
+    name: _locale === "ar" ? n.ar : n.en,
+    score: Math.min(98, overall + 4 + Math.floor(rng() * 12)),
+    reason: altReasons[i],
+  }));
+
+  const summary =
+    overall >= 75
+      ? {
+          ar: `${trimmed || "هذا الفندق"} خيار قوي ومتوازن — احجز بثقة بعد تثبيت السعر شاملاً الرسوم.`,
+          en: `${trimmed || "This hotel"} is a strong, balanced pick — book with confidence after locking the fee-inclusive price.`,
+        }
+      : overall >= 55
+        ? {
+            ar: `${trimmed || "هذا الفندق"} خيار جيد بشروط — راجع السلبيات وقارنه بالبدائل أدناه.`,
+            en: `${trimmed || "This hotel"} is a good option with caveats — weigh the cons and compare the alternatives below.`,
+          }
+        : {
+            ar: `${trimmed || "هذا الفندق"} دون المتوسط في عدة معايير — فكّر جدياً في البدائل أدناه.`,
+            en: `${trimmed || "This hotel"} underperforms on several fronts — seriously consider the alternatives below.`,
+          };
+
+  return {
+    name: trimmed,
+    overall,
+    categories,
+    pros: pick(rng, HOTEL_PROS, strongCount),
+    cons: pick(rng, HOTEL_CONS, weakCount),
+    whoShouldBook: pick(rng, HOTEL_BOOK, 3),
+    whoShouldAvoid: pick(rng, HOTEL_AVOID, 3),
+    alternatives,
+    summary,
+  };
+}
+
 export function compareHotels(names: string[], locale: Locale) {
   const rows = names
     .filter((n) => n.trim().length > 0)
