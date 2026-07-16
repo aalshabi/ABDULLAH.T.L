@@ -3,6 +3,9 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { evaluateAdminAccess } from "@/lib/auth/access";
 
+// Always evaluate the guard per-request (never bake a static decision).
+export const dynamic = "force-dynamic";
+
 /**
  * Server-side guard for the whole /admin subtree. Runs on the server before
  * any admin UI is sent to the browser, so it cannot be bypassed by tampering

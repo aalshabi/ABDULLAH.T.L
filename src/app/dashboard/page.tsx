@@ -5,6 +5,9 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { evaluateDashboardAccess } from "@/lib/auth/access";
 
+// Always evaluate the auth guard per-request.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "لوحة التحكم — Dashboard",
   description: "كل تحليلاتك ورحلاتك وتوفيراتك في مكان واحد.",
