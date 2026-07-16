@@ -2,19 +2,18 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { BarChart3, Plus, Trophy, X, Search } from "lucide-react";
+import { BarChart3, Plus, X, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/lib/i18n/provider";
 import { compareHotels, ANALYSIS_DELAY_MS } from "@/lib/analysis/engine";
 import { saveAnalysis } from "@/lib/storage";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { PageHeader } from "@/components/shared/page-header";
 import { AnalyzerLoading } from "@/components/analyzers/analyzer-loading";
+import { DemoNotice } from "@/components/shared/demo-notice";
 
 type Row = { name: string; score: number; metrics: { key: string; score: number }[] };
 
@@ -124,8 +123,10 @@ export function CompareHotels() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="overflow-x-auto"
+              className="space-y-4"
             >
+              <DemoNotice />
+              <div className="overflow-x-auto">
               <div className="min-w-[640px]">
                 {/* header row */}
                 <div
@@ -134,20 +135,10 @@ export function CompareHotels() {
                 >
                   <div />
                   {result.rows.map((row, i) => (
-                    <Card
-                      key={i}
-                      className={cn(
-                        "text-center transition-all",
-                        i === result.winnerIndex && "border-teal ring-2 ring-teal/30"
-                      )}
-                    >
+                    <Card key={i} className="text-center transition-all">
                       <CardContent className="p-4">
-                        {i === result.winnerIndex && (
-                          <Badge className="mb-2 gap-1">
-                            <Trophy className="size-3" />
-                            {tc.winner}
-                          </Badge>
-                        )}
+                        {/* "Best value" recommendation disabled in demo — the
+                            comparison is illustrative, not a real verdict. */}
                         <p className="truncate font-display font-bold text-foreground">{row.name}</p>
                         <p className="ltr-nums mt-1 font-display text-3xl font-extrabold text-teal">
                           {row.score}
@@ -182,6 +173,7 @@ export function CompareHotels() {
                     </div>
                   ))}
                 </div>
+              </div>
               </div>
             </motion.div>
           )}

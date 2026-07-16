@@ -33,7 +33,7 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
 import { ScoreRing } from "@/components/shared/score-ring";
 import { AnalyzerLoading } from "@/components/analyzers/analyzer-loading";
-import { VerdictBadge } from "@/components/shared/analysis-blocks";
+import { DemoNotice, DemoUnavailable } from "@/components/shared/demo-notice";
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   valueForMoney: Wallet,
@@ -173,6 +173,9 @@ export function HotelAnalyzer() {
               transition={{ duration: 0.5 }}
               className="space-y-6"
             >
+              {/* Demo notice — shown before any score or recommendation */}
+              <DemoNotice />
+
               {/* Overall hero card */}
               <Card className="overflow-hidden">
                 <div className="grid gap-6 p-8 md:grid-cols-[auto_1fr] md:items-center">
@@ -187,11 +190,12 @@ export function HotelAnalyzer() {
                     )}
                     <div className="mt-2 flex flex-wrap items-center justify-center gap-2 md:justify-start">
                       <Badge variant="navy">{d.overall}</Badge>
-                      <VerdictBadge score={result.overall} />
                     </div>
-                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground md:text-base">
-                      {result.summary[locale]}
-                    </p>
+                    {/* Decisive verdict + recommendation are disabled while the
+                        engine is demo-only, to avoid misleading claims. */}
+                    <div className="mt-4">
+                      <DemoUnavailable />
+                    </div>
                     <Button asChild variant="outline" size="sm" className="mt-5">
                       <Link href="/compare-hotels">
                         <Hotel className="size-4" />

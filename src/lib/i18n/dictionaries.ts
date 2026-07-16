@@ -48,6 +48,14 @@ export const dictionaries = {
       caution: "انتبه — إشارات مقلقة",
       risky: "خطر — تجنّب الحجز",
     },
+    demo: {
+      badge:
+        "نسخة تجريبية — هذه النتيجة مولّدة لأغراض عرض تجربة المستخدم، ولا تعتمد حاليًا على بيانات حقيقية أو مصادر خارجية.",
+      unavailable: "غير متاح في النسخة التجريبية — يتطلب بيانات ومصادر فعلية.",
+      offerTitle: "استخراج المحتوى غير مفعّل بعد",
+      offerBody:
+        "النظام الحالي لا يقرأ محتوى ملف PDF أو الصورة، ولا ينفّذ OCR، ولا يستخرج أي بيانات فعلية من العرض. تجربة الرفع معروضة لأغراض العرض فقط، ولن يُنتَج تقرير تحليلي مبني على اسم الملف أو حجمه.",
+    },
     hero: {
       badge: "الجيل الجديد من السفر الواعي",
       title: "لا تدع خدع السفر تسرق رحلتك",
@@ -440,6 +448,14 @@ export const dictionaries = {
       good: "Good — minor caution",
       caution: "Caution — worrying signals",
       risky: "Risky — avoid booking",
+    },
+    demo: {
+      badge:
+        "Demo version — this result is generated to demonstrate the user experience and is not currently based on verified external data.",
+      unavailable: "Not available in the demo — requires real data and sources.",
+      offerTitle: "Content extraction is not enabled yet",
+      offerBody:
+        "The current system does not read PDF or image content, does not run OCR, and does not extract any real data from the offer. The upload experience is shown for demonstration only, and no analytical report is produced from the file name or size.",
     },
     hero: {
       badge: "The new era of conscious travel",

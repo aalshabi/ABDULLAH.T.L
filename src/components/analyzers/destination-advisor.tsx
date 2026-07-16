@@ -37,6 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/shared/page-header";
 import { ScoreRing } from "@/components/shared/score-ring";
 import { AnalyzerLoading } from "@/components/analyzers/analyzer-loading";
+import { DemoNotice } from "@/components/shared/demo-notice";
 
 const WEATHER_ICON: Record<string, LucideIcon> = {
   sun: Sun,
@@ -209,6 +210,8 @@ export function DestinationAdvisor() {
               transition={{ duration: 0.5 }}
               className="space-y-6"
             >
+              <DemoNotice />
+
               {/* Hero */}
               <Card>
                 <div className="grid gap-6 p-8 md:grid-cols-[auto_1fr] md:items-center">
