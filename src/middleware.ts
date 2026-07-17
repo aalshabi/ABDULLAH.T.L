@@ -19,10 +19,11 @@ export async function middleware(request: NextRequest) {
   const isAdminPath = path === "/admin" || path.startsWith("/admin/");
   const isDashboardPath = path === "/dashboard" || path.startsWith("/dashboard/");
 
-  // Demo mode: no Supabase → no auth exists. Admin is never accessible.
-  // (The server layout also enforces this; this is a helper layer.)
+  // Demo mode: no Supabase → no auth exists. Neither /admin nor /dashboard
+  // is accessible; both redirect to /auth. (The server layout/page also
+  // enforce this; the middleware guarantees a clean 307 redirect.)
   if (!isSupabaseConfigured) {
-    if (isAdminPath) return redirectTo("/auth", request);
+    if (isAdminPath || isDashboardPath) return redirectTo("/auth", request);
     return NextResponse.next();
   }
 
