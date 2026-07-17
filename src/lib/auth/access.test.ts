@@ -58,7 +58,9 @@ describe("evaluateDashboardAccess (/dashboard guard)", () => {
     expect(evaluateDashboardAccess({ configured: true, hasUser: false })).toBe("redirect-auth");
     expect(evaluateDashboardAccess({ configured: true, hasUser: true })).toBe("allow");
   });
-  it("allows demo mode (shown with a local-storage banner)", () => {
-    expect(evaluateDashboardAccess({ configured: false, hasUser: false })).toBe("allow");
+  // (3) demo mode (Supabase not configured) must NOT open the dashboard.
+  it("redirects to /auth in demo mode — never anonymous access", () => {
+    expect(evaluateDashboardAccess({ configured: false, hasUser: false })).toBe("redirect-auth");
+    expect(evaluateDashboardAccess({ configured: false, hasUser: true })).toBe("redirect-auth");
   });
 });
