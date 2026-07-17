@@ -1,38 +1,38 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import { BarChart3, Plus, X, Search } from "lucide-react";
+import { BarChart3, Plus, X, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/lib/i18n/provider";
-import { compareHotels, ANALYSIS_DELAY_MS } from "@/lib/analysis/engine";
-import { saveAnalysis } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { PageHeader } from "@/components/shared/page-header";
 import { AnalyzerLoading } from "@/components/analyzers/analyzer-loading";
-import { DemoNotice } from "@/components/shared/demo-notice";
+import { AnalyzerPreview } from "@/components/shared/analyzer-preview";
 
-type Row = { name: string; score: number; metrics: { key: string; score: number }[] };
+// UI-preview only: no engine call, no scores, no "best pick" chosen, no save.
+const PREVIEW_DELAY = 700;
 
 export function CompareHotels() {
   const { t } = useLanguage();
   const tc = t.compare;
-  const th = t.analyzeHotel.metrics;
+  const th = t.analyzeHotel;
   const [names, setNames] = React.useState<string[]>(["", ""]);
   const [loading, setLoading] = React.useState(false);
-  const [result, setResult] = React.useState<{ rows: Row[]; winnerIndex: number } | null>(null);
+  const [submitted, setSubmitted] = React.useState(false);
   const resultRef = React.useRef<HTMLDivElement>(null);
 
-  const metricLabels: Record<string, string> = {
-    reviewAuthenticity: th.reviewAuthenticity,
-    priceTransparency: th.priceTransparency,
-    photoAccuracy: th.photoAccuracy,
-    locationHonesty: th.locationHonesty,
-    hiddenFees: th.hiddenFees,
-  };
+  const futureItems = [
+    th.deep.categories.valueForMoney,
+    th.deep.categories.location,
+    th.deep.categories.family,
+    th.deep.categories.honeymoon,
+    th.deep.categories.food,
+    th.metrics.reviewAuthenticity,
+    th.metrics.priceTransparency,
+    th.metrics.hiddenFees,
+  ];
 
   function updateName(i: number, value: string) {
     setNames((prev) => prev.map((n, idx) => (idx === i ? value : n)));
@@ -52,22 +52,14 @@ export function CompareHotels() {
       return;
     }
     setLoading(true);
-    setResult(null);
-    await new Promise((r) => setTimeout(r, ANALYSIS_DELAY_MS));
-    const res = compareHotels(names, "ar");
-    setResult(res);
+    setSubmitted(false);
+    await new Promise((r) => setTimeout(r, PREVIEW_DELAY));
     setLoading(false);
-    saveAnalysis({
-      type: "compare",
-      title: filled.slice(0, 2).join(" · "),
-      score: res.rows[res.winnerIndex]?.score ?? 0,
-    });
+    setSubmitted(true);
     requestAnimationFrame(() =>
       resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
     );
   }
-
-  const metricKeys = ["reviewAuthenticity", "priceTransparency", "photoAccuracy", "locationHonesty", "hiddenFees"];
 
   return (
     <>
@@ -108,7 +100,7 @@ export function CompareHotels() {
                   </Button>
                 )}
                 <Button type="submit" size="default" className="sm:flex-1" disabled={loading}>
-                  <Search className="size-4" />
+                  <Sparkles className="size-4" />
                   {tc.compareBtn}
                 </Button>
               </div>
@@ -118,65 +110,7 @@ export function CompareHotels() {
 
         <div ref={resultRef} className="mx-auto mt-8 max-w-4xl scroll-mt-24">
           {loading && <AnalyzerLoading />}
-          {result && !loading && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-4"
-            >
-              <DemoNotice />
-              <div className="overflow-x-auto">
-              <div className="min-w-[640px]">
-                {/* header row */}
-                <div
-                  className="grid gap-3"
-                  style={{ gridTemplateColumns: `160px repeat(${result.rows.length}, 1fr)` }}
-                >
-                  <div />
-                  {result.rows.map((row, i) => (
-                    <Card key={i} className="text-center transition-all">
-                      <CardContent className="p-4">
-                        {/* "Best value" recommendation disabled in demo — the
-                            comparison is illustrative, not a real verdict. */}
-                        <p className="truncate font-display font-bold text-foreground">{row.name}</p>
-                        <p className="ltr-nums mt-1 font-display text-3xl font-extrabold text-teal">
-                          {row.score}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                {/* metric rows */}
-                <div className="mt-4 space-y-2">
-                  {metricKeys.map((key) => (
-                    <div
-                      key={key}
-                      className="grid items-center gap-3 rounded-xl border border-border bg-card px-4 py-3"
-                      style={{ gridTemplateColumns: `160px repeat(${result.rows.length}, 1fr)` }}
-                    >
-                      <span className="text-sm font-medium text-muted-foreground">
-                        {metricLabels[key]}
-                      </span>
-                      {result.rows.map((row, i) => {
-                        const m = row.metrics.find((x) => x.key === key);
-                        return (
-                          <div key={i} className="flex items-center gap-2">
-                            <Progress value={m?.score ?? 0} className="h-2" />
-                            <span className="ltr-nums w-9 text-xs font-semibold text-foreground">
-                              {m?.score ?? 0}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
-                </div>
-              </div>
-              </div>
-            </motion.div>
-          )}
+          {submitted && !loading && <AnalyzerPreview futureItems={futureItems} />}
         </div>
       </div>
     </>
