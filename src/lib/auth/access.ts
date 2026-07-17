@@ -43,14 +43,13 @@ export type DashboardDecision = "allow" | "redirect-auth";
 
 /**
  * Dashboard-access decision.
- * - When Supabase is configured, a signed-in user is required.
- * - In demo mode (not configured) the page is shown with a clear "local,
- *   temporary, not tied to a real account" banner — no auth to enforce.
+ * Access requires a signed-in Supabase user. Anonymous access is never
+ * allowed — including demo mode (Supabase not configured), which redirects
+ * to /auth instead of showing an account-like dashboard.
  */
 export function evaluateDashboardAccess(opts: {
   configured: boolean;
   hasUser: boolean;
 }): DashboardDecision {
-  if (opts.configured && !opts.hasUser) return "redirect-auth";
-  return "allow";
+  return opts.configured && opts.hasUser ? "allow" : "redirect-auth";
 }
