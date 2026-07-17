@@ -2,7 +2,7 @@
   "name": "safer-bewae",
   "version": "1.0.0",
   "private": true,
-  "description": "Safer Bewae — AI travel intelligence platform that exposes hotel, destination and travel-offer tricks.",
+  "description": "Safer Bewae — experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { DEMO_ROBOTS } from "@/lib/seo";
 
 const display = Tajawal({
   subsets: ["arabic", "latin"],
@@ -24,20 +25,19 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "سافر بوعي — Safer Bewae | منصة الذكاء الاصطناعي للسفر",
+    default: "سافر بوعي — Safer Bewae | قبل لا تدفع، افهم قرار سفرك",
     template: "%s | سافر بوعي",
   },
   description:
-    "منصة ذكاء اصطناعي تكشف خدع الفنادق والوجهات والعروض السياحية قبل أن تدفع. حلّل، قارن، واحجز بوعي. An AI travel intelligence platform.",
+    "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز. Safer Bewae is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
   keywords: [
     "سافر بوعي",
     "Safer Bewae",
-    "تحليل الفنادق",
-    "خدع السفر",
+    "مراجعة الفنادق",
+    "قرار السفر",
     "مقارنة الفنادق",
-    "travel AI",
-    "hotel analysis",
-    "travel scams",
+    "travel decisions",
+    "hotel review",
     "conscious travel",
   ],
   authors: [{ name: "Abdullah Travel Lab" }],
@@ -48,18 +48,17 @@ export const metadata: Metadata = {
     alternateLocale: "en_US",
     url: SITE_URL,
     title: "سافر بوعي — Safer Bewae",
-    description: "منصة ذكاء اصطناعي تكشف خدع السفر قبل أن تدفع.",
+    description:
+      "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
     siteName: "Safer Bewae",
   },
   twitter: {
     card: "summary_large_image",
     title: "سافر بوعي — Safer Bewae",
-    description: "منصة ذكاء اصطناعي تكشف خدع السفر قبل أن تدفع.",
+    description:
+      "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: DEMO_ROBOTS,
   alternates: {
     canonical: "/",
     languages: {

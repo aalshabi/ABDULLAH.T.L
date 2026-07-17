@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { DestinationAdvisor } from "@/components/analyzers/destination-advisor";
 
 export const metadata: Metadata = {
-  title: "مستشار الوجهات — AI Destination Advisor",
+  title: "مراجعة وجهة — Destination review (preview)",
   description:
-    "أدخل الدولة والمدينة وتاريخ السفر والميزانية وعدد المسافرين، واحصل على الطقس والازدحام والأسعار والفعاليات والأمان وفنادق موصى بها ومتوسط التكلفة وبرنامج مقترح ودرجة من ١٠٠. Get weather, crowds, prices, events, safety, hotels, average cost and a recommended itinerary.",
+    "معاينة أداة لمراجعة عوامل الوجهة قبل السفر — مشروع تجريبي قيد التطوير، لم يتم التحقق بعد. Preview of a destination-review tool — experimental, under development.",
   alternates: { canonical: "/analyze-destination" },
 };
 

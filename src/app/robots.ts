@@ -1,14 +1,14 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
+/**
+ * Experimental (demo) phase: disallow all crawling until a real commercial
+ * launch. Kept in sync with the site-wide `robots: { index:false }` metadata.
+ */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
-      disallow: ["/dashboard", "/auth", "/admin"],
+      disallow: "/",
     },
-    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

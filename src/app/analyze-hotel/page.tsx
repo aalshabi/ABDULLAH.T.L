@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { HotelAnalyzer } from "@/components/analyzers/hotel-analyzer";
 
 export const metadata: Metadata = {
-  title: "تحليل فندق — AI Hotel Analyzer",
+  title: "مراجعة فندق — Hotel review (preview)",
   description:
-    "الصق اسم أو رابط أي فندق لتقييم شامل: درجة من ١٠٠، القيمة والموقع والعائلات وشهر العسل والفخامة والطعام، الإيجابيات والسلبيات، ومن يناسبه، وبدائل مقترحة. A full AI hotel report: score out of 100, category ratings, pros/cons, audience fit and alternatives.",
+    "معاينة أداة لمراجعة إشارات الفندق قبل الحجز — مشروع تجريبي قيد التطوير، لم يتم التحقق بعد. Preview of a hotel-review tool — experimental, under development.",
   alternates: { canonical: "/analyze-hotel" },
 };
 

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { OfferAnalyzer } from "@/components/analyzers/offer-analyzer";
 
 export const metadata: Metadata = {
-  title: "تحليل عرض سفر — AI Offer Analyzer",
+  title: "مراجعة عرض سفر — Offer review (preview)",
   description:
-    "ارفع عرض السفر (PDF أو صورة أو لقطة واتساب) لاستخراج تفاصيله وتحليل الخدمات الناقصة والتكاليف المخفية، مع درجة شفافية وعدالة سعر ومخاطر رحلة. Upload a PDF, image or WhatsApp screenshot to extract and analyze any travel offer.",
+    "معاينة أداة رفع عروض السفر — الاستخراج الفعلي (قراءة الملف/OCR) قيد التطوير ولم يُفعّل بعد. Preview of the offer-upload tool — real extraction (file reading / OCR) is under development.",
   alternates: { canonical: "/analyze-offer" },
 };
 
