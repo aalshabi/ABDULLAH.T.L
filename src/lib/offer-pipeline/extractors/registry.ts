@@ -1,17 +1,17 @@
 /**
  * Extractor registry — the lookup that maps an input type to its extractor.
  *
- * Task 1 registers inert PLACEHOLDER stubs for all four sources: they are wired
- * into the registry but perform no real extraction, reporting `unsupported`.
- * Real per-type extractors (text first) replace these placeholders in later
- * tasks; when a real one is wired, its `enabled` flag becomes `true`. Callers
- * always get an extractor back, so no call site needs to special-case a missing
- * one.
+ * The text source is wired to its real Rule-Engine extractor. PDF, image and
+ * URL remain inert PLACEHOLDER stubs (disabled, reporting `unsupported`) until
+ * their real extractors land — adding one is a single-line swap here, with no
+ * change to the pipeline, route, or data model. Callers always get an extractor
+ * back, so no call site special-cases a missing one.
  */
 
 import type { TravelOfferInputType } from "@/lib/offer-input/types";
 import type { ExtractionResult } from "@/lib/offer-pipeline/types";
 import type { OfferExtractor } from "./types";
+import { createTextExtractor } from "./text/text-extractor";
 
 /**
  * A registered-but-inert extractor. Reports `unsupported` for every source
@@ -28,7 +28,7 @@ function placeholderExtractor(type: TravelOfferInputType): OfferExtractor {
 }
 
 const REGISTRY: Record<TravelOfferInputType, OfferExtractor> = {
-  text: placeholderExtractor("text"),
+  text: createTextExtractor(),
   pdf: placeholderExtractor("pdf"),
   image: placeholderExtractor("image"),
   url: placeholderExtractor("url"),
