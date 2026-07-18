@@ -132,14 +132,17 @@ describe("no fabricated analysis results", () => {
   const orchestrator = readFileSync(join(process.cwd(), "src/components/analyzers/offer-analyzer.tsx"), "utf8");
   const review = readFileSync(join(process.cwd(), "src/components/offer-input/travel-offer-review.tsx"), "utf8");
 
-  it("the orchestrator never calls the analysis engine or persists results", () => {
+  it("the orchestrator never calls the demo engine, persists results, or uses localStorage", () => {
     expect(orchestrator).not.toMatch(/analyzeOfferDeep\s*\(/);
     expect(orchestrator).not.toMatch(/saveAnalysis\s*\(/);
     expect(orchestrator).not.toContain("@/lib/analysis/engine");
+    expect(orchestrator).not.toContain("localStorage");
   });
 
-  it("the review screen shows no score/verdict/recommendation and disables send while the engine is off", () => {
+  it("the review screen shows no fabricated score/verdict and gates send by source capability", () => {
     expect(review).not.toMatch(/score|verdict|recommendation|realPrice|priceFairness/i);
-    expect(review).toContain("isOfferExtractionEnabled");
+    // send is now gated by the per-source capability policy, not the old flag
+    expect(review).toContain("isExtractionEnabledFor");
+    expect(review).not.toContain("isOfferExtractionEnabled");
   });
 });
