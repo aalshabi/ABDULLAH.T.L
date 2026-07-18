@@ -89,6 +89,8 @@ export interface OfferTravelers {
  */
 export interface ExtractedOfferFacts {
   price?: Fact<OfferPrice>;
+  /** Currency stated in the offer, even when no complete price is present. */
+  currency?: Fact<string>;
   destination?: Fact<string>;
   nights?: Fact<number>;
   travelers?: Fact<OfferTravelers>;
