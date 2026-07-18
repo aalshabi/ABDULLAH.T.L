@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { OFFER_CAPABILITIES, isExtractionEnabledFor } from "./capabilities";
 
 describe("offer-source capability policy", () => {
@@ -9,6 +11,11 @@ describe("offer-source capability policy", () => {
       image: false,
       url: false,
     });
+  });
+
+  it("is the single canonical capability source (legacy gate removed)", () => {
+    // the old src/lib/offer-extraction.ts gate must be gone
+    expect(existsSync(join(process.cwd(), "src/lib/offer-extraction.ts"))).toBe(false);
   });
 
   it("isExtractionEnabledFor reflects the policy per source", () => {

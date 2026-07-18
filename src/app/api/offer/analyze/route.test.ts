@@ -1,9 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { POST } from "./route";
+import { offerRateLimiter, OFFER_RATE_LIMIT_MAX } from "@/lib/offer-pipeline/api/rate-limit";
 
 const URL = "http://localhost/api/offer/analyze";
+const VALID_TEXT = "عرض إلى دبي ٥ ليالٍ لشخصين شامل الإفطار، السعر ٣٢٠٠ ر.س";
 
 function post(body: unknown, contentType: string | null = "application/json") {
   const bodyText = typeof body === "string" ? body : JSON.stringify(body);
@@ -11,6 +13,9 @@ function post(body: unknown, contentType: string | null = "application/json") {
   if (contentType) headers["content-type"] = contentType;
   return new Request(URL, { method: "POST", headers, body: bodyText });
 }
+
+// Each test starts with a fresh rate-limit window.
+beforeEach(() => offerRateLimiter.reset());
 
 describe("POST /api/offer/analyze", () => {
   it("200 for valid Arabic text with the full envelope", async () => {
@@ -70,6 +75,25 @@ describe("POST /api/offer/analyze", () => {
     const res = await POST(post({ type: "pdf" }));
     expect(res.headers.get("cache-control")).toBe("no-store");
     const body = await res.json();
+    expect(body.schemaVersion).toBe("1.0");
+    expect(typeof body.requestId).toBe("string");
+  });
+
+  it("allows requests within the rate limit", async () => {
+    const res = await POST(post({ type: "text", text: VALID_TEXT }));
+    expect(res.status).toBe(200);
+  });
+
+  it("returns 429 with Retry-After and no-store after exceeding the limit", async () => {
+    let res!: Response;
+    for (let i = 0; i < OFFER_RATE_LIMIT_MAX + 1; i++) {
+      res = await POST(post({ type: "text", text: VALID_TEXT }));
+    }
+    expect(res.status).toBe(429);
+    expect(res.headers.get("retry-after")).toBeTruthy();
+    expect(res.headers.get("cache-control")).toBe("no-store");
+    const body = await res.json();
+    expect(body.error.code).toBe("RATE_LIMIT_EXCEEDED");
     expect(body.schemaVersion).toBe("1.0");
     expect(typeof body.requestId).toBe("string");
   });

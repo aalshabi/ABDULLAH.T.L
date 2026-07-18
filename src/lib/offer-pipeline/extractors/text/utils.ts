@@ -8,33 +8,12 @@
 
 import type { Fact } from "@/lib/offer-pipeline/types";
 
+// Canonical digit conversion lives in one place; re-exported for the rules.
+export { toWesternDigits } from "@/lib/offer-pipeline/digits";
+
 /** Build an "exact"-confidence fact. This phase never emits "inferred". */
 export function exact<T>(value: T, evidence: string): Fact<T> {
   return { value, evidence, confidenceType: "exact" };
-}
-
-const ARABIC_INDIC_OFFSET = 0x0660; // ٠..٩
-const PERSIAN_OFFSET = 0x06f0; // ۰..۹
-
-/**
- * Map Arabic-Indic and Persian digits to ASCII 0-9. The mapping is 1:1 per code
- * unit, so string length and character indices are PRESERVED — a match found on
- * the normalized copy has the same indices in the original text, which lets us
- * slice authentic evidence (original digits) from the original string.
- */
-export function toWesternDigits(input: string): string {
-  let out = "";
-  for (const ch of input) {
-    const code = ch.codePointAt(0)!;
-    if (code >= ARABIC_INDIC_OFFSET && code <= ARABIC_INDIC_OFFSET + 9) {
-      out += String(code - ARABIC_INDIC_OFFSET);
-    } else if (code >= PERSIAN_OFFSET && code <= PERSIAN_OFFSET + 9) {
-      out += String(code - PERSIAN_OFFSET);
-    } else {
-      out += ch;
-    }
-  }
-  return out;
 }
 
 /**
