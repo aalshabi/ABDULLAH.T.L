@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { CheckCircle2, Pencil, Send, FileText, FileType2, ImageIcon, LinkIcon, type LucideIcon } from "lucide-react";
+import { CheckCircle2, Pencil, Send, Loader2, FileText, FileType2, ImageIcon, LinkIcon, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/provider";
-import { isOfferExtractionEnabled } from "@/lib/offer-extraction";
+import { isExtractionEnabledFor } from "@/lib/offer-pipeline/capabilities";
 import { formatNumber } from "@/lib/utils";
 import type { TravelOfferInput, TravelOfferInputType } from "@/lib/offer-input/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,16 +35,22 @@ export function TravelOfferReview({
   input,
   previewUrl,
   onEdit,
+  onConfirm,
+  submitting = false,
 }: {
   input: TravelOfferInput;
   previewUrl: string | null;
   onEdit: () => void;
+  onConfirm?: () => void;
+  submitting?: boolean;
 }) {
   const { t, locale } = useLanguage();
   const r = t.analyzeOffer.v1.review;
+  const v2 = t.analyzeOffer.v2;
   const typeLabels = t.analyzeOffer.v1.typeLabels;
   const Icon = TYPE_ICON[input.type];
-  const engineEnabled = isOfferExtractionEnabled();
+  // Only sources the pipeline is designed to process (text) can be submitted.
+  const canConfirm = isExtractionEnabledFor(input.type);
 
   return (
     <div className="space-y-6">
@@ -118,21 +124,25 @@ export function TravelOfferReview({
       </Card>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button type="button" variant="outline" onClick={onEdit}>
+        <Button type="button" variant="outline" onClick={onEdit} disabled={submitting}>
           <Pencil className="size-4" />
           {r.editInput}
         </Button>
-        {/* Real analysis engine is not enabled yet → confirm is disabled. */}
-        <span title={engineEnabled ? undefined : r.confirmDisabledTip}>
-          <Button type="button" disabled={!engineEnabled} aria-disabled={!engineEnabled} className="w-full sm:w-auto">
-            <Send className="size-4" />
+        {/* Only text is enabled; pdf/image/url remain "coming soon". */}
+        <span title={canConfirm ? undefined : v2.comingSoon}>
+          <Button
+            type="button"
+            onClick={onConfirm}
+            disabled={!canConfirm || submitting}
+            aria-disabled={!canConfirm || submitting}
+            className="w-full sm:w-auto"
+          >
+            {submitting ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Send className="size-4" />}
             {r.confirmSend}
           </Button>
         </span>
       </div>
-      {!engineEnabled && (
-        <p className="text-center text-xs text-muted-foreground">{r.confirmDisabledTip}</p>
-      )}
+      {!canConfirm && <p className="text-center text-xs text-muted-foreground">{v2.comingSoon}</p>}
     </div>
   );
 }

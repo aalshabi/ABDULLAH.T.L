@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Tag, Sparkles } from "lucide-react";
+import { Tag, Sparkles, AlertCircle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/provider";
 import {
   buildOfferInput,
@@ -13,6 +13,7 @@ import {
   type OfferInputValues,
 } from "@/lib/offer-input/validation";
 import type { OfferErrorCode, TravelOfferInput, TravelOfferInputType } from "@/lib/offer-input/types";
+import type { OfferAnalysis } from "@/lib/offer-pipeline/analysis/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
@@ -22,12 +23,41 @@ import { FileOfferInput } from "@/components/offer-input/file-offer-input";
 import { ImageOfferInput } from "@/components/offer-input/image-offer-input";
 import { UrlOfferInput } from "@/components/offer-input/url-offer-input";
 import { TravelOfferReview } from "@/components/offer-input/travel-offer-review";
+import { OfferAnalysisResult } from "@/components/offer-input/offer-analysis-result";
+
+type Phase = "input" | "review" | "submitting" | "success" | "error";
+type ErrorCode =
+  | "badRequest"
+  | "tooLarge"
+  | "unsupportedMedia"
+  | "notAnalyzable"
+  | "sourceNotSupported"
+  | "server"
+  | "network";
+
+function mapStatus(status: number): ErrorCode {
+  switch (status) {
+    case 400:
+      return "badRequest";
+    case 413:
+      return "tooLarge";
+    case 415:
+      return "unsupportedMedia";
+    case 422:
+      return "notAnalyzable";
+    case 501:
+      return "sourceNotSupported";
+    default:
+      return "server";
+  }
+}
 
 export function OfferAnalyzer() {
   const { t } = useLanguage();
   const v1 = t.analyzeOffer.v1;
+  const v2 = t.analyzeOffer.v2;
 
-  const [step, setStep] = React.useState<"input" | "review">("input");
+  const [phase, setPhase] = React.useState<Phase>("input");
   const [method, setMethod] = React.useState<TravelOfferInputType>("text");
   const [text, setText] = React.useState("");
   const [url, setUrl] = React.useState("");
@@ -36,6 +66,8 @@ export function OfferAnalyzer() {
   const [pending, setPending] = React.useState<TravelOfferInputType | null>(null);
   const [submitted, setSubmitted] = React.useState<TravelOfferInput | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+  const [analysis, setAnalysis] = React.useState<OfferAnalysis | null>(null);
+  const [errorCode, setErrorCode] = React.useState<ErrorCode | null>(null);
   const resultRef = React.useRef<HTMLDivElement>(null);
 
   const values: OfferInputValues = { text, url, pdf, image };
@@ -45,6 +77,10 @@ export function OfferAnalyzer() {
       if (imagePreview) URL.revokeObjectURL(imagePreview);
     };
   }, [imagePreview]);
+
+  function scrollToResult() {
+    requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
 
   function clearMethod(m: TravelOfferInputType) {
     if (m === "text") setText("");
@@ -74,14 +110,47 @@ export function OfferAnalyzer() {
       setImagePreview(URL.createObjectURL(image));
     }
     setSubmitted(input);
-    setStep("review");
-    requestAnimationFrame(() =>
-      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-    );
+    setPhase("review");
+    scrollToResult();
+  }
+
+  // Send the confirmed TEXT offer to the real analysis API (same-origin).
+  async function analyze() {
+    if (phase === "submitting") return; // prevent duplicate submissions
+    if (!submitted || submitted.type !== "text" || submitted.text === undefined) return;
+    setErrorCode(null);
+    setPhase("submitting");
+    try {
+      const res = await fetch("/api/offer/analyze", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ type: "text", text: submitted.text }),
+      });
+      const body = await res.json().catch(() => null);
+      if (res.ok && body?.ok) {
+        setAnalysis(body.data.analysis as OfferAnalysis);
+        setPhase("success");
+        scrollToResult();
+      } else {
+        setErrorCode(mapStatus(res.status));
+        setPhase("error");
+      }
+    } catch {
+      setErrorCode("network");
+      setPhase("error");
+    }
   }
 
   function onEdit() {
-    setStep("input");
+    setPhase("input");
+  }
+
+  function onNew() {
+    clearMethod(method);
+    setSubmitted(null);
+    setAnalysis(null);
+    setErrorCode(null);
+    setPhase("input");
   }
 
   const textError: OfferErrorCode | null =
@@ -94,12 +163,20 @@ export function OfferAnalyzer() {
       : null;
 
   const submittable = canSubmit(method, values);
+  const retryable = errorCode === "server" || errorCode === "network";
+  const errorMessage = errorCode ? v2.errors[errorCode] : "";
 
   return (
     <>
       <PageHeader icon={Tag} title={v1.title} subtitle={v1.subtitle} />
+
+      {/* Screen-reader announcements for the async state changes. */}
+      <div aria-live="polite" className="sr-only">
+        {phase === "submitting" ? v2.srSubmitting : phase === "success" ? v2.srSuccess : phase === "error" ? v2.srError : ""}
+      </div>
+
       <div className="container -mt-8 pb-20">
-        {step === "input" && (
+        {phase === "input" && (
           <Card className="mx-auto max-w-2xl shadow-xl">
             <CardContent className="p-6 md:p-8">
               <form onSubmit={onStart} className="space-y-5">
@@ -122,14 +199,67 @@ export function OfferAnalyzer() {
         )}
 
         <div ref={resultRef} className="mx-auto mt-8 max-w-2xl scroll-mt-24">
-          {step === "review" && submitted && (
+          {(phase === "review" || phase === "submitting") && submitted && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <TravelOfferReview
+                input={submitted}
+                previewUrl={imagePreview}
+                onEdit={onEdit}
+                onConfirm={analyze}
+                submitting={phase === "submitting"}
+              />
+              {phase === "submitting" && (
+                <p role="status" className="mt-4 text-center text-sm text-muted-foreground">
+                  {v2.loading}
+                </p>
+              )}
+            </motion.div>
+          )}
+
+          {phase === "success" && analysis && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
+              className="space-y-6"
             >
-              <TravelOfferReview input={submitted} previewUrl={imagePreview} onEdit={onEdit} />
+              <OfferAnalysisResult analysis={analysis} />
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                <Button type="button" variant="outline" onClick={onEdit}>
+                  {v2.actions.edit}
+                </Button>
+                <Button type="button" onClick={onNew}>
+                  {v2.actions.newAnalysis}
+                </Button>
+              </div>
             </motion.div>
+          )}
+
+          {phase === "error" && (
+            <Card>
+              <CardContent className="p-6 md:p-8">
+                <div role="alert" className="space-y-2">
+                  <h2 className="flex items-center gap-2 font-display text-lg font-bold text-alarm">
+                    <AlertCircle className="size-5 shrink-0" aria-hidden />
+                    {v2.errors.title}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">{errorMessage}</p>
+                </div>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                  <Button type="button" variant="outline" onClick={onEdit}>
+                    {v2.actions.edit}
+                  </Button>
+                  {retryable && (
+                    <Button type="button" variant="outline" onClick={analyze}>
+                      {v2.actions.retry}
+                    </Button>
+                  )}
+                  <Button type="button" onClick={onNew}>
+                    {v2.actions.newAnalysis}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>
