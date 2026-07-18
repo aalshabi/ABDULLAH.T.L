@@ -8,13 +8,12 @@
  *
  * Design guarantees encoded in these types:
  *  - Extraction is kept strictly SEPARATE from analysis: when extraction fails,
- *    no analysis object is ever produced (see `ExtractionResult` vs `OfferAnalysis`).
+ *    no analysis object is ever produced (see `ExtractionResult`; the analysis
+ *    model lives canonically in ./analysis/types.ts).
  *  - Every extracted fact is traceable to its `evidence` and carries a
  *    categorical `confidenceType` — never a numeric confidence score.
  *  - Absent facts are omitted, never invented.
  */
-
-import type { TravelOfferInputType } from "@/lib/offer-input/types";
 
 /** Bilingual string (Arabic source-of-truth + English) used in pipeline output. */
 export interface Bi {
@@ -105,62 +104,17 @@ export interface ExtractedOfferFacts {
 // ---- extraction result (kept separate from analysis) -----------------------
 
 /**
- * Result of the extraction stage ONLY. Deliberately distinct from
- * `OfferAnalysis`: on `ok: false` no analysis is created downstream.
+ * Result of the extraction stage ONLY. Deliberately distinct from the analysis
+ * stage: on `ok: false` no analysis is created downstream.
  */
 export type ExtractionResult =
   | { ok: true; facts: ExtractedOfferFacts; warnings: Bi[] }
   | { ok: false; reason: ExtractionFailureReason };
 
-// ---- facts-only analysis ---------------------------------------------------
-
-export interface CompletenessItem {
-  key: string;
-  present: boolean;
-  label: Bi;
-  evidence?: string;
-}
-
-export interface Contradiction {
-  key: string;
-  description: Bi;
-  evidence: string[];
-}
-
-/** Completeness is present/required WITH the explicit list of fields counted. */
-export interface OfferCompleteness {
-  present: number;
-  required: number;
-  fields: string[];
-}
-
-/**
- * Explainable, facts-only analysis: a checklist of what is present/absent, the
- * missing essentials, detected contradictions, and a transparent completeness
- * ratio. No fabricated scores or opaque numbers.
- */
-export interface OfferAnalysis {
-  checklist: CompletenessItem[];
-  missing: string[];
-  contradictions: Contradiction[];
-  completeness: OfferCompleteness;
-}
-
-// ---- top-level pipeline / API result --------------------------------------
-
-/** The full result the pipeline returns. All responses carry `schemaVersion`. */
-export type OfferPipelineResult =
-  | {
-      ok: true;
-      schemaVersion: typeof SCHEMA_VERSION;
-      source: TravelOfferInputType;
-      extraction: { facts: ExtractedOfferFacts; warnings: Bi[] };
-      analysis: OfferAnalysis;
-    }
-  | {
-      ok: false;
-      schemaVersion: typeof SCHEMA_VERSION;
-      source: TravelOfferInputType;
-      code: OfferApiErrorCode;
-      reason?: ExtractionFailureReason;
-    };
+// ---- analysis & pipeline result -------------------------------------------
+//
+// The analysis model — `OfferAnalysis` and its parts (ConfirmedFact,
+// MissingField, Contradiction, ChecklistItem, SuggestedQuestion,
+// OfferCompleteness, …) — is defined CANONICALLY and ONLY in ./analysis/types.ts.
+// Do not redefine it here. The top-level pipeline/API result type will be
+// defined by the pipeline/route layer (not built yet) from that canonical model.
