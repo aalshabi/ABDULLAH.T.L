@@ -12,6 +12,7 @@
  */
 
 import { randomUUID } from "node:crypto";
+import { ipAddress } from "@vercel/functions";
 import { runOfferPipeline } from "@/lib/offer-pipeline/pipeline";
 import { validateRequest } from "@/lib/offer-pipeline/api/validate-request";
 import { buildErrorBody, outcomeToHttp, type HttpPayload } from "@/lib/offer-pipeline/api/response";
@@ -32,10 +33,28 @@ function json(payload: HttpPayload): Response {
   });
 }
 
-/** Best-effort caller id for rate limiting. Never logged beyond limiter memory. */
+/**
+ * Best-effort caller id for the rate-limit key. Used ONLY as a key — never logged.
+ *
+ * Prefers Vercel's official `ipAddress(request)`: on Vercel the client IP is
+ * managed by the platform, which prevents `x-forwarded-for` spoofing. Off Vercel
+ * (and in tests) it falls back to headers, always taking only the CLIENT (first)
+ * address — never the whole chain:
+ *   x-vercel-forwarded-for → x-forwarded-for → x-real-ip → "unknown".
+ *
+ * NOTE: if an external proxy is placed IN FRONT of Vercel, review its Trusted
+ * Proxy configuration so the first hop is genuinely the client. The limiter
+ * itself remains LOCAL DEFENSE ONLY (in-memory, per instance, not distributed).
+ */
 function clientId(request: Request): string {
-  const fwd = request.headers.get("x-forwarded-for");
-  return fwd?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+  const platformIp = ipAddress(request);
+  if (platformIp) return platformIp;
+
+  const header =
+    request.headers.get("x-vercel-forwarded-for") ||
+    request.headers.get("x-forwarded-for") ||
+    request.headers.get("x-real-ip");
+  return header?.split(",")[0]?.trim() || "unknown";
 }
 
 export async function POST(request: Request): Promise<Response> {

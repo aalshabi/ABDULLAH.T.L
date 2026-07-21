@@ -98,6 +98,21 @@ describe("POST /api/offer/analyze", () => {
     expect(typeof body.requestId).toBe("string");
   });
 
+  it("rate-limits per client, keying on the first x-forwarded-for hop only", async () => {
+    const withXff = (xff: string) =>
+      new Request(URL, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-forwarded-for": xff },
+        body: JSON.stringify({ type: "text", text: VALID_TEXT }),
+      });
+    // Exhaust client A (first hop 1.1.1.1); a shared second hop must NOT merge clients.
+    let last!: Response;
+    for (let i = 0; i < OFFER_RATE_LIMIT_MAX + 1; i++) last = await POST(withXff("1.1.1.1, 10.0.0.1"));
+    expect(last.status).toBe(429);
+    // A different client (first hop 2.2.2.2) is independent despite the shared second hop.
+    expect((await POST(withXff("2.2.2.2, 10.0.0.1"))).status).toBe(200);
+  });
+
   it("never leaks user text in an error response", async () => {
     const secret = "SECRET_TOKEN_9931";
     const res = await POST(post({ type: "text", text: secret })); // too short → 422
