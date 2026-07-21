@@ -27,7 +27,7 @@ const analysis: OfferAnalysis = {
     { key: "cancellationPolicy", label: { ar: "سياسة الإلغاء", en: "Cancellation policy" }, status: "missing", evidence: [], explanation: { ar: "غير مذكورة.", en: "absent" } },
   ],
   suggestedQuestions: [
-    { key: "cancellationPolicy", question: { ar: "ما سياسة الإلغاء والتعديل؟", en: "What is the policy?" } },
+    { key: "cancellationPolicy", question: { ar: "ما سياسة الإلغاء والتعديل؟", en: "What is the policy?" }, priority: "medium" },
   ],
   completeness: {
     present: 2,

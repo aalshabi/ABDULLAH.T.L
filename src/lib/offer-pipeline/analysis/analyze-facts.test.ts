@@ -65,7 +65,7 @@ describe("analyzeFacts", () => {
         { amount: 2800, currency: "SAR", evidence: "٢٨٠٠ ر.س" },
       ],
     };
-    const a = analyzeFacts(fullArabic, obs);
+    const a = analyzeFacts(fullArabic, { observations: obs });
     expect(a.checklist.find((c) => c.key === "totalPrice")?.status).toBe("conflicting");
     expect(a.suggestedQuestions.some((q) => q.key === "totalPrice")).toBe(true);
   });
