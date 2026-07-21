@@ -18,6 +18,7 @@ export type ApiErrorCode =
   | "PAYLOAD_TOO_LARGE"
   | "NOT_ANALYZABLE"
   | "SOURCE_NOT_SUPPORTED"
+  | "RATE_LIMIT_EXCEEDED"
   | "INTERNAL_ERROR";
 
 export interface ApiSuccessBody {
@@ -42,6 +43,8 @@ export interface ApiErrorBody {
 export interface HttpPayload {
   status: number;
   body: ApiSuccessBody | ApiErrorBody;
+  /** Extra response headers (e.g. Retry-After on 429). */
+  headers?: Record<string, string>;
 }
 
 export function buildErrorBody(

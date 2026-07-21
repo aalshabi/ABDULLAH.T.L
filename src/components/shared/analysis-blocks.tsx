@@ -5,7 +5,12 @@ import { useLanguage } from "@/lib/i18n/provider";
 import { scoreLabelKey } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import type { Metric } from "@/lib/analysis/engine";
+
+/** A single named metric bar (0–100). */
+export interface Metric {
+  key: string;
+  score: number;
+}
 
 export function VerdictBadge({ score }: { score: number }) {
   const { t } = useLanguage();

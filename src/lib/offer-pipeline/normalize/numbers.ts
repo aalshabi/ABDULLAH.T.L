@@ -1,27 +1,12 @@
 /**
- * Number normalization — Arabic-Indic / Persian digits → ASCII, and tolerant
- * parsing of integers and monetary amounts. Self-contained so the normalization
- * layer does not depend on any specific extractor.
+ * Number normalization — tolerant parsing of integers and monetary amounts.
+ * Digit conversion comes from the canonical pipeline util (single source).
  */
 
-const ARABIC_INDIC_OFFSET = 0x0660; // ٠..٩
-const PERSIAN_OFFSET = 0x06f0; // ۰..۹
+import { toWesternDigits } from "@/lib/offer-pipeline/digits";
 
 /** Convert Arabic-Indic and Persian digits to ASCII 0-9 (length preserving). */
-export function normalizeArabicDigits(input: string): string {
-  let out = "";
-  for (const ch of input) {
-    const code = ch.codePointAt(0)!;
-    if (code >= ARABIC_INDIC_OFFSET && code <= ARABIC_INDIC_OFFSET + 9) {
-      out += String(code - ARABIC_INDIC_OFFSET);
-    } else if (code >= PERSIAN_OFFSET && code <= PERSIAN_OFFSET + 9) {
-      out += String(code - PERSIAN_OFFSET);
-    } else {
-      out += ch;
-    }
-  }
-  return out;
-}
+export const normalizeArabicDigits = toWesternDigits;
 
 function toPositive(n: number): number | null {
   return Number.isFinite(n) && n > 0 ? n : null;
