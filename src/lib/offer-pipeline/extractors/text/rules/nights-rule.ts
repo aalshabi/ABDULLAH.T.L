@@ -16,6 +16,11 @@ export const nightsRule: ExtractionRule = {
     const m = NIGHTS.exec(norm);
     if (!m) return { facts: {}, warnings: [] };
 
+    // A signed count ("-5 ليالٍ") is not a valid night count: the pattern
+    // captures digits only, so the sign is checked explicitly.
+    const preceding = norm[m.index - 1];
+    if (preceding === "-" || preceding === "−") return { facts: {}, warnings: [] };
+
     const nights = Number(m[1]);
     if (!Number.isInteger(nights) || nights <= 0) return { facts: {}, warnings: [] };
 

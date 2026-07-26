@@ -3,7 +3,7 @@ import { RuleRegistry, createDefaultRuleRegistry } from "./rule-registry";
 import type { ExtractionRule } from "./rule";
 
 describe("RuleRegistry", () => {
-  it("registers all nine built-in rules with their expected keys", () => {
+  it("registers all built-in rules with their expected keys", () => {
     const keys = createDefaultRuleRegistry()
       .list()
       .map((r) => r.key);
@@ -17,6 +17,10 @@ describe("RuleRegistry", () => {
       "insurance",
       "visa",
       "transfer",
+      "taxes",
+      "cancellationPolicy",
+      "accommodation",
+      "destination",
     ]);
   });
 

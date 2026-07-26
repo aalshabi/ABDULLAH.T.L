@@ -99,6 +99,12 @@ export interface ExtractedOfferFacts {
   transfer?: Fact<{ included: boolean }>;
   insurance?: Fact<boolean>;
   visa?: Fact<boolean>;
+  /** Whether taxes/fees are stated as included in the price. */
+  taxes?: Fact<{ included: boolean }>;
+  /** The cancellation/refund terms exactly as stated (never paraphrased). */
+  cancellationPolicy?: Fact<string>;
+  /** Accommodation CATEGORY as stated (e.g. "فندق ٥ نجوم") — never a guessed name. */
+  accommodation?: Fact<string>;
 }
 
 // ---- extraction result (kept separate from analysis) -----------------------

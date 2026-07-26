@@ -43,17 +43,26 @@ export function buildSuggestedQuestions(
   const candidates: Candidate[] = [];
 
   // (A) Conflicts first — a contradiction is the most urgent thing to resolve.
+  // visa/insurance stay context-gated even here, so they can never surface
+  // without the offer text raising them.
+  const contextGate: Record<string, boolean> = {
+    visa: context.visaMentioned,
+    insurance: context.insuranceMentioned,
+  };
   for (const field of FIELDS) {
-    if (conflicting.has(field.key)) {
+    if (conflicting.has(field.key) && contextGate[field.key] !== false) {
       candidates.push({ key: field.key, priority: "high", question: registryQuestion(field.key), when: true });
     }
   }
 
-  // (B) Contextual / missing candidates, authored in booking-impact order.
-
-  // 1) Final price + taxes + fees.
+  // (B) Missing CORE identity of the offer — without these nothing else matters.
   candidates.push({ key: "totalPrice", priority: "high", when: missing.has("totalPrice"), question: registryQuestion("totalPrice") });
   candidates.push({ key: "currency", priority: "high", when: missing.has("currency"), question: registryQuestion("currency") });
+  candidates.push({ key: "nights", priority: "high", when: missing.has("nights"), question: registryQuestion("nights") });
+
+  // (C) HIGH — the five clarifications with the largest booking impact, in order.
+
+  // 1) Taxes and fees on top of the quoted price.
   candidates.push({
     key: "taxes",
     priority: "high",
@@ -61,7 +70,7 @@ export function buildSuggestedQuestions(
     question: { ar: "هل السعر النهائي يشمل جميع الضرائب والرسوم؟", en: "Does the final price include all taxes and fees?" },
   });
 
-  // 2) Airport transfers — a flight+hotel bundle with no transport mentioned.
+  // 2) Airport transfers — nothing about ground transport was stated.
   candidates.push({
     key: "transfers",
     priority: "high",
@@ -69,29 +78,61 @@ export function buildSuggestedQuestions(
     question: { ar: "هل الاستقبال والتوصيل من وإلى المطار مشمولان في السعر؟", en: "Are airport pickup and drop-off included in the price?" },
   });
 
-  // 3) Private vs shared transfer — transport is mentioned but its type is unclear.
-  candidates.push({
-    key: "transfers",
-    priority: "high",
-    when: !context.transferConfirmed && context.transportMentionedInText && !context.transportTypeKnown,
-    question: { ar: "هل المواصلات خاصة أم مشتركة؟", en: "Is the transport private or shared?" },
-  });
-
-  // Inter-city transfers when the offer spans multiple cities/hotels.
-  candidates.push({
-    key: "interCityTransfers",
-    priority: "high",
-    when: context.multiCityOrHotel,
-    question: { ar: "هل التنقلات بين المدن والفنادق مشمولة في السعر؟", en: "Are transfers between cities and hotels included in the price?" },
-  });
-
-  // 4) Room type / beds / occupancy.
+  // 3) Room type / beds.
   candidates.push({
     key: "roomType",
     priority: "high",
     when: context.hasAccommodation && !context.roomTypeMentioned,
     question: { ar: "ما نوع الغرفة وعدد الأسرّة المشمولة؟", en: "What is the room type and how many beds are included?" },
   });
+
+  // 4) Cancellation / change policy.
+  candidates.push({ key: "cancellationPolicy", priority: "high", when: missing.has("cancellationPolicy"), question: registryQuestion("cancellationPolicy") });
+
+  // 5) Baggage allowance.
+  candidates.push({ key: "baggage", priority: "high", when: missing.has("baggage"), question: registryQuestion("baggage") });
+
+  // (D) MEDIUM — useful, but only after the five above.
+
+  // Private vs shared transport — transport exists (confirmed as a fact OR
+  // mentioned in the text) but its TYPE was never stated. Knowing transport is
+  // included does not tell the traveller whether they share a shuttle.
+  candidates.push({
+    key: "transferType",
+    priority: "medium",
+    when: (context.transferConfirmed || context.transportMentionedInText) && !context.transportTypeKnown,
+    question: { ar: "هل المواصلات خاصة أم مشتركة؟", en: "Is the transport private or shared?" },
+  });
+
+  // Inter-city transfers when the offer spans multiple cities/hotels.
+  candidates.push({
+    key: "interCityTransfers",
+    priority: "medium",
+    when: context.multiCityOrHotel,
+    question: { ar: "هل التنقلات بين المدن والفنادق مشمولة في السعر؟", en: "Are transfers between cities and hotels included in the price?" },
+  });
+
+  // Services explicitly NOT included.
+  candidates.push({
+    key: "excludedServices",
+    priority: "medium",
+    when: (context.hasFlight || context.hasAccommodation) && !context.excludedServicesMentioned,
+    question: { ar: "ما الخدمات غير المشمولة في هذا العرض؟", en: "Which services are NOT included in this offer?" },
+  });
+
+  // Flight schedule / stops.
+  candidates.push({
+    key: "flightTimes",
+    priority: "medium",
+    when: context.hasFlight && !context.flightTimesKnown,
+    question: { ar: "ما مواعيد الرحلات وعدد التوقفات؟", en: "What are the flight times and number of stops?" },
+  });
+
+  // Remaining core gaps.
+  candidates.push({ key: "board", priority: "medium", when: missing.has("board"), question: registryQuestion("board") });
+  candidates.push({ key: "travellers", priority: "medium", when: missing.has("travellers"), question: registryQuestion("travellers") });
+  candidates.push({ key: "accommodation", priority: "medium", when: missing.has("accommodation"), question: registryQuestion("accommodation") });
+  candidates.push({ key: "destination", priority: "medium", when: missing.has("destination"), question: registryQuestion("destination") });
   candidates.push({
     key: "childOccupancy",
     priority: "medium",
@@ -99,46 +140,22 @@ export function buildSuggestedQuestions(
     question: { ar: "هل السعر يشمل أسرّة الأطفال أو السرير الإضافي؟", en: "Does the price include children's beds or an extra bed?" },
   });
 
-  // 5) Meals included.
-  candidates.push({ key: "board", priority: "medium", when: missing.has("board"), question: registryQuestion("board") });
-
-  // 6) Baggage.
-  candidates.push({ key: "baggage", priority: "medium", when: missing.has("baggage"), question: registryQuestion("baggage") });
-
-  // 7) Cancellation policy.
-  candidates.push({ key: "cancellationPolicy", priority: "medium", when: missing.has("cancellationPolicy"), question: registryQuestion("cancellationPolicy") });
-
-  // Context-dependent: visa / insurance — ONLY when the offer text raises them.
+  // (E) LOW / context-only — visa and insurance NEVER appear unless the offer
+  // text itself raises them, and they always rank below everything above.
   candidates.push({
     key: "visa",
-    priority: "high",
+    priority: "low",
     when: context.visaMentioned && (missing.has("visa") || conflicting.has("visa")),
     question: registryQuestion("visa"),
   });
   candidates.push({
     key: "insurance",
-    priority: "high",
+    priority: "low",
     when: context.insuranceMentioned && (missing.has("insurance") || conflicting.has("insurance")),
     question: registryQuestion("insurance"),
   });
 
-  // 8) Excluded services (low) — worth asking whenever a bundle exists.
-  candidates.push({
-    key: "excludedServices",
-    priority: "low",
-    when: context.hasFlight || context.hasAccommodation,
-    question: { ar: "ما الخدمات غير المشمولة في هذا العرض؟", en: "Which services are NOT included in this offer?" },
-  });
-
-  // 9) Flight times / stops (low) — a flight with no schedule stated.
-  candidates.push({
-    key: "flightTimes",
-    priority: "low",
-    when: context.hasFlight && !context.flightTimesKnown,
-    question: { ar: "ما مواعيد الرحلات وعدد التوقفات؟", en: "What are the flight times and number of stops?" },
-  });
-
-  // 10) Fees paid on arrival (low).
+  // Fees paid on arrival.
   candidates.push({
     key: "arrivalFees",
     priority: "low",

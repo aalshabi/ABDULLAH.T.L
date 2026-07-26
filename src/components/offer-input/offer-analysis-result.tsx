@@ -7,6 +7,7 @@ import {
   HelpCircle,
   ListChecks,
   ClipboardCheck,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/provider";
@@ -56,6 +57,35 @@ function Section({ id, icon: Icon, title, children }: { id: string; icon: Lucide
       </h3>
       {children}
     </section>
+  );
+}
+
+/**
+ * A secondary section that starts collapsed. The decision-critical parts of the
+ * report (completeness, questions, contradictions) stay open; the exhaustive
+ * per-field detail is one click away instead of a wall of text.
+ */
+function FoldableSection({
+  icon: Icon,
+  title,
+  count,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  count?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="group rounded-xl border border-border">
+      <summary className="flex cursor-pointer items-center gap-2 rounded-xl px-4 py-3 font-display text-base font-bold text-foreground hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Icon className="size-4 shrink-0 text-teal" aria-hidden />
+        <span>{title}</span>
+        {count !== undefined && <span className="ltr-nums text-xs font-normal text-muted-foreground">({count})</span>}
+        <ChevronDown className="ms-auto size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <div className="border-t border-border px-4 py-4">{children}</div>
+    </details>
   );
 }
 
@@ -122,8 +152,22 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
           </div>
         </Section>
 
-        {/* Confirmed facts */}
-        <Section id="oa-confirmed" icon={ClipboardCheck} title={r.confirmedTitle}>
+        {/* Suggested questions — the most actionable output, kept near the top. */}
+        {analysis.suggestedQuestions.length > 0 && (
+          <Section id="oa-questions" icon={HelpCircle} title={r.questionsTitle}>
+            <ol className="space-y-2">
+              {analysis.suggestedQuestions.map((q) => (
+                <li key={q.key} className="flex items-start gap-2.5 rounded-xl border border-border p-3 text-sm text-foreground">
+                  <HelpCircle className="mt-0.5 size-4 shrink-0 text-teal" aria-hidden />
+                  <span>{bi(q.question, locale)}</span>
+                </li>
+              ))}
+            </ol>
+          </Section>
+        )}
+
+        {/* Confirmed facts (secondary detail — collapsed) */}
+        <FoldableSection icon={ClipboardCheck} title={r.confirmedTitle} count={analysis.confirmedFacts.length}>
           {analysis.confirmedFacts.length === 0 ? (
             <p className="text-sm text-muted-foreground">{r.confirmedEmpty}</p>
           ) : (
@@ -144,10 +188,10 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
               ))}
             </ul>
           )}
-        </Section>
+        </FoldableSection>
 
-        {/* Checklist */}
-        <Section id="oa-checklist" icon={ListChecks} title={r.checklistTitle}>
+        {/* Checklist (secondary detail — collapsed) */}
+        <FoldableSection icon={ListChecks} title={r.checklistTitle} count={analysis.checklist.length}>
           <ul className="space-y-2">
             {analysis.checklist.map((item: ChecklistItem) => {
               const s = CHECK_STATUS[item.status];
@@ -166,10 +210,10 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
               );
             })}
           </ul>
-        </Section>
+        </FoldableSection>
 
-        {/* Missing fields */}
-        <Section id="oa-missing" icon={XCircle} title={r.missingTitle}>
+        {/* Missing fields (secondary detail — collapsed) */}
+        <FoldableSection icon={XCircle} title={r.missingTitle} count={analysis.missingFields.length}>
           {analysis.missingFields.length === 0 ? (
             <p className="text-sm text-muted-foreground">{r.missingEmpty}</p>
           ) : (
@@ -182,7 +226,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
               ))}
             </ul>
           )}
-        </Section>
+        </FoldableSection>
 
         {/* Contradictions */}
         <Section id="oa-contradictions" icon={AlertTriangle} title={r.contradictionsTitle}>
@@ -219,17 +263,6 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
             </ul>
           )}
         </Section>
-
-        {/* Suggested questions */}
-        {analysis.suggestedQuestions.length > 0 && (
-          <Section id="oa-questions" icon={HelpCircle} title={r.questionsTitle}>
-            <ul className="list-inside list-disc space-y-1.5 text-sm text-foreground marker:text-teal">
-              {analysis.suggestedQuestions.map((q) => (
-                <li key={q.key}>{bi(q.question, locale)}</li>
-              ))}
-            </ul>
-          </Section>
-        )}
       </CardContent>
     </Card>
   );

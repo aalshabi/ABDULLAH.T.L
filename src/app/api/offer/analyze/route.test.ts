@@ -38,7 +38,7 @@ describe("POST /api/offer/analyze", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.ok).toBe(true);
-    expect(body.data.analysis.completeness.required).toBe(3);
+    expect(body.data.analysis.completeness.required).toBe(10);
   });
 
   it("400 for invalid JSON", async () => {

@@ -17,19 +17,15 @@ const fullArabic: ExtractedOfferFacts = {
 };
 
 describe("analyzeFacts", () => {
-  // (1) full offer with no essential fields missing
-  it("reports full required completeness and no missing required fields", () => {
+  // (1) a price/nights/board offer counts only what it actually states
+  it("counts completeness over the full required set, not a narrow subset", () => {
     const a = analyzeFacts(fullArabic);
-    expect(a.completeness).toEqual({
-      present: 3,
-      required: 3,
-      fields: [
-        { key: "totalPrice", present: true },
-        { key: "currency", present: true },
-        { key: "nights", present: true },
-      ],
-    });
-    expect(a.missingFields.some((m) => m.requirement === "required")).toBe(false);
+    expect(a.completeness.required).toBe(10);
+    // totalPrice, currency, nights, destination, travellers, board are stated
+    expect(a.completeness.present).toBe(6);
+    // …but accommodation / transfers / taxes / cancellation are not
+    const absent = a.completeness.fields.filter((f) => !f.present).map((f) => f.key);
+    expect(absent).toEqual(["accommodation", "transfers", "taxes", "cancellationPolicy"]);
     expect(a.contradictions).toEqual([]);
   });
 
@@ -43,9 +39,9 @@ describe("analyzeFacts", () => {
   });
 
   // (3) offer missing the currency
-  it("marks a missing currency as required missing (completeness 1/3)", () => {
+  it("marks a missing currency as required missing", () => {
     const a = analyzeFacts({ nights: fact(5, "5 nights"), board: fact("BB", "breakfast") });
-    expect(a.completeness.present).toBe(1);
+    expect(a.completeness.present).toBe(2); // nights + board
     expect(a.missingFields.find((m) => m.key === "currency")?.requirement).toBe("required");
     expect(a.suggestedQuestions.some((q) => q.key === "currency")).toBe(true);
   });
@@ -53,7 +49,7 @@ describe("analyzeFacts", () => {
   // (4) offer missing the cancellation policy (recommended)
   it("surfaces a missing cancellation policy as recommended + a question", () => {
     const a = analyzeFacts(fullArabic);
-    expect(a.missingFields.find((m) => m.key === "cancellationPolicy")?.requirement).toBe("recommended");
+    expect(a.missingFields.find((m) => m.key === "cancellationPolicy")?.requirement).toBe("required");
     expect(a.suggestedQuestions.some((q) => q.key === "cancellationPolicy")).toBe(true);
   });
 
@@ -70,6 +66,26 @@ describe("analyzeFacts", () => {
     expect(a.suggestedQuestions.some((q) => q.key === "totalPrice")).toBe(true);
   });
 
+  // Regression: completeness must not read "full" while core info is absent.
+  it("never reports full completeness when destination/travellers/accommodation are missing", () => {
+    const a = analyzeFacts({
+      price: fact({ amount: 3200, currency: "SAR" }, "٣٢٠٠ ر.س"),
+      currency: fact("SAR", "ر.س"),
+      nights: fact(5, "٥ ليالٍ"),
+    });
+    // the old model reported 3/3 here — a misleading "complete" offer
+    expect(a.completeness.present).not.toBe(a.completeness.required);
+    expect(a.completeness.required).toBeGreaterThanOrEqual(10);
+    for (const key of ["destination", "travellers", "accommodation"]) {
+      expect(a.completeness.fields.find((f) => f.key === key)?.present).toBe(false);
+      expect(a.missingFields.some((m) => m.key === key)).toBe(true);
+    }
+    // visa/insurance are deliberately NOT part of the ratio
+    for (const key of ["visa", "insurance"]) {
+      expect(a.completeness.fields.some((f) => f.key === key)).toBe(false);
+    }
+  });
+
   // (11) questions come ONLY from missing or conflicting items
   it("never asks about a present, non-conflicting field", () => {
     const a = analyzeFacts(fullArabic);
@@ -82,15 +98,9 @@ describe("analyzeFacts", () => {
   // (12) completeness is exactly present / required with the counted fields
   it("computes completeness precisely over required fields", () => {
     const a = analyzeFacts({ nights: fact(3, "3 nights") });
-    expect(a.completeness).toEqual({
-      present: 1,
-      required: 3,
-      fields: [
-        { key: "totalPrice", present: false },
-        { key: "currency", present: false },
-        { key: "nights", present: true },
-      ],
-    });
+    expect(a.completeness.present).toBe(1);
+    expect(a.completeness.required).toBe(10);
+    expect(a.completeness.fields.filter((f) => f.present).map((f) => f.key)).toEqual(["nights"]);
   });
 
   // (13) no random score anywhere; deterministic
