@@ -5,10 +5,15 @@
  * appears on the checklist, and the question to ask when it is missing.
  *
  * Requirement policy (an offer is not "everything mandatory"):
- *  - required:            totalPrice, currency, nights
- *  - recommended:         destination, travellers, accommodation, board,
- *                         baggage, transfers, taxes, cancellationPolicy, travelDates
- *  - context-dependent:   visa, insurance
+ *  - required:            the fields a flight+hotel package must state to be
+ *                         judged at all — totalPrice, currency, destination,
+ *                         nights, travellers, accommodation, board, transfers,
+ *                         taxes, cancellationPolicy. These are the fields the
+ *                         completeness ratio counts.
+ *  - recommended:         baggage, travelDates
+ *  - context-dependent:   visa, insurance — DELIBERATELY never counted in
+ *                         completeness, because they only matter when the offer
+ *                         itself raises them.
  */
 
 import type { ExtractedOfferFacts, Fact } from "@/lib/offer-pipeline/types";
@@ -63,15 +68,15 @@ export const FIELDS: FieldDef[] = [
   {
     key: "destination",
     label: { ar: "الوجهة", en: "Destination" },
-    requirement: "recommended",
-    inChecklist: false,
+    requirement: "required",
+    inChecklist: true,
     fact: (f) => f.destination,
     question: { ar: "ما وجهة الرحلة؟", en: "What is the destination?" },
   },
   {
     key: "travellers",
     label: { ar: "عدد المسافرين", en: "Travellers" },
-    requirement: "recommended",
+    requirement: "required",
     inChecklist: true,
     fact: (f) => f.travelers,
     question: { ar: "كم عدد المسافرين (بالغون وأطفال)؟", en: "How many travellers (adults and children)?" },
@@ -79,14 +84,15 @@ export const FIELDS: FieldDef[] = [
   {
     key: "accommodation",
     label: { ar: "الإقامة", en: "Accommodation" },
-    requirement: "recommended",
-    inChecklist: false,
+    requirement: "required",
+    inChecklist: true,
+    fact: (f) => f.accommodation,
     question: { ar: "ما اسم/فئة مكان الإقامة؟", en: "What is the accommodation name/category?" },
   },
   {
     key: "board",
     label: { ar: "نوع الوجبة", en: "Board" },
-    requirement: "recommended",
+    requirement: "required",
     inChecklist: true,
     conflictCode: "conflicting_board",
     fact: (f) => f.board,
@@ -104,7 +110,7 @@ export const FIELDS: FieldDef[] = [
   {
     key: "transfers",
     label: { ar: "التحويلات", en: "Transfers" },
-    requirement: "recommended",
+    requirement: "required",
     inChecklist: true,
     conflictCode: "conflicting_transfers",
     fact: (f) => f.transfer,
@@ -113,15 +119,17 @@ export const FIELDS: FieldDef[] = [
   {
     key: "taxes",
     label: { ar: "الضرائب والرسوم", en: "Taxes & fees" },
-    requirement: "recommended",
+    requirement: "required",
     inChecklist: true,
+    fact: (f) => f.taxes,
     question: { ar: "هل السعر يشمل الضرائب والرسوم؟", en: "Does the price include taxes and fees?" },
   },
   {
     key: "cancellationPolicy",
     label: { ar: "سياسة الإلغاء", en: "Cancellation policy" },
-    requirement: "recommended",
+    requirement: "required",
     inChecklist: true,
+    fact: (f) => f.cancellationPolicy,
     question: { ar: "ما سياسة الإلغاء والتعديل؟", en: "What is the cancellation/change policy?" },
   },
   {

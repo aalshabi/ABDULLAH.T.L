@@ -15,6 +15,10 @@ import { baggageRule } from "./rules/baggage-rule";
 import { insuranceRule } from "./rules/insurance-rule";
 import { visaRule } from "./rules/visa-rule";
 import { transfersRule } from "./rules/transfers-rule";
+import { taxesRule } from "./rules/taxes-rule";
+import { cancellationRule } from "./rules/cancellation-rule";
+import { accommodationRule } from "./rules/accommodation-rule";
+import { destinationRule } from "./rules/destination-rule";
 
 export class RuleRegistry {
   private readonly rules: ExtractionRule[] = [];
@@ -40,5 +44,9 @@ export function createDefaultRuleRegistry(): RuleRegistry {
     .register(baggageRule)
     .register(insuranceRule)
     .register(visaRule)
-    .register(transfersRule);
+    .register(transfersRule)
+    .register(taxesRule)
+    .register(cancellationRule)
+    .register(accommodationRule)
+    .register(destinationRule);
 }

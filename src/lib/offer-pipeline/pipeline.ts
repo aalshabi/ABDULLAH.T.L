@@ -43,8 +43,10 @@ export async function runOfferPipeline(source: RawOfferSource): Promise<Pipeline
   // 2) normalize
   const extraction = normalizeExtraction({ facts: extracted.facts, warnings: extracted.warnings });
 
-  // 3) analyze
-  const analysis = analyzeFacts(extraction.facts);
+  // 3) analyze — pass the original text so questions can be contextual (text only).
+  const analysis = analyzeFacts(extraction.facts, {
+    text: source.type === "text" ? source.text : undefined,
+  });
 
   return { status: "ok", source: type, extraction, analysis };
 }

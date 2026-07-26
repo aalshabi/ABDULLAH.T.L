@@ -82,6 +82,27 @@ export interface OfferTravelers {
 }
 
 /**
+ * How a destination was identified.
+ *  - "canonical_alias":  matched a curated dictionary entry, so a standard name
+ *                        and country code are known.
+ *  - "explicit_mention": the offer stated a destination explicitly ("إلى …",
+ *                        "destination: …") that is not in the dictionary. The
+ *                        wording is reported as-is; NO standard name or country
+ *                        is invented for it.
+ */
+export type DestinationMatchType = "canonical_alias" | "explicit_mention";
+
+export interface OfferDestination {
+  /** The destination exactly as the offer worded it. */
+  value: string;
+  /** Standard name — present ONLY for a dictionary match. */
+  canonicalValue?: string;
+  /** ISO 3166-1 alpha-2 — present ONLY for a dictionary match. */
+  countryCode?: string;
+  matchType: DestinationMatchType;
+}
+
+/**
  * The canonical fact model. Every field is optional: a field is present ONLY
  * when it was extracted with confidence. Absent fields are omitted — the
  * pipeline never fabricates them. Uncertain captures become `warnings`, not facts.
@@ -90,7 +111,7 @@ export interface ExtractedOfferFacts {
   price?: Fact<OfferPrice>;
   /** Currency stated in the offer, even when no complete price is present. */
   currency?: Fact<string>;
-  destination?: Fact<string>;
+  destination?: Fact<OfferDestination>;
   nights?: Fact<number>;
   travelers?: Fact<OfferTravelers>;
   board?: Fact<string>;
@@ -99,6 +120,12 @@ export interface ExtractedOfferFacts {
   transfer?: Fact<{ included: boolean }>;
   insurance?: Fact<boolean>;
   visa?: Fact<boolean>;
+  /** Whether taxes/fees are stated as included in the price. */
+  taxes?: Fact<{ included: boolean }>;
+  /** The cancellation/refund terms exactly as stated (never paraphrased). */
+  cancellationPolicy?: Fact<string>;
+  /** Accommodation CATEGORY as stated (e.g. "فندق ٥ نجوم") — never a guessed name. */
+  accommodation?: Fact<string>;
 }
 
 // ---- extraction result (kept separate from analysis) -----------------------

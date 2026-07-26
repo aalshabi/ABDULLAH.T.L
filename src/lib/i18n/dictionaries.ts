@@ -416,6 +416,7 @@ export const dictionaries = {
           no: "لا",
           adults: "بالغون",
           children: "أطفال",
+          destinationStated: "الوجهة المذكورة",
         },
         actions: {
           edit: "تعديل الإدخال",
@@ -431,6 +432,8 @@ export const dictionaries = {
           sourceNotSupported: "هذا المصدر غير مدعوم حاليًا. المتاح الآن هو النص فقط.",
           server: "حدث خطأ غير متوقع. رجاءً حاول مرة أخرى.",
           network: "تعذّر الاتصال بالخادم. تحقّق من اتصالك وحاول مجددًا.",
+          rateLimited: "تم إرسال طلبات كثيرة خلال وقت قصير. حاول مرة أخرى بعد دقيقة.",
+          rateLimitedRetryIn: "يمكنك المحاولة بعد {n} ثانية.",
         },
       },
     },
@@ -949,6 +952,7 @@ export const dictionaries = {
           no: "No",
           adults: "Adults",
           children: "Children",
+          destinationStated: "Stated destination",
         },
         actions: {
           edit: "Edit input",
@@ -964,6 +968,8 @@ export const dictionaries = {
           sourceNotSupported: "This source is not supported yet. Only text is available now.",
           server: "An unexpected error occurred. Please try again.",
           network: "Could not reach the server. Check your connection and try again.",
+          rateLimited: "Too many requests were sent in a short time. Try again in one minute.",
+          rateLimitedRetryIn: "You can try again in {n} seconds.",
         },
       },
     },

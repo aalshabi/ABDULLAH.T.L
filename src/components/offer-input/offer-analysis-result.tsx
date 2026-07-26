@@ -7,6 +7,7 @@ import {
   HelpCircle,
   ListChecks,
   ClipboardCheck,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/provider";
@@ -26,13 +27,26 @@ function bi(value: Bi, locale: Locale): string {
   return locale === "ar" ? value.ar : value.en;
 }
 
-function formatValue(value: unknown, locale: Locale, labels: { yes: string; no: string; adults: string; children: string }): string {
+function formatValue(
+  value: unknown,
+  locale: Locale,
+  labels: { yes: string; no: string; adults: string; children: string; destinationStated: string }
+): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "boolean") return value ? labels.yes : labels.no;
   if (typeof value === "number") return formatNumber(value, locale);
   if (typeof value === "string") return value;
   if (typeof value === "object") {
     const v = value as Record<string, unknown>;
+    // Destination: show the offer's own wording. A dictionary match may also
+    // show the standard name; an explicit mention is labelled as *stated*, never
+    // presented as a verified geographic match.
+    if (typeof v.value === "string" && typeof v.matchType === "string") {
+      if (v.matchType === "canonical_alias" && typeof v.canonicalValue === "string" && v.canonicalValue !== v.value) {
+        return `${v.value} (${v.canonicalValue})`;
+      }
+      return v.matchType === "explicit_mention" ? `${labels.destinationStated}: ${v.value}` : v.value;
+    }
     if (typeof v.amount === "number" && typeof v.currency === "string") {
       return `${formatNumber(v.amount, locale)} ${v.currency}`;
     }
@@ -59,6 +73,35 @@ function Section({ id, icon: Icon, title, children }: { id: string; icon: Lucide
   );
 }
 
+/**
+ * A secondary section that starts collapsed. The decision-critical parts of the
+ * report (completeness, questions, contradictions) stay open; the exhaustive
+ * per-field detail is one click away instead of a wall of text.
+ */
+function FoldableSection({
+  icon: Icon,
+  title,
+  count,
+  children,
+}: {
+  icon: LucideIcon;
+  title: string;
+  count?: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="group rounded-xl border border-border">
+      <summary className="flex cursor-pointer items-center gap-2 rounded-xl px-4 py-3 font-display text-base font-bold text-foreground hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Icon className="size-4 shrink-0 text-teal" aria-hidden />
+        <span>{title}</span>
+        {count !== undefined && <span className="ltr-nums text-xs font-normal text-muted-foreground">({count})</span>}
+        <ChevronDown className="ms-auto size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden />
+      </summary>
+      <div className="border-t border-border px-4 py-4">{children}</div>
+    </details>
+  );
+}
+
 const CHECK_STATUS: Record<ChecklistStatus, { icon: LucideIcon; className: string }> = {
   present: { icon: CheckCircle2, className: "text-teal-700 dark:text-teal-300" },
   missing: { icon: XCircle, className: "text-muted-foreground" },
@@ -68,7 +111,7 @@ const CHECK_STATUS: Record<ChecklistStatus, { icon: LucideIcon; className: strin
 export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
   const { t, locale } = useLanguage();
   const r = t.analyzeOffer.v2.result;
-  const valueLabels = { yes: r.yes, no: r.no, adults: r.adults, children: r.children };
+  const valueLabels = { yes: r.yes, no: r.no, adults: r.adults, children: r.children, destinationStated: r.destinationStated };
 
   const labelByKey = new Map<string, Bi>();
   for (const f of analysis.confirmedFacts) labelByKey.set(f.key, f.label);
@@ -122,8 +165,22 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
           </div>
         </Section>
 
-        {/* Confirmed facts */}
-        <Section id="oa-confirmed" icon={ClipboardCheck} title={r.confirmedTitle}>
+        {/* Suggested questions — the most actionable output, kept near the top. */}
+        {analysis.suggestedQuestions.length > 0 && (
+          <Section id="oa-questions" icon={HelpCircle} title={r.questionsTitle}>
+            <ol className="space-y-2">
+              {analysis.suggestedQuestions.map((q) => (
+                <li key={q.key} className="flex items-start gap-2.5 rounded-xl border border-border p-3 text-sm text-foreground">
+                  <HelpCircle className="mt-0.5 size-4 shrink-0 text-teal" aria-hidden />
+                  <span>{bi(q.question, locale)}</span>
+                </li>
+              ))}
+            </ol>
+          </Section>
+        )}
+
+        {/* Confirmed facts (secondary detail — collapsed) */}
+        <FoldableSection icon={ClipboardCheck} title={r.confirmedTitle} count={analysis.confirmedFacts.length}>
           {analysis.confirmedFacts.length === 0 ? (
             <p className="text-sm text-muted-foreground">{r.confirmedEmpty}</p>
           ) : (
@@ -144,10 +201,10 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
               ))}
             </ul>
           )}
-        </Section>
+        </FoldableSection>
 
-        {/* Checklist */}
-        <Section id="oa-checklist" icon={ListChecks} title={r.checklistTitle}>
+        {/* Checklist (secondary detail — collapsed) */}
+        <FoldableSection icon={ListChecks} title={r.checklistTitle} count={analysis.checklist.length}>
           <ul className="space-y-2">
             {analysis.checklist.map((item: ChecklistItem) => {
               const s = CHECK_STATUS[item.status];
@@ -166,10 +223,10 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
               );
             })}
           </ul>
-        </Section>
+        </FoldableSection>
 
-        {/* Missing fields */}
-        <Section id="oa-missing" icon={XCircle} title={r.missingTitle}>
+        {/* Missing fields (secondary detail — collapsed) */}
+        <FoldableSection icon={XCircle} title={r.missingTitle} count={analysis.missingFields.length}>
           {analysis.missingFields.length === 0 ? (
             <p className="text-sm text-muted-foreground">{r.missingEmpty}</p>
           ) : (
@@ -182,7 +239,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
               ))}
             </ul>
           )}
-        </Section>
+        </FoldableSection>
 
         {/* Contradictions */}
         <Section id="oa-contradictions" icon={AlertTriangle} title={r.contradictionsTitle}>
@@ -219,17 +276,6 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
             </ul>
           )}
         </Section>
-
-        {/* Suggested questions */}
-        {analysis.suggestedQuestions.length > 0 && (
-          <Section id="oa-questions" icon={HelpCircle} title={r.questionsTitle}>
-            <ul className="list-inside list-disc space-y-1.5 text-sm text-foreground marker:text-teal">
-              {analysis.suggestedQuestions.map((q) => (
-                <li key={q.key}>{bi(q.question, locale)}</li>
-              ))}
-            </ul>
-          </Section>
-        )}
       </CardContent>
     </Card>
   );

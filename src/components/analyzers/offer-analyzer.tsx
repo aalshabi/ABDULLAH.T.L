@@ -32,8 +32,12 @@ type ErrorCode =
   | "unsupportedMedia"
   | "notAnalyzable"
   | "sourceNotSupported"
+  | "rateLimited"
   | "server"
   | "network";
+
+/** UI-side cooldown after a 429, matching the server's rate-limit window. */
+const RATE_LIMIT_COOLDOWN_SECONDS = 60;
 
 function mapStatus(status: number): ErrorCode {
   switch (status) {
@@ -45,6 +49,8 @@ function mapStatus(status: number): ErrorCode {
       return "unsupportedMedia";
     case 422:
       return "notAnalyzable";
+    case 429:
+      return "rateLimited";
     case 501:
       return "sourceNotSupported";
     default:
@@ -68,6 +74,7 @@ export function OfferAnalyzer() {
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [analysis, setAnalysis] = React.useState<OfferAnalysis | null>(null);
   const [errorCode, setErrorCode] = React.useState<ErrorCode | null>(null);
+  const [cooldown, setCooldown] = React.useState(0);
   const resultRef = React.useRef<HTMLDivElement>(null);
 
   const values: OfferInputValues = { text, url, pdf, image };
@@ -77,6 +84,13 @@ export function OfferAnalyzer() {
       if (imagePreview) URL.revokeObjectURL(imagePreview);
     };
   }, [imagePreview]);
+
+  // Rate-limit cooldown countdown (no auto-retry — the user retries manually).
+  React.useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = window.setInterval(() => setCooldown((c) => (c <= 1 ? 0 : c - 1)), 1000);
+    return () => window.clearInterval(id);
+  }, [cooldown]);
 
   function scrollToResult() {
     requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
@@ -117,6 +131,7 @@ export function OfferAnalyzer() {
   // Send the confirmed TEXT offer to the real analysis API (same-origin).
   async function analyze() {
     if (phase === "submitting") return; // prevent duplicate submissions
+    if (cooldown > 0) return; // blocked during the rate-limit cooldown
     if (!submitted || submitted.type !== "text" || submitted.text === undefined) return;
     setErrorCode(null);
     setPhase("submitting");
@@ -126,6 +141,14 @@ export function OfferAnalyzer() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ type: "text", text: submitted.text }),
       });
+      // Rate limited: decide on STATUS only. The 429 may come from an edge WAF
+      // before the app, so its body shape is not guaranteed — never read/show it.
+      if (res.status === 429) {
+        setErrorCode("rateLimited");
+        setCooldown(RATE_LIMIT_COOLDOWN_SECONDS);
+        setPhase("error");
+        return;
+      }
       const body = await res.json().catch(() => null);
       if (res.ok && body?.ok) {
         setAnalysis(body.data.analysis as OfferAnalysis);
@@ -163,14 +186,18 @@ export function OfferAnalyzer() {
       : null;
 
   const submittable = canSubmit(method, values);
-  const retryable = errorCode === "server" || errorCode === "network";
+  const rateLimited = errorCode === "rateLimited";
+  const retryable = errorCode === "server" || errorCode === "network" || (rateLimited && cooldown === 0);
   const errorMessage = errorCode ? v2.errors[errorCode] : "";
+  const countdownText = v2.errors.rateLimitedRetryIn.replace("{n}", String(cooldown));
 
   return (
     <>
       <PageHeader icon={Tag} title={v1.title} subtitle={v1.subtitle} />
 
-      {/* Screen-reader announcements for the async state changes. */}
+      {/* Screen-reader announcements for the async state changes. The full error
+          text (incl. the rate-limit message) is announced by the role="alert"
+          region below, which is itself an assertive aria-live region. */}
       <div aria-live="polite" className="sr-only">
         {phase === "submitting" ? v2.srSubmitting : phase === "success" ? v2.srSuccess : phase === "error" ? v2.srError : ""}
       </div>
@@ -245,6 +272,12 @@ export function OfferAnalyzer() {
                   </h2>
                   <p className="text-sm text-muted-foreground">{errorMessage}</p>
                 </div>
+                {/* Simple countdown — visual only; the message above is announced. */}
+                {rateLimited && cooldown > 0 && (
+                  <p aria-hidden="true" className="mt-2 text-sm font-medium text-foreground">
+                    {countdownText}
+                  </p>
+                )}
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
                   <Button type="button" variant="outline" onClick={onEdit}>
                     {v2.actions.edit}

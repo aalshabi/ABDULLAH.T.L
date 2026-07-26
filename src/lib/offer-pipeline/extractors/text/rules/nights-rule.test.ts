@@ -21,4 +21,18 @@ describe("nightsRule", () => {
   it("returns nothing for unrelated text", () => {
     expect(nightsRule.apply("عرض رائع للعائلات").facts).toEqual({});
   });
+
+  // Regression: the full offer sentence must yield 5 — never 0.
+  it("extracts 5 (not 0) from a complete Arabic offer sentence", () => {
+    const r = nightsRule.apply("عرض إلى دبي لمدة 5 ليالٍ لشخصين شامل الإفطار، السعر الإجمالي 7,500 ريال.");
+    expect(r.facts.nights?.value).toBe(5);
+    expect(r.facts.nights?.evidence).toContain("5 ليالٍ");
+  });
+
+  // Regression: a non-positive count is never presented as a confirmed fact.
+  it("never emits a nights fact for a zero or negative count", () => {
+    for (const text of ["إقامة 0 ليالٍ", "0 nights", "رحلة 00 ليلة", "-5 nights"]) {
+      expect(nightsRule.apply(text).facts.nights).toBeUndefined();
+    }
+  });
 });

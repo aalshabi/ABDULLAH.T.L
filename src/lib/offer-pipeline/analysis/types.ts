@@ -54,10 +54,20 @@ export interface ChecklistItem {
   explanation: Bi;
 }
 
-/** A question generated ONLY from a missing or conflicting item. */
+/**
+ * Booking-impact priority for a suggested question. Questions are ordered
+ * high → medium → low so the most decision-critical clarifications surface first.
+ */
+export type QuestionPriority = "high" | "medium" | "low";
+
+/**
+ * A question generated ONLY from a missing, conflicting, or context-relevant
+ * item. Never produced for a field that is present and consistent.
+ */
 export interface SuggestedQuestion {
   key: string;
   question: Bi;
+  priority: QuestionPriority;
 }
 
 export interface CompletenessField {

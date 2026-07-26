@@ -3,6 +3,9 @@
  */
 
 export { analyzeFacts } from "./analyze-facts";
+export type { AnalyzeOptions } from "./analyze-facts";
+export { deriveQuestionContext } from "./question-context";
+export type { QuestionContext } from "./question-context";
 export { detectContradictions } from "./contradictions";
 export { buildConfirmedFacts } from "./confirmed-facts";
 export { buildMissingFields } from "./missing-fields";
@@ -20,6 +23,7 @@ export type {
   ChecklistItem,
   ChecklistStatus,
   SuggestedQuestion,
+  QuestionPriority,
   OfferCompleteness,
   CompletenessField,
   FieldRequirement,
