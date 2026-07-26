@@ -11,7 +11,7 @@ const fullArabic: ExtractedOfferFacts = {
   price: fact({ amount: 3200, currency: "SAR" }, "٣٢٠٠ ر.س"),
   currency: fact("SAR", "ر.س"),
   nights: fact(5, "٥ ليالٍ"),
-  destination: fact("دبي", "دبي"),
+  destination: fact({ value: "دبي", canonicalValue: "Dubai", countryCode: "AE", matchType: "canonical_alias" as const }, "دبي"),
   travelers: fact({ adults: 2 }, "٢ بالغين"),
   board: fact("BB", "شامل الإفطار"),
 };

@@ -20,7 +20,7 @@ const core: ExtractedOfferFacts = {
  */
 const rich: ExtractedOfferFacts = {
   ...core,
-  destination: fact("دبي", "دبي"),
+  destination: fact({ value: "دبي", canonicalValue: "Dubai", countryCode: "AE", matchType: "canonical_alias" as const }, "دبي"),
   travelers: fact({ adults: 2 }, "شخصين"),
   accommodation: fact("فندق 5 نجوم", "فندق 5 نجوم"),
   board: fact("BB", "شامل الإفطار"),

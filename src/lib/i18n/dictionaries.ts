@@ -416,6 +416,7 @@ export const dictionaries = {
           no: "لا",
           adults: "بالغون",
           children: "أطفال",
+          destinationStated: "الوجهة المذكورة",
         },
         actions: {
           edit: "تعديل الإدخال",
@@ -951,6 +952,7 @@ export const dictionaries = {
           no: "No",
           adults: "Adults",
           children: "Children",
+          destinationStated: "Stated destination",
         },
         actions: {
           edit: "Edit input",

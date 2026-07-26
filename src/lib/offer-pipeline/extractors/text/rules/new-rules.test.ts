@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { taxesRule } from "./taxes-rule";
 import { cancellationRule } from "./cancellation-rule";
 import { accommodationRule } from "./accommodation-rule";
-import { destinationRule } from "./destination-rule";
 
 describe("taxesRule", () => {
   it("extracts an explicit inclusion", () => {
@@ -61,19 +60,4 @@ describe("accommodationRule", () => {
   });
 });
 
-describe("destinationRule", () => {
-  it("matches a known destination and canonicalizes it", () => {
-    const r = destinationRule.apply("عرض إلى دبي لمدة 5 ليالٍ");
-    expect(r.facts.destination?.value).toBe("دبي");
-    expect(r.facts.destination?.evidence).toBe("دبي");
-  });
-
-  it("matches English and alternate spellings", () => {
-    expect(destinationRule.apply("5 nights in Istanbul").facts.destination?.value).toBe("إسطنبول");
-    expect(destinationRule.apply("رحلة إلى اسطنبول").facts.destination?.value).toBe("إسطنبول");
-  });
-
-  it("leaves an unlisted destination absent rather than guessing", () => {
-    expect(destinationRule.apply("عرض إلى مدينة نائية جميلة").facts.destination).toBeUndefined();
-  });
-});
+// Destination coverage lives in ./destination-rule.test.ts (two-tier matching).

@@ -72,7 +72,10 @@ export function normalizeFacts(facts: ExtractedOfferFacts): ExtractedOfferFacts 
   if (facts.insurance) out.insurance = facts.insurance;
   if (facts.visa) out.visa = facts.visa;
   if (facts.taxes) out.taxes = facts.taxes;
-  if (facts.destination) out.destination = withValue(facts.destination, facts.destination.value.trim());
+  if (facts.destination) {
+    const d = facts.destination.value;
+    out.destination = withValue(facts.destination, { ...d, value: d.value.trim() });
+  }
 
   // Free-text facts: trimmed only; a value that trims to empty is dropped.
   if (facts.cancellationPolicy) {

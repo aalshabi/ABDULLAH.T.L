@@ -27,13 +27,26 @@ function bi(value: Bi, locale: Locale): string {
   return locale === "ar" ? value.ar : value.en;
 }
 
-function formatValue(value: unknown, locale: Locale, labels: { yes: string; no: string; adults: string; children: string }): string {
+function formatValue(
+  value: unknown,
+  locale: Locale,
+  labels: { yes: string; no: string; adults: string; children: string; destinationStated: string }
+): string {
   if (value === null || value === undefined) return "";
   if (typeof value === "boolean") return value ? labels.yes : labels.no;
   if (typeof value === "number") return formatNumber(value, locale);
   if (typeof value === "string") return value;
   if (typeof value === "object") {
     const v = value as Record<string, unknown>;
+    // Destination: show the offer's own wording. A dictionary match may also
+    // show the standard name; an explicit mention is labelled as *stated*, never
+    // presented as a verified geographic match.
+    if (typeof v.value === "string" && typeof v.matchType === "string") {
+      if (v.matchType === "canonical_alias" && typeof v.canonicalValue === "string" && v.canonicalValue !== v.value) {
+        return `${v.value} (${v.canonicalValue})`;
+      }
+      return v.matchType === "explicit_mention" ? `${labels.destinationStated}: ${v.value}` : v.value;
+    }
     if (typeof v.amount === "number" && typeof v.currency === "string") {
       return `${formatNumber(v.amount, locale)} ${v.currency}`;
     }
@@ -98,7 +111,7 @@ const CHECK_STATUS: Record<ChecklistStatus, { icon: LucideIcon; className: strin
 export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
   const { t, locale } = useLanguage();
   const r = t.analyzeOffer.v2.result;
-  const valueLabels = { yes: r.yes, no: r.no, adults: r.adults, children: r.children };
+  const valueLabels = { yes: r.yes, no: r.no, adults: r.adults, children: r.children, destinationStated: r.destinationStated };
 
   const labelByKey = new Map<string, Bi>();
   for (const f of analysis.confirmedFacts) labelByKey.set(f.key, f.label);

@@ -1,85 +1,137 @@
 /**
- * DestinationRule — matches the destination against a CURATED list of known
- * cities/countries only.
+ * DestinationRule — a TWO-TIER extractor.
  *
- * Free-text place extraction is deliberately not attempted: guessing a proper
- * noun out of an offer is exactly the kind of "confident but wrong" behaviour
- * this pipeline refuses. An unlisted destination is simply left absent, and the
- * analysis asks about it instead.
+ *  Tier 1 — curated dictionary (`data/destinations.ts`): an alias match yields a
+ *           standard name + ISO country code (`matchType: "canonical_alias"`).
+ *           Adding a destination is a DATA edit; this file never changes.
+ *
+ *  Tier 2 — explicit-mention fallback: when nothing matches the dictionary, a
+ *           destination is taken ONLY from an explicit travel marker
+ *           ("إلى …", "الوجهة: …", "trip to …"). The wording is reported
+ *           verbatim with `matchType: "explicit_mention"` and NO invented
+ *           standard name or country.
+ *
+ * Free-text place guessing is never attempted: without a marker nothing is
+ * extracted, so an unlisted destination is surfaced honestly rather than
+ * fabricated or silently lost.
  */
 
+import type { OfferDestination } from "@/lib/offer-pipeline/types";
 import type { ExtractionRule, RuleResult } from "../rule";
 import { exact } from "../utils";
+import { DESTINATIONS } from "@/lib/offer-pipeline/data/destinations";
 
-/** Canonical destination → the surface forms that unambiguously denote it. */
-const DESTINATIONS: { canonical: string; forms: string[] }[] = [
-  { canonical: "دبي", forms: ["دبي", "dubai"] },
-  { canonical: "أبوظبي", forms: ["أبوظبي", "ابوظبي", "أبو ظبي", "abu dhabi"] },
-  { canonical: "الرياض", forms: ["الرياض", "riyadh"] },
-  { canonical: "جدة", forms: ["جدة", "jeddah"] },
-  { canonical: "مكة", forms: ["مكة", "makkah", "mecca"] },
-  { canonical: "المدينة المنورة", forms: ["المدينة المنورة", "madinah", "medina"] },
-  { canonical: "إسطنبول", forms: ["إسطنبول", "اسطنبول", "استانبول", "istanbul"] },
-  { canonical: "طرابزون", forms: ["طرابزون", "trabzon"] },
-  { canonical: "أنطاليا", forms: ["أنطاليا", "انطاليا", "antalya"] },
-  { canonical: "القاهرة", forms: ["القاهرة", "cairo"] },
-  { canonical: "شرم الشيخ", forms: ["شرم الشيخ", "sharm el sheikh", "sharm"] },
-  { canonical: "المالديف", forms: ["المالديف", "مالديف", "maldives"] },
-  { canonical: "موريشيوس", forms: ["موريشيوس", "mauritius"] },
-  { canonical: "بالي", forms: ["بالي", "bali"] },
-  { canonical: "جاكرتا", forms: ["جاكرتا", "jakarta"] },
-  { canonical: "كوالالمبور", forms: ["كوالالمبور", "kuala lumpur"] },
-  { canonical: "بانكوك", forms: ["بانكوك", "bangkok"] },
-  { canonical: "بوكيت", forms: ["بوكيت", "phuket"] },
-  { canonical: "تبليسي", forms: ["تبليسي", "تبليسى", "tbilisi"] },
-  { canonical: "باتومي", forms: ["باتومي", "batumi"] },
-  { canonical: "باكو", forms: ["باكو", "baku"] },
-  { canonical: "لندن", forms: ["لندن", "london"] },
-  { canonical: "باريس", forms: ["باريس", "paris"] },
-  { canonical: "روما", forms: ["روما", "rome"] },
-  { canonical: "برشلونة", forms: ["برشلونة", "barcelona"] },
-  { canonical: "مدريد", forms: ["مدريد", "madrid"] },
-  { canonical: "جنيف", forms: ["جنيف", "geneva"] },
-  { canonical: "زيورخ", forms: ["زيورخ", "zurich"] },
-  { canonical: "فيينا", forms: ["فيينا", "vienna"] },
-  { canonical: "أمستردام", forms: ["أمستردام", "امستردام", "amsterdam"] },
-  { canonical: "ميونخ", forms: ["ميونخ", "munich"] },
-  { canonical: "سنغافورة", forms: ["سنغافورة", "singapore"] },
-  { canonical: "طوكيو", forms: ["طوكيو", "tokyo"] },
-  { canonical: "سيول", forms: ["سيول", "seoul"] },
-  { canonical: "كيرالا", forms: ["كيرالا", "kerala"] },
-  { canonical: "مومباي", forms: ["مومباي", "mumbai"] },
-  { canonical: "نيويورك", forms: ["نيويورك", "new york"] },
-  { canonical: "لوس أنجلوس", forms: ["لوس أنجلوس", "لوس انجلوس", "los angeles"] },
-  { canonical: "موسكو", forms: ["موسكو", "moscow"] },
-  { canonical: "شيشان", forms: ["شيشان", "الشيشان", "grozny"] },
-  { canonical: "سراييفو", forms: ["سراييفو", "sarajevo"] },
-  { canonical: "تيرانا", forms: ["تيرانا", "tirana"] },
-  { canonical: "سيلان", forms: ["سيلان", "سريلانكا", "sri lanka", "colombo"] },
-  { canonical: "زنجبار", forms: ["زنجبار", "zanzibar"] },
-  { canonical: "سيشل", forms: ["سيشل", "seychelles"] },
+/** Explicit "this is the destination" markers. */
+const MARKERS: RegExp[] = [
+  /(?:الوجهة|وجهة)\s*[:：]\s*/g,
+  /(?:السفر|الرحلة|رحلة|عرض|باقة|برنامج)?\s*إلى\s+/g,
+  /\bdestination\s*[:：]\s*/gi,
+  /\b(?:trip|travel|journey|flight)\s+to\s+/gi,
+  /\bto\s+/gi,
 ];
+
+/**
+ * Words that end a destination phrase. They start the NEXT clause of an offer
+ * ("… إلى دبي لمدة ٥ ليالٍ"), so capture must stop before them.
+ */
+const STOP_WORDS = [
+  "لمدة", "مدة", "لشخصين", "لشخص", "لفردين", "يشمل", "تشمل", "شامل", "شاملة", "السعر", "بسعر",
+  "سعر", "من", "في", "مع", "ليالٍ", "ليالي", "ليلة", "أيام", "يوم", "بالطيران", "طيران",
+  "فندق", "إقامة", "للشخص", "ابتداءً", "تبدأ", "خلال",
+  "for", "from", "includes", "including", "price", "nights", "night", "days", "with", "at",
+  "starting", "per", "hotel", "stay", "on",
+];
+
+/** Phrases where a following "إلى/to" is NOT introducing a destination. */
+const MARKER_BLOCKLIST = ["بالإضافة", "إضافة", "اضافة", "تصل", "يصل", "up", "close", "next"];
+
+const MAX_WORDS = 4;
+const MAX_CHARS = 40;
+
+function findCanonical(text: string): { entry: (typeof DESTINATIONS)[number]; index: number; length: number } | null {
+  const haystack = text.toLowerCase();
+  let best: { entry: (typeof DESTINATIONS)[number]; index: number; length: number } | null = null;
+
+  for (const entry of DESTINATIONS) {
+    for (const alias of entry.aliases) {
+      const index = haystack.indexOf(alias.toLowerCase());
+      if (index === -1) continue;
+      // Longest alias wins so "أبو ظبي" is not shadowed by a shorter entry.
+      if (!best || alias.length > best.length) best = { entry, index, length: alias.length };
+    }
+  }
+  return best;
+}
+
+/** Trim a captured tail down to a short, plausible destination phrase. */
+function trimToDestination(tail: string): string {
+  // Stop at the first clause boundary.
+  const clause = tail.split(/[،,.\n\r؛;:()]/)[0] ?? "";
+
+  const words: string[] = [];
+  for (const word of clause.trim().split(/\s+/)) {
+    const bare = word.replace(/[^\p{L}\p{N}\-']/gu, "");
+    if (!bare) break;
+    if (STOP_WORDS.includes(bare.toLowerCase())) break;
+    // A number starts the "5 nights" clause — never part of a destination.
+    if (/^\d+$/.test(bare)) break;
+    words.push(bare);
+    if (words.length >= MAX_WORDS) break;
+  }
+
+  return words.join(" ").slice(0, MAX_CHARS).trim();
+}
+
+function findExplicit(text: string): { value: string; evidence: string } | null {
+  for (const marker of MARKERS) {
+    marker.lastIndex = 0;
+    let m: RegExpExecArray | null;
+    while ((m = marker.exec(text)) !== null) {
+      const before = text.slice(Math.max(0, m.index - 12), m.index).toLowerCase();
+      if (MARKER_BLOCKLIST.some((b) => before.includes(b.toLowerCase()))) continue;
+
+      const tail = text.slice(m.index + m[0].length);
+      const value = trimToDestination(tail);
+      if (!value) continue;
+
+      // Evidence covers the marker plus the captured destination.
+      return { value, evidence: text.slice(m.index, m.index + m[0].length + value.length).trim() };
+    }
+  }
+  return null;
+}
 
 export const destinationRule: ExtractionRule = {
   key: "destination",
   apply(text: string): RuleResult {
-    const haystack = text.toLowerCase();
-
-    // Longest form first so "أبو ظبي" is not shadowed by a shorter entry.
-    let best: { canonical: string; index: number; length: number } | null = null;
-    for (const entry of DESTINATIONS) {
-      for (const form of entry.forms) {
-        const index = haystack.indexOf(form.toLowerCase());
-        if (index === -1) continue;
-        if (!best || form.length > best.length) {
-          best = { canonical: entry.canonical, index, length: form.length };
-        }
-      }
+    // Tier 1 — curated dictionary.
+    const known = findCanonical(text);
+    if (known) {
+      const evidence = text.slice(known.index, known.index + known.length);
+      const value: OfferDestination = {
+        value: evidence,
+        canonicalValue: known.entry.canonical,
+        countryCode: known.entry.countryCode,
+        matchType: "canonical_alias",
+      };
+      return { facts: { destination: exact(value, evidence) }, warnings: [] };
     }
 
-    if (!best) return { facts: {}, warnings: [] };
+    // Tier 2 — explicit mention only.
+    const explicit = findExplicit(text);
+    if (explicit) {
+      const value: OfferDestination = { value: explicit.value, matchType: "explicit_mention" };
+      return {
+        facts: { destination: exact(value, explicit.evidence) },
+        warnings: [
+          {
+            ar: `الوجهة «${explicit.value}» مذكورة صراحةً لكنها غير مرتبطة باسم جغرافي قياسي.`,
+            en: `Destination "${explicit.value}" is explicitly stated but not matched to a standard geographic name.`,
+          },
+        ],
+      };
+    }
 
-    const evidence = text.slice(best.index, best.index + best.length);
-    return { facts: { destination: exact(best.canonical, evidence) }, warnings: [] };
+    return { facts: {}, warnings: [] };
   },
 };

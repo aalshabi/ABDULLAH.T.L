@@ -1,0 +1,212 @@
+/**
+ * Curated destination dictionary — DATA ONLY.
+ *
+ * Adding a destination must never require touching DestinationRule: append an
+ * entry here and it is matched automatically.
+ *
+ * Scope is deliberately MVP-sized (a few hundred destinations the agency
+ * actually sells) rather than a full geographic database. Authoritative
+ * reference data — UN/LOCODE (~100k locations) for places and ISO 3166 for
+ * country codes — can back this table later; loading either in full would be
+ * far heavier than this stage needs, and the explicit-mention fallback in the
+ * rule already prevents unlisted destinations from being lost.
+ *
+ * `canonical` is the standard (English) name. `countryCode` is ISO 3166-1
+ * alpha-2. `aliases` carry the Arabic and English surface forms, including the
+ * common misspellings seen in real supplier offers.
+ */
+
+export interface DestinationEntry {
+  /** Standard English name used as `canonicalValue`. */
+  canonical: string;
+  /** ISO 3166-1 alpha-2 country code. */
+  countryCode?: string;
+  /** Surface forms (ar + en) that unambiguously denote this destination. */
+  aliases: string[];
+}
+
+export const DESTINATIONS: DestinationEntry[] = [
+  // ---- Gulf & Saudi Arabia ----
+  { canonical: "Dubai", countryCode: "AE", aliases: ["دبي", "dubai"] },
+  { canonical: "Abu Dhabi", countryCode: "AE", aliases: ["أبوظبي", "ابوظبي", "أبو ظبي", "ابو ظبي", "abu dhabi"] },
+  { canonical: "Sharjah", countryCode: "AE", aliases: ["الشارقة", "sharjah"] },
+  { canonical: "Ras Al Khaimah", countryCode: "AE", aliases: ["رأس الخيمة", "راس الخيمة", "ras al khaimah"] },
+  { canonical: "Riyadh", countryCode: "SA", aliases: ["الرياض", "riyadh"] },
+  { canonical: "Jeddah", countryCode: "SA", aliases: ["جدة", "jeddah"] },
+  { canonical: "Makkah", countryCode: "SA", aliases: ["مكة", "مكة المكرمة", "makkah", "mecca"] },
+  { canonical: "Madinah", countryCode: "SA", aliases: ["المدينة المنورة", "المدينة", "madinah", "medina"] },
+  { canonical: "AlUla", countryCode: "SA", aliases: ["العلا", "alula", "al ula"] },
+  { canonical: "Abha", countryCode: "SA", aliases: ["أبها", "ابها", "abha"] },
+  { canonical: "Taif", countryCode: "SA", aliases: ["الطائف", "taif"] },
+  { canonical: "Dammam", countryCode: "SA", aliases: ["الدمام", "dammam"] },
+  { canonical: "NEOM", countryCode: "SA", aliases: ["نيوم", "neom"] },
+  { canonical: "Doha", countryCode: "QA", aliases: ["الدوحة", "doha"] },
+  { canonical: "Kuwait City", countryCode: "KW", aliases: ["الكويت", "kuwait", "kuwait city"] },
+  { canonical: "Manama", countryCode: "BH", aliases: ["المنامة", "البحرين", "manama", "bahrain"] },
+  { canonical: "Muscat", countryCode: "OM", aliases: ["مسقط", "muscat"] },
+  { canonical: "Salalah", countryCode: "OM", aliases: ["صلالة", "salalah"] },
+
+  // ---- Levant, Egypt & North Africa ----
+  { canonical: "Cairo", countryCode: "EG", aliases: ["القاهرة", "cairo"] },
+  { canonical: "Sharm El Sheikh", countryCode: "EG", aliases: ["شرم الشيخ", "sharm el sheikh", "sharm"] },
+  { canonical: "Hurghada", countryCode: "EG", aliases: ["الغردقة", "hurghada"] },
+  { canonical: "Alexandria", countryCode: "EG", aliases: ["الإسكندرية", "الاسكندرية", "alexandria"] },
+  { canonical: "Luxor", countryCode: "EG", aliases: ["الأقصر", "الاقصر", "luxor"] },
+  { canonical: "Amman", countryCode: "JO", aliases: ["عمان", "عمّان", "amman"] },
+  { canonical: "Aqaba", countryCode: "JO", aliases: ["العقبة", "aqaba"] },
+  { canonical: "Petra", countryCode: "JO", aliases: ["البتراء", "petra"] },
+  { canonical: "Beirut", countryCode: "LB", aliases: ["بيروت", "beirut"] },
+  { canonical: "Damascus", countryCode: "SY", aliases: ["دمشق", "damascus"] },
+  { canonical: "Marrakesh", countryCode: "MA", aliases: ["مراكش", "marrakesh", "marrakech"] },
+  { canonical: "Casablanca", countryCode: "MA", aliases: ["الدار البيضاء", "casablanca"] },
+  { canonical: "Tangier", countryCode: "MA", aliases: ["طنجة", "tangier"] },
+  { canonical: "Fez", countryCode: "MA", aliases: ["فاس", "fez", "fes"] },
+  { canonical: "Tunis", countryCode: "TN", aliases: ["تونس", "tunis"] },
+  { canonical: "Hammamet", countryCode: "TN", aliases: ["الحمامات", "hammamet"] },
+  { canonical: "Algiers", countryCode: "DZ", aliases: ["الجزائر", "algiers"] },
+
+  // ---- Türkiye ----
+  { canonical: "Istanbul", countryCode: "TR", aliases: ["إسطنبول", "اسطنبول", "استانبول", "إستانبول", "istanbul"] },
+  { canonical: "Trabzon", countryCode: "TR", aliases: ["طرابزون", "trabzon"] },
+  { canonical: "Antalya", countryCode: "TR", aliases: ["أنطاليا", "انطاليا", "antalya"] },
+  { canonical: "Bodrum", countryCode: "TR", aliases: ["بودروم", "bodrum"] },
+  { canonical: "Cappadocia", countryCode: "TR", aliases: ["كابادوكيا", "كبادوكيا", "cappadocia"] },
+  { canonical: "Bursa", countryCode: "TR", aliases: ["بورصة", "bursa"] },
+  { canonical: "Izmir", countryCode: "TR", aliases: ["إزمير", "ازمير", "izmir"] },
+  { canonical: "Fethiye", countryCode: "TR", aliases: ["فتحية", "fethiye"] },
+  { canonical: "Sapanca", countryCode: "TR", aliases: ["سبانجا", "sapanca"] },
+  { canonical: "Uzungol", countryCode: "TR", aliases: ["أوزنجول", "اوزنجول", "uzungol"] },
+  { canonical: "Ankara", countryCode: "TR", aliases: ["أنقرة", "انقرة", "ankara"] },
+
+  // ---- Caucasus & Central Asia ----
+  { canonical: "Tbilisi", countryCode: "GE", aliases: ["تبليسي", "تبليسى", "تبيليسي", "tbilisi"] },
+  { canonical: "Batumi", countryCode: "GE", aliases: ["باتومي", "batumi"] },
+  { canonical: "Borjomi", countryCode: "GE", aliases: ["بورجومي", "borjomi"] },
+  { canonical: "Kutaisi", countryCode: "GE", aliases: ["كوتايسي", "kutaisi"] },
+  { canonical: "Baku", countryCode: "AZ", aliases: ["باكو", "baku"] },
+  { canonical: "Yerevan", countryCode: "AM", aliases: ["يريفان", "yerevan"] },
+  { canonical: "Almaty", countryCode: "KZ", aliases: ["ألماتي", "الماتي", "almaty"] },
+  { canonical: "Tashkent", countryCode: "UZ", aliases: ["طشقند", "tashkent"] },
+  { canonical: "Samarkand", countryCode: "UZ", aliases: ["سمرقند", "samarkand"] },
+  { canonical: "Bishkek", countryCode: "KG", aliases: ["بيشكك", "bishkek"] },
+
+  // ---- Europe ----
+  { canonical: "London", countryCode: "GB", aliases: ["لندن", "london"] },
+  { canonical: "Manchester", countryCode: "GB", aliases: ["مانشستر", "manchester"] },
+  { canonical: "Edinburgh", countryCode: "GB", aliases: ["إدنبرة", "ادنبرة", "edinburgh"] },
+  { canonical: "Paris", countryCode: "FR", aliases: ["باريس", "paris"] },
+  { canonical: "Nice", countryCode: "FR", aliases: ["نيس", "nice"] },
+  { canonical: "Cannes", countryCode: "FR", aliases: ["كان", "cannes"] },
+  { canonical: "Lyon", countryCode: "FR", aliases: ["ليون", "lyon"] },
+  { canonical: "Rome", countryCode: "IT", aliases: ["روما", "rome"] },
+  { canonical: "Milan", countryCode: "IT", aliases: ["ميلانو", "ميلان", "milan"] },
+  { canonical: "Venice", countryCode: "IT", aliases: ["البندقية", "فينيسيا", "venice"] },
+  { canonical: "Florence", countryCode: "IT", aliases: ["فلورنسا", "florence"] },
+  { canonical: "Naples", countryCode: "IT", aliases: ["نابولي", "naples"] },
+  { canonical: "Amalfi", countryCode: "IT", aliases: ["أمالفي", "امالفي", "amalfi"] },
+  { canonical: "Como", countryCode: "IT", aliases: ["كومو", "بحيرة كومو", "lake como", "como"] },
+  { canonical: "Barcelona", countryCode: "ES", aliases: ["برشلونة", "barcelona"] },
+  { canonical: "Madrid", countryCode: "ES", aliases: ["مدريد", "madrid"] },
+  { canonical: "Marbella", countryCode: "ES", aliases: ["ماربيا", "marbella"] },
+  { canonical: "Ibiza", countryCode: "ES", aliases: ["إيبيزا", "ايبيزا", "ibiza"] },
+  { canonical: "Lisbon", countryCode: "PT", aliases: ["لشبونة", "lisbon"] },
+  { canonical: "Porto", countryCode: "PT", aliases: ["بورتو", "porto"] },
+  { canonical: "Geneva", countryCode: "CH", aliases: ["جنيف", "geneva"] },
+  { canonical: "Zurich", countryCode: "CH", aliases: ["زيورخ", "زيوريخ", "zurich"] },
+  { canonical: "Interlaken", countryCode: "CH", aliases: ["إنترلاكن", "انترلاكن", "interlaken"] },
+  { canonical: "Lucerne", countryCode: "CH", aliases: ["لوزيرن", "lucerne", "luzern"] },
+  { canonical: "Montreux", countryCode: "CH", aliases: ["مونترو", "montreux"] },
+  { canonical: "Vienna", countryCode: "AT", aliases: ["فيينا", "vienna"] },
+  { canonical: "Salzburg", countryCode: "AT", aliases: ["سالزبورغ", "salzburg"] },
+  { canonical: "Innsbruck", countryCode: "AT", aliases: ["إنسبروك", "انسبروك", "innsbruck"] },
+  { canonical: "Munich", countryCode: "DE", aliases: ["ميونخ", "ميونيخ", "munich"] },
+  { canonical: "Berlin", countryCode: "DE", aliases: ["برلين", "berlin"] },
+  { canonical: "Frankfurt", countryCode: "DE", aliases: ["فرانكفورت", "frankfurt"] },
+  { canonical: "Hamburg", countryCode: "DE", aliases: ["هامبورغ", "hamburg"] },
+  { canonical: "Amsterdam", countryCode: "NL", aliases: ["أمستردام", "امستردام", "amsterdam"] },
+  { canonical: "Brussels", countryCode: "BE", aliases: ["بروكسل", "brussels"] },
+  { canonical: "Prague", countryCode: "CZ", aliases: ["براغ", "prague"] },
+  { canonical: "Budapest", countryCode: "HU", aliases: ["بودابست", "budapest"] },
+  { canonical: "Warsaw", countryCode: "PL", aliases: ["وارسو", "warsaw"] },
+  { canonical: "Athens", countryCode: "GR", aliases: ["أثينا", "اثينا", "athens"] },
+  { canonical: "Santorini", countryCode: "GR", aliases: ["سانتوريني", "santorini"] },
+  { canonical: "Mykonos", countryCode: "GR", aliases: ["ميكونوس", "mykonos"] },
+  { canonical: "Crete", countryCode: "GR", aliases: ["كريت", "crete"] },
+  { canonical: "Sarajevo", countryCode: "BA", aliases: ["سراييفو", "سراييفوا", "sarajevo"] },
+  { canonical: "Mostar", countryCode: "BA", aliases: ["موستار", "mostar"] },
+  { canonical: "Tirana", countryCode: "AL", aliases: ["تيرانا", "tirana"] },
+  { canonical: "Belgrade", countryCode: "RS", aliases: ["بلغراد", "belgrade"] },
+  { canonical: "Bucharest", countryCode: "RO", aliases: ["بوخارست", "bucharest"] },
+  { canonical: "Sofia", countryCode: "BG", aliases: ["صوفيا", "sofia"] },
+  { canonical: "Dubrovnik", countryCode: "HR", aliases: ["دوبروفنيك", "dubrovnik"] },
+  { canonical: "Split", countryCode: "HR", aliases: ["سبليت", "split"] },
+  { canonical: "Copenhagen", countryCode: "DK", aliases: ["كوبنهاغن", "copenhagen"] },
+  { canonical: "Stockholm", countryCode: "SE", aliases: ["ستوكهولم", "stockholm"] },
+  { canonical: "Oslo", countryCode: "NO", aliases: ["أوسلو", "اوسلو", "oslo"] },
+  { canonical: "Tromso", countryCode: "NO", aliases: ["ترومسو", "tromso"] },
+  { canonical: "Helsinki", countryCode: "FI", aliases: ["هلسنكي", "helsinki"] },
+  { canonical: "Reykjavik", countryCode: "IS", aliases: ["ريكيافيك", "reykjavik"] },
+  { canonical: "Dublin", countryCode: "IE", aliases: ["دبلن", "dublin"] },
+  { canonical: "Moscow", countryCode: "RU", aliases: ["موسكو", "moscow"] },
+  { canonical: "Saint Petersburg", countryCode: "RU", aliases: ["سان بطرسبرغ", "بطرسبرغ", "saint petersburg", "st petersburg"] },
+  { canonical: "Grozny", countryCode: "RU", aliases: ["غروزني", "الشيشان", "شيشان", "grozny", "chechnya"] },
+
+  // ---- Asia ----
+  { canonical: "Bali", countryCode: "ID", aliases: ["بالي", "bali"] },
+  { canonical: "Jakarta", countryCode: "ID", aliases: ["جاكرتا", "jakarta"] },
+  { canonical: "Lombok", countryCode: "ID", aliases: ["لومبوك", "lombok"] },
+  { canonical: "Kuala Lumpur", countryCode: "MY", aliases: ["كوالالمبور", "كوالا لمبور", "kuala lumpur"] },
+  { canonical: "Langkawi", countryCode: "MY", aliases: ["لنكاوي", "langkawi"] },
+  { canonical: "Penang", countryCode: "MY", aliases: ["بينانج", "بينانغ", "penang"] },
+  { canonical: "Singapore", countryCode: "SG", aliases: ["سنغافورة", "singapore"] },
+  { canonical: "Bangkok", countryCode: "TH", aliases: ["بانكوك", "bangkok"] },
+  { canonical: "Phuket", countryCode: "TH", aliases: ["بوكيت", "phuket"] },
+  { canonical: "Krabi", countryCode: "TH", aliases: ["كرابي", "krabi"] },
+  { canonical: "Pattaya", countryCode: "TH", aliases: ["باتايا", "pattaya"] },
+  { canonical: "Chiang Mai", countryCode: "TH", aliases: ["شيانغ ماي", "chiang mai"] },
+  { canonical: "Tokyo", countryCode: "JP", aliases: ["طوكيو", "tokyo"] },
+  { canonical: "Osaka", countryCode: "JP", aliases: ["أوساكا", "اوساكا", "osaka"] },
+  { canonical: "Kyoto", countryCode: "JP", aliases: ["كيوتو", "kyoto"] },
+  { canonical: "Seoul", countryCode: "KR", aliases: ["سيول", "seoul"] },
+  { canonical: "Beijing", countryCode: "CN", aliases: ["بكين", "beijing"] },
+  { canonical: "Shanghai", countryCode: "CN", aliases: ["شنغهاي", "shanghai"] },
+  { canonical: "Hong Kong", countryCode: "HK", aliases: ["هونغ كونغ", "هونج كونج", "hong kong"] },
+  { canonical: "Mumbai", countryCode: "IN", aliases: ["مومباي", "mumbai"] },
+  { canonical: "New Delhi", countryCode: "IN", aliases: ["نيودلهي", "نيو دلهي", "دلهي", "new delhi", "delhi"] },
+  { canonical: "Kerala", countryCode: "IN", aliases: ["كيرالا", "kerala"] },
+  { canonical: "Goa", countryCode: "IN", aliases: ["غوا", "جوا", "goa"] },
+  { canonical: "Kashmir", countryCode: "IN", aliases: ["كشمير", "kashmir"] },
+  { canonical: "Colombo", countryCode: "LK", aliases: ["كولومبو", "سيلان", "سريلانكا", "colombo", "sri lanka"] },
+  { canonical: "Kandy", countryCode: "LK", aliases: ["كاندي", "kandy"] },
+  { canonical: "Kathmandu", countryCode: "NP", aliases: ["كاتماندو", "kathmandu"] },
+  { canonical: "Malé", countryCode: "MV", aliases: ["المالديف", "مالديف", "جزر المالديف", "ماليه", "maldives", "male"] },
+  { canonical: "Baku Old City", countryCode: "AZ", aliases: ["مدينة باكو القديمة"] },
+
+  // ---- Indian Ocean & Africa ----
+  { canonical: "Mauritius", countryCode: "MU", aliases: ["موريشيوس", "موريشيس", "mauritius"] },
+  { canonical: "Seychelles", countryCode: "SC", aliases: ["سيشل", "سيشيل", "seychelles"] },
+  { canonical: "Zanzibar", countryCode: "TZ", aliases: ["زنجبار", "zanzibar"] },
+  { canonical: "Nairobi", countryCode: "KE", aliases: ["نيروبي", "nairobi"] },
+  { canonical: "Cape Town", countryCode: "ZA", aliases: ["كيب تاون", "cape town"] },
+  { canonical: "Johannesburg", countryCode: "ZA", aliases: ["جوهانسبرغ", "johannesburg"] },
+  { canonical: "Addis Ababa", countryCode: "ET", aliases: ["أديس أبابا", "اديس ابابا", "addis ababa"] },
+
+  // ---- Americas & Oceania ----
+  { canonical: "New York", countryCode: "US", aliases: ["نيويورك", "نيو يورك", "new york"] },
+  { canonical: "Los Angeles", countryCode: "US", aliases: ["لوس أنجلوس", "لوس انجلوس", "los angeles"] },
+  { canonical: "Miami", countryCode: "US", aliases: ["ميامي", "miami"] },
+  { canonical: "Orlando", countryCode: "US", aliases: ["أورلاندو", "اورلاندو", "orlando"] },
+  { canonical: "San Francisco", countryCode: "US", aliases: ["سان فرانسيسكو", "san francisco"] },
+  { canonical: "Las Vegas", countryCode: "US", aliases: ["لاس فيغاس", "لاس فيجاس", "las vegas"] },
+  { canonical: "Washington", countryCode: "US", aliases: ["واشنطن", "washington"] },
+  { canonical: "Toronto", countryCode: "CA", aliases: ["تورنتو", "toronto"] },
+  { canonical: "Vancouver", countryCode: "CA", aliases: ["فانكوفر", "vancouver"] },
+  { canonical: "Montreal", countryCode: "CA", aliases: ["مونتريال", "montreal"] },
+  { canonical: "Mexico City", countryCode: "MX", aliases: ["مكسيكو سيتي", "mexico city"] },
+  { canonical: "Cancun", countryCode: "MX", aliases: ["كانكون", "cancun"] },
+  { canonical: "Rio de Janeiro", countryCode: "BR", aliases: ["ريو دي جانيرو", "rio de janeiro"] },
+  { canonical: "Buenos Aires", countryCode: "AR", aliases: ["بوينس آيرس", "بوينس ايرس", "buenos aires"] },
+  { canonical: "Sydney", countryCode: "AU", aliases: ["سيدني", "sydney"] },
+  { canonical: "Melbourne", countryCode: "AU", aliases: ["ملبورن", "melbourne"] },
+  { canonical: "Auckland", countryCode: "NZ", aliases: ["أوكلاند", "اوكلاند", "auckland"] },
+];
