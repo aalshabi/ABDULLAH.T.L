@@ -1,6 +1,6 @@
 # DEMO_INTEGRITY_REPORT — جولة نزاهة النسخة التجريبية
 
-**المشروع:** سافر بوعي — `aalshabi/ABDULLAH.T.L`
+**المشروع:** سافر بوعي — `aalshabi/safrbwai`
 **الفرع الأساسي:** `claude/security-mvp-hardening`
 **الفرع الجديد:** `claude/demo-integrity-fixes`
 **الهدف:** إزالة كل ادعاء أو نتيجة غير مدعومة من النسخة التجريبية — لا الاكتفاء بشارة Demo.

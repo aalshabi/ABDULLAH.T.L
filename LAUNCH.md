@@ -46,7 +46,7 @@ netlify deploy --prod
 
 ```bash
 # تأكد من أن repository موجود على GitHub
-git remote add origin https://github.com/USERNAME/ABDULLAH.T.L.git
+git remote add origin https://github.com/aalshabi/safrbwai.git
 
 # دفع المشروع
 git push -u origin main
@@ -55,7 +55,7 @@ git push -u origin main
 # 1. اذهب إلى Settings
 # 2. اختر Pages
 # 3. اختر Branch: main
-# 4. الموقع يكون متاح على: https://USERNAME.github.io/ABDULLAH.T.L/
+# 4. الموقع يكون متاح على: https://aalshabi.github.io/safrbwai/
 ```
 
 ### خيار 4: DigitalOcean/Linode
@@ -71,8 +71,8 @@ apt install nginx git -y
 
 # 4. نسخ المشروع
 cd /var/www
-git clone https://github.com/USERNAME/ABDULLAH.T.L.git
-cd ABDULLAH.T.L
+git clone https://github.com/aalshabi/safrbwai.git
+cd safrbwai
 
 # 5. إعداد Nginx
 sudo nano /etc/nginx/sites-available/default
@@ -84,7 +84,7 @@ server {
 
     server_name example.com www.example.com;
 
-    root /var/www/ABDULLAH.T.L;
+    root /var/www/safrbwai;
     index index.html;
 
     location / {
