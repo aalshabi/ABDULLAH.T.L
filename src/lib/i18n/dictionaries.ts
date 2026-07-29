@@ -417,6 +417,18 @@ export const dictionaries = {
           adults: "بالغون",
           children: "أطفال",
           destinationStated: "الوجهة المذكورة",
+          copy: {
+            questionsButton: "نسخ الأسئلة",
+            summaryButton: "نسخ الملخص",
+            questionsCopied: "تم نسخ الأسئلة.",
+            summaryCopied: "تم نسخ الملخص.",
+            failed: "تعذّر النسخ. حدّد النص وانسخه يدويًا.",
+            reviewedWith: "تمت المراجعة عبر سافر بوعي",
+            summaryTitle: "مراجعة عرض السفر",
+            disclaimer:
+              "هذه مراجعة مساعدة وليست ضمانًا لصحة العرض أو البائع.",
+            brandLabel: "سافر بوعي",
+          },
         },
         feedback: {
           question: "هل كانت النتيجة مفيدة؟",
@@ -974,6 +986,18 @@ export const dictionaries = {
           adults: "Adults",
           children: "Children",
           destinationStated: "Stated destination",
+          copy: {
+            questionsButton: "Copy questions",
+            summaryButton: "Copy summary",
+            questionsCopied: "Questions copied.",
+            summaryCopied: "Summary copied.",
+            failed: "Copy failed. Select the text and copy it manually.",
+            reviewedWith: "Reviewed with SafrBwai",
+            summaryTitle: "Travel offer review",
+            disclaimer:
+              "This review is an aid and does not guarantee the accuracy of the offer or the seller.",
+            brandLabel: "SafrBwai",
+          },
         },
         feedback: {
           question: "Was this result helpful?",
