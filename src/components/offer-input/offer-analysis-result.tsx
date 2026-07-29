@@ -11,9 +11,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/provider";
-import { formatNumber } from "@/lib/utils";
-import type { Locale } from "@/lib/i18n/config";
 import type { Bi } from "@/lib/offer-pipeline/types";
+import { formatNumber } from "@/lib/utils";
 import type {
   ChecklistItem,
   ChecklistStatus,
@@ -22,52 +21,37 @@ import type {
   OfferAnalysis,
 } from "@/lib/offer-pipeline/analysis/types";
 import { Card, CardContent } from "@/components/ui/card";
+import { ResultCopyAction } from "./result-actions";
+import {
+  formatResultValue,
+  localizeBi,
+} from "@/lib/result-actions/format-result-value";
 
-function bi(value: Bi, locale: Locale): string {
-  return locale === "ar" ? value.ar : value.en;
-}
-
-function formatValue(
-  value: unknown,
-  locale: Locale,
-  labels: { yes: string; no: string; adults: string; children: string; destinationStated: string }
-): string {
-  if (value === null || value === undefined) return "";
-  if (typeof value === "boolean") return value ? labels.yes : labels.no;
-  if (typeof value === "number") return formatNumber(value, locale);
-  if (typeof value === "string") return value;
-  if (typeof value === "object") {
-    const v = value as Record<string, unknown>;
-    // Destination: show the offer's own wording. A dictionary match may also
-    // show the standard name; an explicit mention is labelled as *stated*, never
-    // presented as a verified geographic match.
-    if (typeof v.value === "string" && typeof v.matchType === "string") {
-      if (v.matchType === "canonical_alias" && typeof v.canonicalValue === "string" && v.canonicalValue !== v.value) {
-        return `${v.value} (${v.canonicalValue})`;
-      }
-      return v.matchType === "explicit_mention" ? `${labels.destinationStated}: ${v.value}` : v.value;
-    }
-    if (typeof v.amount === "number" && typeof v.currency === "string") {
-      return `${formatNumber(v.amount, locale)} ${v.currency}`;
-    }
-    if (typeof v.included === "boolean") return v.included ? labels.yes : labels.no;
-    if ("adults" in v || "children" in v) {
-      const parts: string[] = [];
-      if (typeof v.adults === "number") parts.push(`${labels.adults}: ${formatNumber(v.adults, locale)}`);
-      if (typeof v.children === "number") parts.push(`${labels.children}: ${formatNumber(v.children, locale)}`);
-      return parts.join("، ");
-    }
-  }
-  return String(value);
-}
-
-function Section({ id, icon: Icon, title, children }: { id: string; icon: LucideIcon; title: string; children: React.ReactNode }) {
+function Section({
+  id,
+  icon: Icon,
+  title,
+  action,
+  children,
+}: {
+  id: string;
+  icon: LucideIcon;
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <section aria-labelledby={id}>
-      <h3 id={id} className="mb-3 flex items-center gap-2 font-display text-base font-bold text-foreground">
-        <Icon className="size-4 text-teal" aria-hidden />
-        {title}
-      </h3>
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
+        <h3
+          id={id}
+          className="flex items-center gap-2 font-display text-base font-bold text-foreground"
+        >
+          <Icon className="size-4 text-teal" aria-hidden />
+          {title}
+        </h3>
+        {action}
+      </div>
       {children}
     </section>
   );
@@ -132,9 +116,14 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
   return (
     <Card>
       <CardContent className="space-y-8 p-6 md:p-8">
-        <div>
-          <h2 className="font-display text-lg font-bold text-foreground">{r.title}</h2>
-          <p className="mt-1 text-xs text-muted-foreground">{r.note}</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="font-display text-lg font-bold text-foreground">
+              {r.title}
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">{r.note}</p>
+          </div>
+          <ResultCopyAction analysis={analysis} kind="summary" />
         </div>
 
         {/* Completeness — present / required with the counted fields */}
@@ -157,7 +146,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
                     }`}
                   >
                     <Icon className="size-3.5" aria-hidden />
-                    {label ? bi(label, locale) : f.key}
+                    {label ? localizeBi(label, locale) : f.key}
                   </li>
                 );
               })}
@@ -167,12 +156,19 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
 
         {/* Suggested questions — the most actionable output, kept near the top. */}
         {analysis.suggestedQuestions.length > 0 && (
-          <Section id="oa-questions" icon={HelpCircle} title={r.questionsTitle}>
+          <Section
+            id="oa-questions"
+            icon={HelpCircle}
+            title={r.questionsTitle}
+            action={
+              <ResultCopyAction analysis={analysis} kind="questions" />
+            }
+          >
             <ol className="space-y-2">
               {analysis.suggestedQuestions.map((q) => (
                 <li key={q.key} className="flex items-start gap-2.5 rounded-xl border border-border p-3 text-sm text-foreground">
                   <HelpCircle className="mt-0.5 size-4 shrink-0 text-teal" aria-hidden />
-                  <span>{bi(q.question, locale)}</span>
+                  <span>{localizeBi(q.question, locale)}</span>
                 </li>
               ))}
             </ol>
@@ -188,9 +184,9 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
               {analysis.confirmedFacts.map((f) => (
                 <li key={f.key} className="rounded-xl border border-border p-3">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="text-sm font-semibold text-foreground">{bi(f.label, locale)}</span>
+                    <span className="text-sm font-semibold text-foreground">{localizeBi(f.label, locale)}</span>
                     <span dir="auto" className="text-sm text-teal-700 dark:text-teal-300">
-                      {formatValue(f.value, locale, valueLabels)}
+                      {formatResultValue(f.value, locale, valueLabels)}
                     </span>
                   </div>
                   <p dir="auto" className="mt-1.5 text-xs text-muted-foreground">
@@ -214,10 +210,10 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
                   <Icon className={`mt-0.5 size-4 shrink-0 ${s.className}`} aria-hidden />
                   <div className="min-w-0">
                     <p className="text-sm text-foreground">
-                      {bi(item.label, locale)}
+                      {localizeBi(item.label, locale)}
                       <span className={`ms-2 text-xs ${s.className}`}>({statusLabel[item.status]})</span>
                     </p>
-                    <p className="text-xs text-muted-foreground">{bi(item.explanation, locale)}</p>
+                    <p className="text-xs text-muted-foreground">{localizeBi(item.explanation, locale)}</p>
                   </div>
                 </li>
               );
@@ -233,7 +229,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
             <ul className="flex flex-wrap gap-2">
               {analysis.missingFields.map((m) => (
                 <li key={m.key} className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 text-xs text-foreground">
-                  {bi(m.label, locale)}
+                  {localizeBi(m.label, locale)}
                   <span className="text-muted-foreground">· {requirementLabel[m.requirement]}</span>
                 </li>
               ))}
@@ -261,7 +257,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
                       className={`size-4 shrink-0 ${c.severity === "critical" ? "text-alarm" : "text-amber-600 dark:text-amber-400"}`}
                       aria-hidden
                     />
-                    {bi(c.message, locale)}
+                    {localizeBi(c.message, locale)}
                     <span className="text-xs text-muted-foreground">
                       ({c.severity === "critical" ? r.sevCritical : r.sevWarning})
                     </span>

@@ -28,4 +28,15 @@ describe("demo dictionary", () => {
     expect(en.thanks).toBe("Thank you. Your feedback was recorded.");
     expect(en.reasons.other).toBe("Another reason");
   });
+
+  it("keeps result-copy translations aligned in Arabic and English", () => {
+    const ar = getDictionary("ar").analyzeOffer.v2.result.copy;
+    const en = getDictionary("en").analyzeOffer.v2.result.copy;
+
+    expect(Object.keys(ar).sort()).toEqual(Object.keys(en).sort());
+    expect(ar.questionsButton).toBe("نسخ الأسئلة");
+    expect(ar.summaryButton).toBe("نسخ الملخص");
+    expect(en.questionsButton).toBe("Copy questions");
+    expect(en.summaryButton).toBe("Copy summary");
+  });
 });
