@@ -59,8 +59,12 @@ beforeAll(() => {
 });
 beforeEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllEnvs();
+});
 
 describe("OfferAnalyzer text → API integration", () => {
   it("enables the text confirm button on valid input", async () => {
@@ -83,15 +87,30 @@ describe("OfferAnalyzer text → API integration", () => {
     expect(String(fetchMock.mock.calls[0][1]?.body)).toContain('"type":"text"');
     // renders sections, no opaque score
     expect(screen.getByText(d.analyzeOffer.v2.result.completenessTitle)).toBeTruthy();
-    expect(screen.getByText(d.analyzeOffer.v2.feedback.question)).toBeTruthy();
+    expect(screen.queryByText(d.analyzeOffer.v2.feedback.question)).toBeNull();
     expect(document.body.textContent?.toLowerCase()).not.toContain("score");
   });
 
+  it("shows beta feedback only when the public flag is the literal value true", async () => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_FEEDBACK_ENABLED", "true");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(okResponse(SAMPLE_ANALYSIS)));
+    renderAnalyzer();
+    await goToReview();
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
+
+    expect(await screen.findByText(d.analyzeOffer.v2.feedback.question)).toBeTruthy();
+  });
+
   it("sends feedback without the offer text or evidence", async () => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_FEEDBACK_ENABLED", "true");
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(okResponse(SAMPLE_ANALYSIS))
-      .mockResolvedValueOnce({ ok: true, status: 200 });
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true }),
+      });
     vi.stubGlobal("fetch", fetchMock);
     renderAnalyzer();
     await goToReview();
@@ -115,10 +134,18 @@ describe("OfferAnalyzer text → API integration", () => {
   });
 
   it("keeps the analysis result visible when feedback storage fails", async () => {
+    vi.stubEnv("NEXT_PUBLIC_BETA_FEEDBACK_ENABLED", "true");
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(okResponse(SAMPLE_ANALYSIS))
-      .mockResolvedValueOnce({ ok: false, status: 500 });
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+        json: async () => ({
+          ok: false,
+          error: { code: "STORAGE_UNAVAILABLE" },
+        }),
+      });
     vi.stubGlobal("fetch", fetchMock);
     renderAnalyzer();
     await goToReview();

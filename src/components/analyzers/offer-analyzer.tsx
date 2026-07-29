@@ -25,6 +25,7 @@ import { UrlOfferInput } from "@/components/offer-input/url-offer-input";
 import { TravelOfferReview } from "@/components/offer-input/travel-offer-review";
 import { OfferAnalysisResult } from "@/components/offer-input/offer-analysis-result";
 import { BetaFeedback } from "@/components/offer-input/beta-feedback";
+import { isPublicBetaFeedbackEnabled } from "@/lib/feedback/config";
 
 type Phase = "input" | "review" | "submitting" | "success" | "error";
 type ErrorCode =
@@ -63,6 +64,7 @@ export function OfferAnalyzer() {
   const { t } = useLanguage();
   const v1 = t.analyzeOffer.v1;
   const v2 = t.analyzeOffer.v2;
+  const feedbackEnabled = isPublicBetaFeedbackEnabled();
 
   const [phase, setPhase] = React.useState<Phase>("input");
   const [method, setMethod] = React.useState<TravelOfferInputType>("text");
@@ -260,24 +262,26 @@ export function OfferAnalyzer() {
               className="space-y-6"
             >
               <OfferAnalysisResult analysis={analysis} />
-              <BetaFeedback
-                key={analysisRequestId ?? analysisSequence}
-                analysisRequestId={analysisRequestId ?? undefined}
-                sourceType="text"
-                alreadySubmitted={
-                  analysisRequestId
-                    ? feedbackSubmittedIds.has(analysisRequestId)
-                    : false
-                }
-                onSubmitted={() => {
-                  if (!analysisRequestId) return;
-                  setFeedbackSubmittedIds((current) => {
-                    const next = new Set(current);
-                    next.add(analysisRequestId);
-                    return next;
-                  });
-                }}
-              />
+              {feedbackEnabled && (
+                <BetaFeedback
+                  key={analysisRequestId ?? analysisSequence}
+                  analysisRequestId={analysisRequestId ?? undefined}
+                  sourceType="text"
+                  alreadySubmitted={
+                    analysisRequestId
+                      ? feedbackSubmittedIds.has(analysisRequestId)
+                      : false
+                  }
+                  onSubmitted={() => {
+                    if (!analysisRequestId) return;
+                    setFeedbackSubmittedIds((current) => {
+                      const next = new Set(current);
+                      next.add(analysisRequestId);
+                      return next;
+                    });
+                  }}
+                />
+              )}
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={onEdit}>
                   {v2.actions.edit}

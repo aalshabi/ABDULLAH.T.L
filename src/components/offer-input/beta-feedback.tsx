@@ -72,7 +72,8 @@ export function BetaFeedback({
         headers: { "content-type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      if (!response.ok || body?.ok !== true) {
         setStatus("error");
         return;
       }

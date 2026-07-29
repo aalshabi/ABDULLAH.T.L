@@ -10,9 +10,11 @@ SafrBwai currently has application-level Supabase configuration, but the reposit
 
 - `FeedbackStore` is the only persistence boundary used by the feedback API.
 - `InMemoryFeedbackStore` is used only in development and tests.
-- `NoopFeedbackStore` is used in production until a durable provider is approved.
+- `DisabledFeedbackStore` is used in production until a durable provider is approved.
 - No credentials or external services are introduced.
-- Production requests can exercise validation, rate limiting, and the UI without creating an unapproved durable dataset.
+- `NEXT_PUBLIC_BETA_FEEDBACK_ENABLED` and `BETA_FEEDBACK_ENABLED` default to `false`.
+- The UI is absent and the API returns `503 FEEDBACK_DISABLED` while collection is disabled.
+- A success response is returned only after a store reports `{ stored: true }`.
 
 Durable aggregation must be approved and configured before the actual closed Beta begins.
 
@@ -62,13 +64,15 @@ Persist through an existing first-party database only if it has a reviewed serve
 
 ## Recommendation
 
-Keep `NoopFeedbackStore` in production until Option A or C is explicitly approved with retention and access controls. Option A is the shortest implementation path if the existing provider is approved for this dataset. Do not add a new paid provider solely for Beta feedback without a separate decision.
+Keep `DisabledFeedbackStore` in production until Option A or C is explicitly approved with retention and access controls. Option A is the shortest implementation path if the existing provider is approved for this dataset. Do not add a new paid provider solely for Beta feedback without a separate decision.
 
 ## Operational safeguards
 
 - The API has its own rate limiter and request-body cap.
+- The server rejects feedback before reading the payload when its feature flag is disabled.
 - Only schema-approved fields reach `FeedbackStore`.
 - The caller address may be used ephemerally as a rate-limit key but is never included in the payload or stored record.
 - Error logging contains only operational metadata and never the comment.
 - Storage failure affects only feedback submission; it does not alter or remove the analysis result.
+- Disabled storage never produces a success message.
 - No offer content is sent to an external service.

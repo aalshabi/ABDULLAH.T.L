@@ -5,8 +5,8 @@ import {
   FEEDBACK_SCHEMA_VERSION,
 } from "@/lib/feedback/schema";
 import {
+  DisabledFeedbackStore,
   InMemoryFeedbackStore,
-  NoopFeedbackStore,
   createDefaultFeedbackStore,
   type FeedbackStore,
 } from "@/lib/feedback/store";
@@ -33,12 +33,17 @@ function request(body: unknown, ip = "203.0.113.10") {
   });
 }
 
-function setup(store: FeedbackStore = new InMemoryFeedbackStore(), max = 10) {
+function setup(
+  store: FeedbackStore = new InMemoryFeedbackStore(),
+  max = 10,
+  enabled = true
+) {
   return {
     store,
     handler: createFeedbackHandler({
       store,
       rateLimiter: createInMemoryRateLimiter({ max, windowMs: 60_000 }),
+      enabled,
       now: () => NOW,
     }),
   };
@@ -47,6 +52,51 @@ function setup(store: FeedbackStore = new InMemoryFeedbackStore(), max = 10) {
 afterEach(() => vi.restoreAllMocks());
 
 describe("POST /api/feedback", () => {
+  it("returns 503 FEEDBACK_DISABLED without reading or storing when the server flag is off", async () => {
+    const save = vi.fn();
+    const store: FeedbackStore = { save };
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { handler } = setup(store, 10, false);
+    const res = await handler(
+      request({
+        ...VALID_PAYLOAD,
+        comment: "PRIVATE_DISABLED_PAYLOAD",
+      })
+    );
+
+    expect(res.status).toBe(503);
+    expect(save).not.toHaveBeenCalled();
+    expect(log).not.toHaveBeenCalled();
+    const body = await res.json();
+    expect(body).toEqual({
+      ok: false,
+      schemaVersion: FEEDBACK_SCHEMA_VERSION,
+      requestId: expect.any(String),
+      error: {
+        code: "FEEDBACK_DISABLED",
+        message: {
+          ar: "استقبال الملاحظات غير مفعّل حاليًا.",
+          en: "Feedback collection is not currently enabled.",
+        },
+      },
+    });
+    expect(JSON.stringify(body)).not.toContain("شكرًا، تم تسجيل ملاحظتك.");
+  });
+
+  it("returns 503 without a success message when the store reports disabled", async () => {
+    const { handler } = setup(new DisabledFeedbackStore());
+    const res = await handler(request(VALID_PAYLOAD));
+
+    expect(res.status).toBe(503);
+    const body = await res.json();
+    expect(body.ok).toBe(false);
+    expect(body.error.code).toBe("FEEDBACK_DISABLED");
+    expect(JSON.stringify(body)).not.toContain("شكرًا، تم تسجيل ملاحظتك.");
+    expect(JSON.stringify(body)).not.toContain(
+      "Thank you. Your feedback was recorded."
+    );
+  });
+
   it("stores only the allowed privacy-safe fields with a server timestamp", async () => {
     const { store, handler } = setup();
     const res = await handler(request(VALID_PAYLOAD));
@@ -182,9 +232,24 @@ describe("POST /api/feedback", () => {
     ]);
   });
 
-  it("uses a no-op store in production and memory only outside production", () => {
+  it("reports explicit save results for disabled and in-memory stores", async () => {
+    const disabled = new DisabledFeedbackStore();
+    expect(await disabled.save({
+      ...VALID_PAYLOAD,
+      timestamp: NOW.toISOString(),
+    })).toEqual({ stored: false, reason: "disabled" });
+
+    const memory = new InMemoryFeedbackStore();
+    expect(await memory.save({
+      ...VALID_PAYLOAD,
+      timestamp: NOW.toISOString(),
+    })).toEqual({ stored: true });
+    expect(memory.getAll()).toHaveLength(1);
+  });
+
+  it("uses a disabled store in production and memory only outside production", () => {
     expect(createDefaultFeedbackStore("production")).toBeInstanceOf(
-      NoopFeedbackStore
+      DisabledFeedbackStore
     );
     expect(createDefaultFeedbackStore("development")).toBeInstanceOf(
       InMemoryFeedbackStore
