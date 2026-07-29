@@ -1,6 +1,6 @@
 # REVIEW_FIXES — مرحلة تأمين وتنظيف النسخة التجريبية
 
-**المشروع:** سافر بوعي — `aalshabi/ABDULLAH.T.L`
+**المشروع:** سافر بوعي — `aalshabi/safrbwai`
 **الفرع الأساسي:** `claude/safer-bewae-travel-platform-uijts9` (عند الـ commit `f01fc97`)
 **الفرع الجديد:** `claude/security-mvp-hardening`
 **النطاق:** تأمين + منع تضليل (P0/P1 فقط) — **بدون** بناء ذكاء اصطناعي حقيقي أو قاعدة بيانات كاملة.

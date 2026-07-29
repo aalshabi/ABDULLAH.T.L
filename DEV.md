@@ -143,7 +143,7 @@ git branch -d feature/اسم-الميزة
 
 ```bash
 # إضافة remote repository
-git remote add origin https://github.com/USERNAME/ABDULLAH.T.L.git
+git remote add origin https://github.com/aalshabi/safrbwai.git
 
 # إعادة تسمية branch الرئيسي
 git branch -M main
