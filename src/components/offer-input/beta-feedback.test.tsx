@@ -29,6 +29,22 @@ import { BetaFeedback } from "./beta-feedback";
 const ar = getDictionary("ar").analyzeOffer.v2.feedback;
 const en = getDictionary("en").analyzeOffer.v2.feedback;
 
+function apiResponse(ok: boolean, status: number) {
+  return {
+    ok,
+    status,
+    json: async () =>
+      ok
+        ? { ok: true }
+        : {
+            ok: false,
+            error: {
+              code: status === 503 ? "FEEDBACK_DISABLED" : "STORAGE_UNAVAILABLE",
+            },
+          },
+  };
+}
+
 function LocaleSetter({ locale }: { locale: Locale }) {
   const { setLocale } = useLanguage();
   React.useEffect(() => setLocale(locale), [locale, setLocale]);
@@ -62,7 +78,7 @@ describe("BetaFeedback", () => {
   });
 
   it("sends a safe helpful payload without offer text, evidence or personal data", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200 });
+    const fetchMock = vi.fn().mockResolvedValue(apiResponse(true, 200));
     vi.stubGlobal("fetch", fetchMock);
     renderFeedback();
 
@@ -102,7 +118,7 @@ describe("BetaFeedback", () => {
   });
 
   it("limits another-reason comments to 300 characters", async () => {
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200 });
+    const fetchMock = vi.fn().mockResolvedValue(apiResponse(true, 200));
     vi.stubGlobal("fetch", fetchMock);
     renderFeedback();
 
@@ -132,7 +148,7 @@ describe("BetaFeedback", () => {
     fireEvent.click(yes);
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    resolve({ ok: true, status: 200 });
+    resolve(apiResponse(true, 200));
     await screen.findByText(ar.thanks);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -144,5 +160,15 @@ describe("BetaFeedback", () => {
     fireEvent.click(await screen.findByRole("button", { name: ar.yes }));
     await waitFor(() => expect(screen.getByText(ar.error)).toBeTruthy());
     expect(document.body.textContent).not.toContain("offline details");
+  });
+
+  it("does not show success when storage is disabled", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(apiResponse(false, 503)));
+    renderFeedback();
+
+    fireEvent.click(await screen.findByRole("button", { name: ar.yes }));
+    await screen.findByText(ar.error);
+
+    expect(screen.queryByText(ar.thanks)).toBeNull();
   });
 });

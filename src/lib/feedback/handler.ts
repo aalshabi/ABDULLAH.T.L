@@ -14,6 +14,7 @@ type FeedbackErrorCode =
   | "BAD_REQUEST"
   | "PAYLOAD_TOO_LARGE"
   | "RATE_LIMIT_EXCEEDED"
+  | "FEEDBACK_DISABLED"
   | "STORAGE_UNAVAILABLE"
   | "INTERNAL_ERROR";
 
@@ -33,6 +34,10 @@ const MESSAGES = {
   rateLimited: {
     ar: "تم إرسال ملاحظات كثيرة خلال وقت قصير. حاول لاحقًا.",
     en: "Too many feedback requests were sent. Try again later.",
+  },
+  disabled: {
+    ar: "استقبال الملاحظات غير مفعّل حاليًا.",
+    en: "Feedback collection is not currently enabled.",
   },
   unavailable: {
     ar: "تعذّر تسجيل الملاحظة الآن. حاول مرة أخرى لاحقًا.",
@@ -136,18 +141,27 @@ async function readLimitedBody(
 interface FeedbackHandlerDependencies {
   store: FeedbackStore;
   rateLimiter: RateLimiter;
+  enabled?: boolean;
   now?: () => Date;
 }
 
 export function createFeedbackHandler({
   store,
   rateLimiter,
+  enabled = false,
   now = () => new Date(),
 }: FeedbackHandlerDependencies) {
   return async function handleFeedback(request: Request): Promise<Response> {
     const requestId = randomUUID();
     const startedAt = Date.now();
     try {
+      if (!enabled) {
+        return json(
+          error(requestId, "FEEDBACK_DISABLED", MESSAGES.disabled),
+          503
+        );
+      }
+
       const rate = rateLimiter.check(clientKey(request));
       if (!rate.allowed) {
         return json(
@@ -184,7 +198,13 @@ export function createFeedbackHandler({
       };
 
       try {
-        await store.save(record);
+        const result = await store.save(record);
+        if (!result.stored) {
+          return json(
+            error(requestId, "FEEDBACK_DISABLED", MESSAGES.disabled),
+            503
+          );
+        }
       } catch {
         logFeedbackServerError({
           requestId,
