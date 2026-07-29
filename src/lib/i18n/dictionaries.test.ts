@@ -16,4 +16,16 @@ describe("demo dictionary", () => {
     expect(getDictionary("ar").demo.unavailable).toContain("غير متاح");
     expect(getDictionary("en").demo.unavailable).toContain("Not available");
   });
+
+  it("exposes beta feedback messages and reasons in both languages", () => {
+    const ar = getDictionary("ar").analyzeOffer.v2.feedback;
+    const en = getDictionary("en").analyzeOffer.v2.feedback;
+
+    expect(ar.question).toBe("هل كانت النتيجة مفيدة؟");
+    expect(ar.thanks).toBe("شكرًا، تم تسجيل ملاحظتك.");
+    expect(ar.reasons.other).toBe("سبب آخر");
+    expect(en.question).toBe("Was this result helpful?");
+    expect(en.thanks).toBe("Thank you. Your feedback was recorded.");
+    expect(en.reasons.other).toBe("Another reason");
+  });
 });

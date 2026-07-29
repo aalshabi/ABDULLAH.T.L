@@ -83,7 +83,53 @@ describe("OfferAnalyzer text → API integration", () => {
     expect(String(fetchMock.mock.calls[0][1]?.body)).toContain('"type":"text"');
     // renders sections, no opaque score
     expect(screen.getByText(d.analyzeOffer.v2.result.completenessTitle)).toBeTruthy();
+    expect(screen.getByText(d.analyzeOffer.v2.feedback.question)).toBeTruthy();
     expect(document.body.textContent?.toLowerCase()).not.toContain("score");
+  });
+
+  it("sends feedback without the offer text or evidence", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(okResponse(SAMPLE_ANALYSIS))
+      .mockResolvedValueOnce({ ok: true, status: 200 });
+    vi.stubGlobal("fetch", fetchMock);
+    renderAnalyzer();
+    await goToReview();
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
+
+    await screen.findByText(d.analyzeOffer.v2.feedback.question);
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v2.feedback.yes }));
+    await screen.findByText(d.analyzeOffer.v2.feedback.thanks);
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const feedbackPayload = String(fetchMock.mock.calls[1][1]?.body);
+    expect(feedbackPayload).not.toContain(VALID_TEXT);
+    expect(feedbackPayload).not.toContain("٥ ليالٍ");
+    expect(JSON.parse(feedbackPayload)).toEqual({
+      requestId: "srv-1",
+      feedback: "helpful",
+      locale: "ar",
+      sourceType: "text",
+      schemaVersion: "1.0",
+    });
+  });
+
+  it("keeps the analysis result visible when feedback storage fails", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(okResponse(SAMPLE_ANALYSIS))
+      .mockResolvedValueOnce({ ok: false, status: 500 });
+    vi.stubGlobal("fetch", fetchMock);
+    renderAnalyzer();
+    await goToReview();
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
+
+    await screen.findByText(d.analyzeOffer.v2.feedback.question);
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v2.feedback.yes }));
+    await screen.findByText(d.analyzeOffer.v2.feedback.error);
+
+    expect(screen.getByText(d.analyzeOffer.v2.result.title)).toBeTruthy();
+    expect(screen.getByText(d.analyzeOffer.v2.result.confirmedTitle)).toBeTruthy();
   });
 
   it("shows a loading state and prevents duplicate submissions", async () => {

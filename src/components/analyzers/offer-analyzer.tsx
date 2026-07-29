@@ -24,6 +24,7 @@ import { ImageOfferInput } from "@/components/offer-input/image-offer-input";
 import { UrlOfferInput } from "@/components/offer-input/url-offer-input";
 import { TravelOfferReview } from "@/components/offer-input/travel-offer-review";
 import { OfferAnalysisResult } from "@/components/offer-input/offer-analysis-result";
+import { BetaFeedback } from "@/components/offer-input/beta-feedback";
 
 type Phase = "input" | "review" | "submitting" | "success" | "error";
 type ErrorCode =
@@ -73,6 +74,11 @@ export function OfferAnalyzer() {
   const [submitted, setSubmitted] = React.useState<TravelOfferInput | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [analysis, setAnalysis] = React.useState<OfferAnalysis | null>(null);
+  const [analysisRequestId, setAnalysisRequestId] = React.useState<string | null>(null);
+  const [analysisSequence, setAnalysisSequence] = React.useState(0);
+  const [feedbackSubmittedIds, setFeedbackSubmittedIds] = React.useState<ReadonlySet<string>>(
+    () => new Set()
+  );
   const [errorCode, setErrorCode] = React.useState<ErrorCode | null>(null);
   const [cooldown, setCooldown] = React.useState(0);
   const resultRef = React.useRef<HTMLDivElement>(null);
@@ -152,6 +158,8 @@ export function OfferAnalyzer() {
       const body = await res.json().catch(() => null);
       if (res.ok && body?.ok) {
         setAnalysis(body.data.analysis as OfferAnalysis);
+        setAnalysisRequestId(typeof body.requestId === "string" ? body.requestId : null);
+        setAnalysisSequence((current) => current + 1);
         setPhase("success");
         scrollToResult();
       } else {
@@ -172,6 +180,7 @@ export function OfferAnalyzer() {
     clearMethod(method);
     setSubmitted(null);
     setAnalysis(null);
+    setAnalysisRequestId(null);
     setErrorCode(null);
     setPhase("input");
   }
@@ -251,6 +260,24 @@ export function OfferAnalyzer() {
               className="space-y-6"
             >
               <OfferAnalysisResult analysis={analysis} />
+              <BetaFeedback
+                key={analysisRequestId ?? analysisSequence}
+                analysisRequestId={analysisRequestId ?? undefined}
+                sourceType="text"
+                alreadySubmitted={
+                  analysisRequestId
+                    ? feedbackSubmittedIds.has(analysisRequestId)
+                    : false
+                }
+                onSubmitted={() => {
+                  if (!analysisRequestId) return;
+                  setFeedbackSubmittedIds((current) => {
+                    const next = new Set(current);
+                    next.add(analysisRequestId);
+                    return next;
+                  });
+                }}
+              />
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={onEdit}>
                   {v2.actions.edit}
