@@ -308,7 +308,7 @@ export const dictionaries = {
       v1: {
         title: "حلّل عرض سفرك",
         subtitle:
-          "ألصق تفاصيل العرض، أو ارفع الملف أو الصورة، أو أدخل الرابط. سنرتب المعلومات ونوضح لك النقاط التي تحتاج إلى مراجعتها قبل الحجز.",
+          "ألصق نص عرض السفر. سنرتب المعلومات ونوضح لك النقاط التي تحتاج إلى مراجعتها قبل الحجز.",
         methods: {
           text: "نص",
           pdf: "ملف PDF",
@@ -385,6 +385,16 @@ export const dictionaries = {
       },
       v2: {
         comingSoon: "قريبًا — هذا المصدر غير مفعّل بعد. المتاح الآن هو تحليل النص فقط.",
+        unsupportedInputLabel: "قريبًا",
+        closedBeta: {
+          title: "نسخة تجريبية محدودة",
+          supportedSources:
+            "تحليل النص متاح حاليًا. ملفات PDF والصور والروابط غير مدعومة بعد.",
+          safetyNotice:
+            "سافر بوعي يساعدك على مراجعة المعلومات المذكورة في العرض، لكنه لا يتحقق من هوية البائع ولا يضمن صحة العرض. لا تُدخل بيانات شخصية أو معلومات دفع.",
+          privacyLink: "سياسة الخصوصية",
+          termsLink: "الشروط والأحكام",
+        },
         loading: "جارٍ تحليل العرض…",
         srSubmitting: "جارٍ تحليل العرض، الرجاء الانتظار.",
         srSuccess: "اكتمل تحليل العرض.",
@@ -467,6 +477,10 @@ export const dictionaries = {
           network: "تعذّر الاتصال بالخادم. تحقّق من اتصالك وحاول مجددًا.",
           rateLimited: "تم إرسال طلبات كثيرة خلال وقت قصير. حاول مرة أخرى بعد دقيقة.",
           rateLimitedRetryIn: "يمكنك المحاولة بعد {n} ثانية.",
+          requestIdLabel: "رقم الطلب",
+          copyRequestId: "نسخ رقم الطلب",
+          requestIdCopied: "تم نسخ رقم الطلب.",
+          requestIdCopyFailed: "تعذّر نسخ رقم الطلب.",
         },
       },
     },
@@ -878,7 +892,7 @@ export const dictionaries = {
       v1: {
         title: "Analyze your travel offer",
         subtitle:
-          "Paste the offer details, upload the file or image, or enter the link. We'll organize the information and show you the points to review before booking.",
+          "Paste the travel offer text. We'll organize the information and show you the points to review before booking.",
         methods: {
           text: "Text",
           pdf: "PDF file",
@@ -954,6 +968,16 @@ export const dictionaries = {
       },
       v2: {
         comingSoon: "Coming soon — this source is not enabled yet. Only text analysis is available now.",
+        unsupportedInputLabel: "Coming soon",
+        closedBeta: {
+          title: "Limited Beta",
+          supportedSources:
+            "Text analysis is currently available. PDF files, images, and links are not supported yet.",
+          safetyNotice:
+            "SafrBwai helps you review the information stated in an offer. It does not verify the seller or guarantee the offer’s accuracy. Do not enter personal or payment information.",
+          privacyLink: "Privacy Policy",
+          termsLink: "Terms",
+        },
         loading: "Analyzing your offer…",
         srSubmitting: "Analyzing your offer, please wait.",
         srSuccess: "Offer analysis complete.",
@@ -1036,6 +1060,10 @@ export const dictionaries = {
           network: "Could not reach the server. Check your connection and try again.",
           rateLimited: "Too many requests were sent in a short time. Try again in one minute.",
           rateLimitedRetryIn: "You can try again in {n} seconds.",
+          requestIdLabel: "Request ID",
+          copyRequestId: "Copy request ID",
+          requestIdCopied: "Request ID copied.",
+          requestIdCopyFailed: "Could not copy the request ID.",
         },
       },
     },

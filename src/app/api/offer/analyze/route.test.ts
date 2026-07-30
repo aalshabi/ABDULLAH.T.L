@@ -3,6 +3,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { POST } from "./route";
 import { offerRateLimiter, OFFER_RATE_LIMIT_MAX } from "@/lib/offer-pipeline/api/rate-limit";
+import {
+  APPLICATION_RESPONSE_HEADER,
+  APPLICATION_RESPONSE_MARKER,
+} from "@/lib/offer-pipeline/api/constants";
 
 const URL = "http://localhost/api/offer/analyze";
 const VALID_TEXT = "عرض إلى دبي ٥ ليالٍ لشخصين شامل الإفطار، السعر ٣٢٠٠ ر.س";
@@ -22,6 +26,7 @@ describe("POST /api/offer/analyze", () => {
     const res = await POST(post({ type: "text", text: "عرض إلى دبي ٥ ليالٍ لشخصين شامل الإفطار، السعر ٣٢٠٠ ر.س" }));
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
+    expect(res.headers.get(APPLICATION_RESPONSE_HEADER)).toBe(APPLICATION_RESPONSE_MARKER);
     const body = await res.json();
     expect(body.ok).toBe(true);
     expect(body.schemaVersion).toBe("1.0");
@@ -74,6 +79,7 @@ describe("POST /api/offer/analyze", () => {
   it("every response carries schemaVersion, requestId and no-store", async () => {
     const res = await POST(post({ type: "pdf" }));
     expect(res.headers.get("cache-control")).toBe("no-store");
+    expect(res.headers.get(APPLICATION_RESPONSE_HEADER)).toBe(APPLICATION_RESPONSE_MARKER);
     const body = await res.json();
     expect(body.schemaVersion).toBe("1.0");
     expect(typeof body.requestId).toBe("string");

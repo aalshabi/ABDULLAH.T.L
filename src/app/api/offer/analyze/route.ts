@@ -18,6 +18,10 @@ import { validateRequest } from "@/lib/offer-pipeline/api/validate-request";
 import { buildErrorBody, outcomeToHttp, type HttpPayload } from "@/lib/offer-pipeline/api/response";
 import { offerRateLimiter } from "@/lib/offer-pipeline/api/rate-limit";
 import { logServerError } from "@/lib/offer-pipeline/api/logging";
+import {
+  APPLICATION_RESPONSE_HEADER,
+  APPLICATION_RESPONSE_MARKER,
+} from "@/lib/offer-pipeline/api/constants";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -28,6 +32,7 @@ function json(payload: HttpPayload): Response {
     headers: {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
+      [APPLICATION_RESPONSE_HEADER]: APPLICATION_RESPONSE_MARKER,
       ...(payload.headers ?? {}),
     },
   });

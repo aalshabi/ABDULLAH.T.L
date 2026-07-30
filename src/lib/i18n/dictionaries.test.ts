@@ -1,6 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { getDictionary } from "./dictionaries";
 
+function dictionaryKeyPaths(value: unknown, prefix = ""): string[] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+
+  return Object.entries(value as Record<string, unknown>).flatMap(([key, child]) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+    return [path, ...dictionaryKeyPaths(child, path)];
+  });
+}
+
 describe("demo dictionary", () => {
   it("exposes the exact demo badge in both languages", () => {
     expect(getDictionary("ar").demo.badge).toContain("نسخة تجريبية");
@@ -38,5 +47,26 @@ describe("demo dictionary", () => {
     expect(ar.summaryButton).toBe("نسخ الملخص");
     expect(en.questionsButton).toBe("Copy questions");
     expect(en.summaryButton).toBe("Copy summary");
+  });
+
+  it("keeps every Arabic and English dictionary key aligned", () => {
+    const arKeys = dictionaryKeyPaths(getDictionary("ar")).sort();
+    const enKeys = dictionaryKeyPaths(getDictionary("en")).sort();
+
+    expect(arKeys).toEqual(enKeys);
+  });
+
+  it("exposes the closed beta scope and safety copy in both languages", () => {
+    const ar = getDictionary("ar").analyzeOffer.v2.closedBeta;
+    const en = getDictionary("en").analyzeOffer.v2.closedBeta;
+
+    expect(ar.title).toBe("نسخة تجريبية محدودة");
+    expect(ar.supportedSources).toBe(
+      "تحليل النص متاح حاليًا. ملفات PDF والصور والروابط غير مدعومة بعد."
+    );
+    expect(en.title).toBe("Limited Beta");
+    expect(en.supportedSources).toBe(
+      "Text analysis is currently available. PDF files, images, and links are not supported yet."
+    );
   });
 });

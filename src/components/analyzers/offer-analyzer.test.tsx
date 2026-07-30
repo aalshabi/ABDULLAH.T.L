@@ -2,10 +2,14 @@ import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from "vite
 import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
 import { LanguageProvider } from "@/lib/i18n/provider";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { copyText } from "@/lib/clipboard/copy-text";
 import type { OfferAnalysis } from "@/lib/offer-pipeline/analysis/types";
 import { OfferAnalyzer } from "./offer-analyzer";
 
+vi.mock("@/lib/clipboard/copy-text", () => ({ copyText: vi.fn() }));
+
 const d = getDictionary("ar");
+const copyTextMock = vi.mocked(copyText);
 const VALID_TEXT = "عرض إلى دبي خمس ليالٍ لشخصين شامل الإفطار، السعر ٣٢٠٠ ر.س، التأشيرة غير مشمولة.";
 
 const SAMPLE_ANALYSIS: OfferAnalysis = {
@@ -27,7 +31,17 @@ function okResponse(analysis: OfferAnalysis) {
   };
 }
 function errResponse(status: number) {
-  return { ok: false, status, json: async () => ({ ok: false, schemaVersion: "1.0", requestId: "srv-1", error: { code: "X" } }) };
+  return {
+    ok: false,
+    status,
+    headers: { get: (name: string) => name === "x-safrbwai-application-response" ? "1" : null },
+    json: async () => ({
+      ok: false,
+      schemaVersion: "1.0",
+      requestId: "srv-1",
+      error: { code: "INTERNAL_ERROR" },
+    }),
+  };
 }
 // A 429 may originate at an edge WAF before the app, so its body is arbitrary
 // and must never be surfaced. This marker asserts we ignore it.
@@ -60,6 +74,8 @@ beforeAll(() => {
 beforeEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
+  copyTextMock.mockReset();
+  copyTextMock.mockResolvedValue({ copied: true, method: "clipboard" });
 });
 afterEach(() => {
   cleanup();
@@ -67,6 +83,21 @@ afterEach(() => {
 });
 
 describe("OfferAnalyzer text → API integration", () => {
+  it("uses a safe mobile top margin and scopes overlap to larger screens", () => {
+    renderAnalyzer();
+
+    const betaHeading = screen.getByRole("heading", {
+      name: d.analyzeOffer.v2.closedBeta.title,
+    });
+    const layoutContainer = betaHeading.closest(".container");
+    const classTokens = layoutContainer?.className.split(/\s+/) ?? [];
+
+    expect(layoutContainer).not.toBeNull();
+    expect(classTokens).toContain("mt-4");
+    expect(classTokens).toContain("sm:-mt-4");
+    expect(classTokens.some((token) => /^-mt-/.test(token))).toBe(false);
+  });
+
   it("enables the text confirm button on valid input", async () => {
     renderAnalyzer();
     await goToReview();
@@ -88,6 +119,7 @@ describe("OfferAnalyzer text → API integration", () => {
     // renders sections, no opaque score
     expect(screen.getByText(d.analyzeOffer.v2.result.completenessTitle)).toBeTruthy();
     expect(screen.queryByText(d.analyzeOffer.v2.feedback.question)).toBeNull();
+    expect(screen.queryByText(d.analyzeOffer.v2.errors.requestIdLabel)).toBeNull();
     expect(document.body.textContent?.toLowerCase()).not.toContain("score");
   });
 
@@ -200,6 +232,94 @@ describe("OfferAnalyzer text → API integration", () => {
     await waitFor(() => expect(screen.getByText(d.analyzeOffer.v2.errors.server)).toBeTruthy());
   });
 
+  it("shows an application error request ID and copies it without a network request", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(errResponse(500));
+    vi.stubGlobal("fetch", fetchMock);
+    renderAnalyzer();
+    await goToReview();
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
+
+    await screen.findByText(d.analyzeOffer.v2.errors.requestIdLabel);
+    expect(screen.getByText("srv-1")).toBeTruthy();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: d.analyzeOffer.v2.errors.copyRequestId })
+    );
+
+    await waitFor(() => expect(copyTextMock).toHaveBeenCalledWith("srv-1"));
+    expect(screen.getByText(d.analyzeOffer.v2.errors.requestIdCopied)).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not show a request ID when the application error response has none", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      headers: { get: (name: string) => name === "x-safrbwai-application-response" ? "1" : null },
+      json: async () => ({
+        ok: false,
+        schemaVersion: "1.0",
+        error: { code: "INTERNAL_ERROR" },
+      }),
+    }));
+    renderAnalyzer();
+    await goToReview();
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
+
+    await screen.findByText(d.analyzeOffer.v2.errors.server);
+    expect(screen.queryByText(d.analyzeOffer.v2.errors.requestIdLabel)).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: d.analyzeOffer.v2.errors.copyRequestId })
+    ).toBeNull();
+  });
+
+  it("never surfaces a raw application stack or response body", async () => {
+    const rawMarker = "RAW_STACK_AND_RESPONSE_MARKER";
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      headers: { get: (name: string) => name === "x-safrbwai-application-response" ? "1" : null },
+      json: async () => ({
+        ok: false,
+        schemaVersion: "1.0",
+        requestId: "safe-id-2",
+        error: {
+          code: "INTERNAL_ERROR",
+          message: rawMarker,
+          stack: `Error: ${rawMarker}`,
+        },
+      }),
+    }));
+    renderAnalyzer();
+    await goToReview();
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
+
+    await screen.findByText(d.analyzeOffer.v2.errors.server);
+    expect(screen.getByText("safe-id-2")).toBeTruthy();
+    expect(document.body.textContent).not.toContain(rawMarker);
+  });
+
+  it("does not derive a request ID from an unmarked edge response", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      headers: { get: () => null },
+      json: async () => ({
+        ok: false,
+        schemaVersion: "1.0",
+        requestId: "edge-generated-id",
+        error: { code: "INTERNAL_ERROR" },
+      }),
+    }));
+    renderAnalyzer();
+    await goToReview();
+    fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
+
+    await screen.findByText(d.analyzeOffer.v2.errors.server);
+    expect(screen.queryByText("edge-generated-id")).toBeNull();
+    expect(screen.queryByText(d.analyzeOffer.v2.errors.requestIdLabel)).toBeNull();
+  });
+
   it("maps a network failure to the network error and offers retry", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline")));
     renderAnalyzer();
@@ -226,6 +346,7 @@ describe("OfferAnalyzer text → API integration", () => {
     fireEvent.click(screen.getByRole("button", { name: d.analyzeOffer.v1.review.confirmSend }));
     await waitFor(() => screen.getByText(d.analyzeOffer.v2.errors.rateLimited));
     expect(document.body.textContent).not.toContain(WAF_MARKER);
+    expect(screen.queryByText(d.analyzeOffer.v2.errors.requestIdLabel)).toBeNull();
   });
 
   // (Task 1.2) a 60s cooldown blocks resubmission with NO auto-retry

@@ -18,3 +18,7 @@ export const MAX_BODY_BYTES = 100_000;
 
 /** The one Content-Type the endpoint accepts. */
 export const REQUIRED_CONTENT_TYPE = "application/json";
+
+/** Marks responses produced by the application route, not a generic edge response. */
+export const APPLICATION_RESPONSE_HEADER = "x-safrbwai-application-response";
+export const APPLICATION_RESPONSE_MARKER = "1";
