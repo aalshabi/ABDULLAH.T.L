@@ -9,14 +9,16 @@ const FIXTURES: readonly RegressionFixture[] = Object.freeze([
   ...ENGLISH_REGRESSION_FIXTURES,
 ]);
 
+type RegressionExpectationName = keyof RegressionFixture["expectations"];
+
 /**
- * Expectations in these fixtures are intentionally not weakened. Each listed
- * expectation is exercised by an expected-failure test until a separate engine
- * PR resolves the documented gap.
+ * Expectations in these fixtures are intentionally not weakened. Any future
+ * entry must name an existing fixture expectation and is exercised by an
+ * expected-failure test until a separate engine PR resolves the gap.
  */
-export const KNOWN_REGRESSION_GAPS = Object.freeze({
-  "ar-conflicting-nights": ["mustDetectContradictions"],
-} as const);
+export const KNOWN_REGRESSION_GAPS: Readonly<
+  Record<string, readonly RegressionExpectationName[]>
+> = Object.freeze({});
 
 export function loadRegressionFixtures(): readonly RegressionFixture[] {
   return FIXTURES;
