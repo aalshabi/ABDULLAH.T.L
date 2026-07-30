@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "سافر بوعي — Safer Bewae",
+    name: "سافر بوعي — SafrBwai",
     short_name: "سافر بوعي",
     description: "منصة الذكاء الاصطناعي التي تكشف خدع السفر قبل أن تدفع.",
     start_url: "/",

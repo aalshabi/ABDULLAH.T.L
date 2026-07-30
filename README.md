@@ -1,4 +1,4 @@
-# سافر بوعي — Safer Bewae
+# سافر بوعي — SafrBwai
 
 **منصة الذكاء الاصطناعي التي تكشف خدع السفر قبل أن تدفع.**
 _An AI travel-intelligence platform that exposes hotel, destination and travel-offer tricks before you pay._
@@ -105,4 +105,4 @@ UI needs no changes.
 
 ---
 
-© 2026 سافر بوعي · Safer Bewae — Abdullah Travel Lab
+© 2026 سافر بوعي · SafrBwai — Abdullah Travel Lab

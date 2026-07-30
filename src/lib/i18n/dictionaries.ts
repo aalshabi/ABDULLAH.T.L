@@ -591,12 +591,12 @@ export const dictionaries = {
 
   en: {
     meta: {
-      title: "Safer Bewae — Understand your travel decision before you pay",
+      title: "SafrBwai — Understand your travel decision before you pay",
       description:
-        "Safer Bewae is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+        "SafrBwai is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
     },
     brand: {
-      name: "Safer Bewae",
+      name: "SafrBwai",
       tagline: "Understand your travel decision before you pay.",
     },
     nav: {
@@ -647,13 +647,13 @@ export const dictionaries = {
       badge: "Experimental project — under development",
       title: "Understand your travel decision before you pay.",
       subtitle:
-        "Safer Bewae is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+        "SafrBwai is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
       ctaPrimary: "Try the interface",
       ctaSecondary: "See how it will work",
       trustLine: "The current version demonstrates the product experience while real verification tools are still under development.",
     },
     benefits: {
-      title: "Why Safer Bewae?",
+      title: "Why SafrBwai?",
       subtitle: "The idea we're building: helping you reach a clearer travel decision before booking.",
       clearer: "A clearer decision",
       gaps: "Missing points surfaced",
@@ -710,7 +710,7 @@ export const dictionaries = {
       ],
     },
     cta: {
-      title: "Follow Safer Bewae as it develops",
+      title: "Follow SafrBwai as it develops",
       subtitle: "An experimental project under development — try the interface now and be among the first to use the real tools once they're ready.",
       button: "Create your account",
     },
@@ -1153,7 +1153,7 @@ export const dictionaries = {
     auth: {
       signInTitle: "Sign in",
       signUpTitle: "Create account",
-      signInSubtitle: "Welcome back to Safer Bewae.",
+      signInSubtitle: "Welcome back to SafrBwai.",
       signUpSubtitle: "Start your journey toward conscious travel.",
       email: "Email",
       password: "Password",

@@ -25,14 +25,14 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "سافر بوعي — Safer Bewae | قبل لا تدفع، افهم قرار سفرك",
+    default: "سافر بوعي — SafrBwai | قبل لا تدفع، افهم قرار سفرك",
     template: "%s | سافر بوعي",
   },
   description:
-    "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز. Safer Bewae is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+    "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز. SafrBwai is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
   keywords: [
     "سافر بوعي",
-    "Safer Bewae",
+    "SafrBwai",
     "مراجعة الفنادق",
     "قرار السفر",
     "مقارنة الفنادق",
@@ -47,14 +47,14 @@ export const metadata: Metadata = {
     locale: "ar_SA",
     alternateLocale: "en_US",
     url: SITE_URL,
-    title: "سافر بوعي — Safer Bewae",
+    title: "سافر بوعي — SafrBwai",
     description:
       "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
-    siteName: "Safer Bewae",
+    siteName: "SafrBwai",
   },
   twitter: {
     card: "summary_large_image",
-    title: "سافر بوعي — Safer Bewae",
+    title: "سافر بوعي — SafrBwai",
     description:
       "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
   },

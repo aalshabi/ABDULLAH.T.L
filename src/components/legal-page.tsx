@@ -31,7 +31,7 @@ const CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
       { h: "وسيلة التواصل", p: "لأي استفسار حول الخصوصية أو لطلب حذف بياناتك، تواصل معنا عبر قنوات التواصل المعلنة في المنصة." },
     ],
     en: [
-      { h: "Experimental product", p: "Safer Bewae is an experimental platform under development. The results shown are generated to demonstrate the user experience and are not currently based on real data or external sources." },
+      { h: "Experimental product", p: "SafrBwai is an experimental platform under development. The results shown are generated to demonstrate the user experience and are not currently based on real data or external sources." },
       { h: "Account data", p: "When you sign up we may process your email, name and account ID via our authentication provider (Supabase) to create your account and secure sign-in." },
       { h: "Files you upload", p: "You may upload files (PDF or images) for demonstration. In the current version the system does not read file content or perform extraction; files stay in your browser and are not uploaded to our servers." },
       { h: "Analyses", p: "Your analysis history is currently stored locally in your browser (Local Storage) and is temporary; it will be linked to your account once the database is enabled." },
@@ -54,9 +54,9 @@ const CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
       { h: "التواصل", p: "لأي استفسار حول الشروط، تواصل معنا عبر القنوات المعلنة في المنصة." },
     ],
     en: [
-      { h: "Nature of the service", p: "Safer Bewae is an advisory and educational tool to help you think before booking. The current content is experimental and does not constitute final advice or a guarantee." },
+      { h: "Nature of the service", p: "SafrBwai is an advisory and educational tool to help you think before booking. The current content is experimental and does not constitute final advice or a guarantee." },
       { h: "No price or availability guarantee", p: "We do not guarantee the accuracy of any price, availability or policy. Results are advisory and may change; verify with the official source before any financial commitment." },
-      { h: "Relationship with Sky Global Holidays", p: "Safer Bewae is a neutral analysis party; when you wish to book we may refer you to Sky Global Holidays as a separate fulfillment party. This does not affect analysis neutrality, and any booking is subject to that party's terms." },
+      { h: "Relationship with Sky Global Holidays", p: "SafrBwai is a neutral analysis party; when you wish to book we may refer you to Sky Global Holidays as a separate fulfillment party. This does not affect analysis neutrality, and any booking is subject to that party's terms." },
       { h: "Acceptable use", p: "You agree not to misuse the platform, upload unlawful or harmful content, or infringe others' rights." },
       { h: "Intellectual property", p: "All platform rights, design and content are reserved and may not be reused without permission." },
       { h: "Limitation of liability", p: "The service is provided \"as is\" without warranties. We are not liable for any travel decision or loss arising from reliance on the experimental results." },

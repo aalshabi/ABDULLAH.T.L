@@ -9,7 +9,7 @@ import { CTA } from "@/components/home/cta";
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Safer Bewae — سافر بوعي",
+  name: "SafrBwai — سافر بوعي",
   description:
     "An experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
   inLanguage: ["ar", "en"],
