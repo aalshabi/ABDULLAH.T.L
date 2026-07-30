@@ -25,15 +25,23 @@ export function extractFactsFromText(
   const facts: ExtractedOfferFacts = {};
   const warnings: Bi[] = [];
   const prices: NonNullable<OfferObservations["prices"]> = [];
+  const currencies: NonNullable<OfferObservations["currencies"]> = [];
 
   for (const rule of registry.list()) {
     const result = rule.apply(text);
     Object.assign(facts, result.facts);
     warnings.push(...result.warnings);
     prices.push(...(result.observations?.prices ?? []));
+    currencies.push(...(result.observations?.currencies ?? []));
   }
 
-  const observations = prices.length > 0 ? { prices } : undefined;
+  const observations =
+    prices.length > 0 || currencies.length > 0
+      ? {
+          ...(prices.length > 0 ? { prices } : {}),
+          ...(currencies.length > 0 ? { currencies } : {}),
+        }
+      : undefined;
   return { facts, warnings, observations };
 }
 

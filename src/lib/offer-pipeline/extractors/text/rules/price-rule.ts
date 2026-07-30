@@ -18,6 +18,9 @@ import {
 
 const AMOUNT_THEN_CURRENCY = new RegExp(`(${AMOUNT_PATTERN})\\s*(${CURRENCY_ALT})`, "gi");
 const CURRENCY_THEN_AMOUNT = new RegExp(`(${CURRENCY_ALT})\\s*(${AMOUNT_PATTERN})`, "gi");
+const FINAL_PRICE_LABEL =
+  /(?:السعر\s+(?:النهائي|الإجمالي)|(?:final|total)\s+price)\s*[:：\-–—]?\s*$/i;
+const CLAUSE_BOUNDARY = /[،,؛;.!?\n]/;
 
 type PriceObservation = NonNullable<OfferObservations["prices"]>[number];
 
@@ -51,16 +54,30 @@ function collectMatches(
   return matches;
 }
 
+function hasFinalPriceContext(text: string, matchIndex: number): boolean {
+  const clausePrefix = text
+    .slice(0, matchIndex)
+    .split(CLAUSE_BOUNDARY)
+    .at(-1);
+  return FINAL_PRICE_LABEL.test(clausePrefix ?? "");
+}
+
 /**
- * Collect every complete price supported by the existing adjacency patterns.
- * Values are canonicalized before deduplication and source order is preserved.
+ * Collect final/total prices when they are explicitly labelled. Without such a
+ * label, preserve the existing single-price extraction fallback. This avoids
+ * treating itemized hotel, flight, or fee amounts as competing final prices.
  */
 export function extractPriceObservations(text: string): PriceObservation[] {
   const normalizedText = toWesternDigits(text);
-  const matches = [
+  const allMatches = [
     ...collectMatches(normalizedText, text, AMOUNT_THEN_CURRENCY, 1, 2),
     ...collectMatches(normalizedText, text, CURRENCY_THEN_AMOUNT, 2, 1),
   ].sort((left, right) => left.index - right.index);
+  const finalPriceMatches = allMatches.filter((match) =>
+    hasFinalPriceContext(normalizedText, match.index)
+  );
+  const matches =
+    finalPriceMatches.length > 0 ? finalPriceMatches : allMatches.slice(0, 1);
 
   const seen = new Set<string>();
   const observations: PriceObservation[] = [];
@@ -84,7 +101,13 @@ export const priceRule: ExtractionRule = {
     return {
       facts: { price: exact(value, first.evidence) },
       warnings: [],
-      observations: { prices },
+      observations: {
+        prices,
+        currencies: prices.map((price) => ({
+          code: price.currency,
+          evidence: price.evidence,
+        })),
+      },
     };
   },
 };

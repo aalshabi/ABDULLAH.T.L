@@ -77,4 +77,65 @@ describe("multiple final price observations", () => {
       )
     ).toHaveLength(1);
   });
+
+  it("does not treat itemized hotel and flight costs as conflicting final prices", async () => {
+    const text =
+      "الفندق 2000 ريال، والطيران 1200 ريال، والسعر الإجمالي 3200 ريال.";
+    const extracted = extractFactsFromText(text);
+    const outcome = await runOfferPipeline({ type: "text", text });
+
+    expect(extracted.observations?.prices).toEqual([
+      { amount: 3200, currency: "SAR", evidence: "3200 ريال" },
+    ]);
+    expect(outcome.status).toBe("ok");
+    if (outcome.status !== "ok") return;
+    expect(outcome.extraction.facts.price?.value).toEqual({
+      amount: 3200,
+      currency: "SAR",
+    });
+    expect(outcome.analysis.contradictions).not.toContainEqual(
+      expect.objectContaining({ code: "multiple_prices" })
+    );
+  });
+
+  it("reports conflicting currency for equal final amounts in different currencies", async () => {
+    const text =
+      "السعر النهائي 3200 ريال، والسعر النهائي 3200 دولار.";
+    const extracted = extractFactsFromText(text);
+    const outcome = await runOfferPipeline({ type: "text", text });
+
+    expect(extracted.observations?.currencies).toEqual([
+      { code: "SAR", evidence: "3200 ريال" },
+      { code: "USD", evidence: "3200 دولار" },
+    ]);
+    expect(outcome.status).toBe("ok");
+    if (outcome.status !== "ok") return;
+    expect(outcome.analysis.contradictions).not.toContainEqual(
+      expect.objectContaining({ code: "multiple_prices" })
+    );
+    expect(
+      outcome.analysis.contradictions.filter(
+        (contradiction) => contradiction.code === "conflicting_currency"
+      )
+    ).toHaveLength(1);
+  });
+
+  it("reports both price and currency conflicts for different final prices", async () => {
+    const text =
+      "السعر النهائي 3200 ريال، والسعر النهائي 3500 دولار.";
+    const outcome = await runOfferPipeline({ type: "text", text });
+
+    expect(outcome.status).toBe("ok");
+    if (outcome.status !== "ok") return;
+    expect(
+      outcome.analysis.contradictions.filter(
+        (contradiction) => contradiction.code === "multiple_prices"
+      )
+    ).toHaveLength(1);
+    expect(
+      outcome.analysis.contradictions.filter(
+        (contradiction) => contradiction.code === "conflicting_currency"
+      )
+    ).toHaveLength(1);
+  });
 });
