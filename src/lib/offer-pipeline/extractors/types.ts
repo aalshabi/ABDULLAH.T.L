@@ -11,6 +11,16 @@
 
 import type { TravelOfferInputType } from "@/lib/offer-input/types";
 import type { ExtractionResult, RawOfferSource } from "@/lib/offer-pipeline/types";
+import type { OfferObservations } from "@/lib/offer-pipeline/analysis/types";
+
+type SuccessfulExtraction = Extract<ExtractionResult, { ok: true }> & {
+  /** Multiple explicit values retained for deterministic contradiction checks. */
+  observations?: OfferObservations;
+};
+
+export type OfferExtractionResult =
+  | SuccessfulExtraction
+  | Extract<ExtractionResult, { ok: false }>;
 
 export interface OfferExtractor {
   /** The single input source this extractor handles. */
@@ -21,5 +31,5 @@ export interface OfferExtractor {
    */
   readonly enabled: boolean;
   /** Attempt extraction for the given source. */
-  extract(source: RawOfferSource): ExtractionResult | Promise<ExtractionResult>;
+  extract(source: RawOfferSource): OfferExtractionResult | Promise<OfferExtractionResult>;
 }

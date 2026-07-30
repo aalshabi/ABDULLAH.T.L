@@ -46,6 +46,7 @@ export async function runOfferPipeline(source: RawOfferSource): Promise<Pipeline
   // 3) analyze — pass the original text so questions can be contextual (text only).
   const analysis = analyzeFacts(extraction.facts, {
     text: source.type === "text" ? source.text : undefined,
+    observations: extracted.observations,
   });
 
   return { status: "ok", source: type, extraction, analysis };
