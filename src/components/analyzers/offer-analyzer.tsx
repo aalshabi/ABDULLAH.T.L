@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Tag, Sparkles, AlertCircle } from "lucide-react";
+import { Tag, Sparkles, AlertCircle, Copy } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/provider";
 import {
   buildOfferInput,
@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { TravelOfferInputSelector } from "@/components/offer-input/travel-offer-input-selector";
+import { ClosedBetaNotice } from "@/components/offer-input/closed-beta-notice";
 import { TextOfferInput } from "@/components/offer-input/text-offer-input";
 import { FileOfferInput } from "@/components/offer-input/file-offer-input";
 import { ImageOfferInput } from "@/components/offer-input/image-offer-input";
@@ -26,6 +27,11 @@ import { TravelOfferReview } from "@/components/offer-input/travel-offer-review"
 import { OfferAnalysisResult } from "@/components/offer-input/offer-analysis-result";
 import { BetaFeedback } from "@/components/offer-input/beta-feedback";
 import { isPublicBetaFeedbackEnabled } from "@/lib/feedback/config";
+import { copyText } from "@/lib/clipboard/copy-text";
+import {
+  APPLICATION_RESPONSE_HEADER,
+  APPLICATION_RESPONSE_MARKER,
+} from "@/lib/offer-pipeline/api/constants";
 
 type Phase = "input" | "review" | "submitting" | "success" | "error";
 type ErrorCode =
@@ -40,6 +46,32 @@ type ErrorCode =
 
 /** UI-side cooldown after a 429, matching the server's rate-limit window. */
 const RATE_LIMIT_COOLDOWN_SECONDS = 60;
+
+function applicationErrorRequestId(body: unknown): string | null {
+  if (!body || typeof body !== "object") return null;
+
+  const response = body as Record<string, unknown>;
+  const error = response.error;
+  const requestId = response.requestId;
+
+  if (
+    response.ok !== false ||
+    response.schemaVersion !== "1.0" ||
+    !error ||
+    typeof error !== "object" ||
+    typeof (error as Record<string, unknown>).code !== "string" ||
+    typeof requestId !== "string"
+  ) {
+    return null;
+  }
+
+  const normalized = requestId.trim();
+  return normalized.length > 0 &&
+    normalized.length <= 128 &&
+    /^[A-Za-z0-9._:-]+$/.test(normalized)
+    ? normalized
+    : null;
+}
 
 function mapStatus(status: number): ErrorCode {
   switch (status) {
@@ -82,6 +114,10 @@ export function OfferAnalyzer() {
     () => new Set()
   );
   const [errorCode, setErrorCode] = React.useState<ErrorCode | null>(null);
+  const [errorRequestId, setErrorRequestId] = React.useState<string | null>(null);
+  const [requestIdCopyStatus, setRequestIdCopyStatus] = React.useState<"idle" | "copied" | "failed">(
+    "idle"
+  );
   const [cooldown, setCooldown] = React.useState(0);
   const resultRef = React.useRef<HTMLDivElement>(null);
 
@@ -142,6 +178,8 @@ export function OfferAnalyzer() {
     if (cooldown > 0) return; // blocked during the rate-limit cooldown
     if (!submitted || submitted.type !== "text" || submitted.text === undefined) return;
     setErrorCode(null);
+    setErrorRequestId(null);
+    setRequestIdCopyStatus("idle");
     setPhase("submitting");
     try {
       const res = await fetch("/api/offer/analyze", {
@@ -153,6 +191,7 @@ export function OfferAnalyzer() {
       // before the app, so its body shape is not guaranteed — never read/show it.
       if (res.status === 429) {
         setErrorCode("rateLimited");
+        setErrorRequestId(null);
         setCooldown(RATE_LIMIT_COOLDOWN_SECONDS);
         setPhase("error");
         return;
@@ -161,15 +200,20 @@ export function OfferAnalyzer() {
       if (res.ok && body?.ok) {
         setAnalysis(body.data.analysis as OfferAnalysis);
         setAnalysisRequestId(typeof body.requestId === "string" ? body.requestId : null);
+        setErrorRequestId(null);
         setAnalysisSequence((current) => current + 1);
         setPhase("success");
         scrollToResult();
       } else {
         setErrorCode(mapStatus(res.status));
+        const isApplicationResponse =
+          res.headers?.get(APPLICATION_RESPONSE_HEADER) === APPLICATION_RESPONSE_MARKER;
+        setErrorRequestId(isApplicationResponse ? applicationErrorRequestId(body) : null);
         setPhase("error");
       }
     } catch {
       setErrorCode("network");
+      setErrorRequestId(null);
       setPhase("error");
     }
   }
@@ -184,7 +228,15 @@ export function OfferAnalyzer() {
     setAnalysis(null);
     setAnalysisRequestId(null);
     setErrorCode(null);
+    setErrorRequestId(null);
+    setRequestIdCopyStatus("idle");
     setPhase("input");
+  }
+
+  async function copyErrorRequestId() {
+    if (!errorRequestId) return;
+    const result = await copyText(errorRequestId);
+    setRequestIdCopyStatus(result.copied ? "copied" : "failed");
   }
 
   const textError: OfferErrorCode | null =
@@ -215,25 +267,28 @@ export function OfferAnalyzer() {
 
       <div className="container -mt-8 pb-20">
         {phase === "input" && (
-          <Card className="mx-auto max-w-2xl shadow-xl">
-            <CardContent className="p-6 md:p-8">
-              <form onSubmit={onStart} className="space-y-5">
-                <TravelOfferInputSelector method={method} onSelect={onSelect} />
+          <>
+            <ClosedBetaNotice />
+            <Card className="mx-auto max-w-2xl shadow-xl">
+              <CardContent className="p-6 md:p-8">
+                <form onSubmit={onStart} className="space-y-5">
+                  <TravelOfferInputSelector method={method} onSelect={onSelect} />
 
-                <div>
-                  {method === "text" && <TextOfferInput value={text} onChange={setText} error={textError} />}
-                  {method === "pdf" && <FileOfferInput file={pdf} onFile={setPdf} />}
-                  {method === "image" && <ImageOfferInput file={image} onFile={setImage} />}
-                  {method === "url" && <UrlOfferInput value={url} onChange={setUrl} error={urlError} />}
-                </div>
+                  <div>
+                    {method === "text" && <TextOfferInput value={text} onChange={setText} error={textError} />}
+                    {method === "pdf" && <FileOfferInput file={pdf} onFile={setPdf} />}
+                    {method === "image" && <ImageOfferInput file={image} onFile={setImage} />}
+                    {method === "url" && <UrlOfferInput value={url} onChange={setUrl} error={urlError} />}
+                  </div>
 
-                <Button type="submit" size="lg" className="w-full" disabled={!submittable}>
-                  <Sparkles className="size-4" />
-                  {v1.startAnalysis}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <Button type="submit" size="lg" className="w-full" disabled={!submittable}>
+                    <Sparkles className="size-4" />
+                    {v1.startAnalysis}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </>
         )}
 
         <div ref={resultRef} className="mx-auto mt-8 max-w-2xl scroll-mt-24">
@@ -308,6 +363,33 @@ export function OfferAnalyzer() {
                   <p aria-hidden="true" className="mt-2 text-sm font-medium text-foreground">
                     {countdownText}
                   </p>
+                )}
+                {errorRequestId && (
+                  <div className="mt-4 rounded-xl border border-border bg-muted/40 p-3">
+                    <p className="text-xs font-medium text-muted-foreground">{v2.errors.requestIdLabel}</p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <code dir="ltr" className="break-all text-sm font-semibold text-foreground">
+                        {errorRequestId}
+                      </code>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={copyErrorRequestId}
+                        aria-label={v2.errors.copyRequestId}
+                      >
+                        <Copy aria-hidden />
+                        {v2.errors.copyRequestId}
+                      </Button>
+                    </div>
+                    <p role="status" aria-live="polite" className="mt-2 text-xs text-muted-foreground">
+                      {requestIdCopyStatus === "copied"
+                        ? v2.errors.requestIdCopied
+                        : requestIdCopyStatus === "failed"
+                          ? v2.errors.requestIdCopyFailed
+                          : ""}
+                    </p>
+                  </div>
                 )}
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
                   <Button type="button" variant="outline" onClick={onEdit}>
