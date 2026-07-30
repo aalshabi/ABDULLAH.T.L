@@ -83,6 +83,21 @@ afterEach(() => {
 });
 
 describe("OfferAnalyzer text → API integration", () => {
+  it("uses a safe mobile top margin and scopes overlap to larger screens", () => {
+    renderAnalyzer();
+
+    const betaHeading = screen.getByRole("heading", {
+      name: d.analyzeOffer.v2.closedBeta.title,
+    });
+    const layoutContainer = betaHeading.closest(".container");
+    const classTokens = layoutContainer?.className.split(/\s+/) ?? [];
+
+    expect(layoutContainer).not.toBeNull();
+    expect(classTokens).toContain("mt-4");
+    expect(classTokens).toContain("sm:-mt-4");
+    expect(classTokens.some((token) => /^-mt-/.test(token))).toBe(false);
+  });
+
   it("enables the text confirm button on valid input", async () => {
     renderAnalyzer();
     await goToReview();

@@ -265,7 +265,7 @@ export function OfferAnalyzer() {
         {phase === "submitting" ? v2.srSubmitting : phase === "success" ? v2.srSuccess : phase === "error" ? v2.srError : ""}
       </div>
 
-      <div className="container -mt-8 pb-20">
+      <div className="container mt-4 pb-20 sm:-mt-4">
         {phase === "input" && (
           <>
             <ClosedBetaNotice />
