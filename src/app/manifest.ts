@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "سافر بوعي — SafrBwai",
     short_name: "سافر بوعي",
-    description: "منصة الذكاء الاصطناعي التي تكشف خدع السفر قبل أن تدفع.",
+    description: "أداة تجريبية لمراجعة المعلومات المذكورة في عروض السفر النصية قبل الحجز.",
     start_url: "/",
     display: "standalone",
     background_color: "#0D1B3A",

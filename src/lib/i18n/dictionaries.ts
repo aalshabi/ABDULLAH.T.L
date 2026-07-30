@@ -1,7 +1,7 @@
 import type { Locale } from "./config";
 
 /**
- * Central translation dictionary for Safer Bewae.
+ * Central translation dictionary for SafrBwai.
  * Arabic is the source of truth (arabic-first); English mirrors it.
  */
 export const dictionaries = {
@@ -9,7 +9,7 @@ export const dictionaries = {
     meta: {
       title: "سافر بوعي — قبل لا تدفع… افهم قرار سفرك",
       description:
-        "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز.",
+        "سافر بوعي أداة تجريبية لتحليل عروض السفر النصية بقواعد حتمية قبل الحجز.",
     },
     brand: {
       name: "سافر بوعي",
@@ -593,7 +593,7 @@ export const dictionaries = {
     meta: {
       title: "SafrBwai — Understand your travel decision before you pay",
       description:
-        "SafrBwai is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+        "SafrBwai is an experimental rule-based tool for reviewing text travel offers before booking.",
     },
     brand: {
       name: "SafrBwai",

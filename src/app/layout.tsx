@@ -29,16 +29,16 @@ export const metadata: Metadata = {
     template: "%s | سافر بوعي",
   },
   description:
-    "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز. SafrBwai is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+    "سافر بوعي أداة تجريبية لتحليل عروض السفر النصية بقواعد حتمية قبل الحجز. SafrBwai is an experimental rule-based tool for reviewing text travel offers before booking.",
   keywords: [
     "سافر بوعي",
     "SafrBwai",
-    "مراجعة الفنادق",
+    "تحليل عرض سفر نصي",
     "قرار السفر",
-    "مقارنة الفنادق",
+    "مراجعة عرض السفر",
     "travel decisions",
-    "hotel review",
-    "conscious travel",
+    "text travel offer",
+    "rule-based analysis",
   ],
   authors: [{ name: "Abdullah Travel Lab" }],
   creator: "Abdullah Travel Lab",
@@ -49,14 +49,14 @@ export const metadata: Metadata = {
     url: SITE_URL,
     title: "سافر بوعي — SafrBwai",
     description:
-      "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
+      "أداة تجريبية لمراجعة عروض السفر النصية قبل الحجز. An experimental tool for reviewing text travel offers before booking.",
     siteName: "SafrBwai",
   },
   twitter: {
     card: "summary_large_image",
     title: "سافر بوعي — SafrBwai",
     description:
-      "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
+      "أداة تجريبية لمراجعة عروض السفر النصية قبل الحجز. An experimental tool for reviewing text travel offers before booking.",
   },
   robots: DEMO_ROBOTS,
   alternates: {

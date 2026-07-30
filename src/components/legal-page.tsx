@@ -17,51 +17,169 @@ const TITLES: Record<Doc, { ar: string; en: string }> = {
   terms: { ar: "الشروط والأحكام", en: "Terms & Conditions" },
 };
 
-const CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
+export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
   privacy: {
     ar: [
-      { h: "منتج تجريبي", p: "سافر بوعي منصة تجريبية قيد التطوير. النتائج والتحليلات المعروضة حاليًا مولّدة لأغراض عرض تجربة المستخدم ولا تعتمد على بيانات حقيقية أو مصادر خارجية." },
-      { h: "بيانات الحساب", p: "عند التسجيل قد نعالج بريدك الإلكتروني واسمك ومعرّف الحساب عبر مزوّد المصادقة (Supabase) لإنشاء حسابك وتأمين الدخول." },
-      { h: "الملفات التي ترفعها", p: "قد ترفع ملفات (PDF أو صور) لأغراض العرض. في النسخة الحالية لا يقرأ النظام محتوى الملف ولا ينفّذ استخراجًا، وتبقى الملفات في متصفحك ولا تُرفع إلى خوادمنا." },
-      { h: "التحليلات", p: "سجلّ تحليلاتك يُخزَّن حاليًا محليًا في متصفحك (Local Storage) وهو مؤقت، وسيُربط بحسابك عند تفعيل قاعدة البيانات مستقبلًا." },
-      { h: "ملفات الارتباط", p: "نستخدم ملفات ارتباط ضرورية لإدارة الجلسة وتفضيلات اللغة والمظهر. لا نستخدم حاليًا أدوات تتبّع تسويقية." },
-      { h: "مزوّدو الخدمات", p: "قد نعتمد على مزوّدين مثل Supabase (المصادقة) واستضافة السحابة. تخضع بياناتك لسياساتهم إضافةً إلى سياستنا." },
-      { h: "مدة الاحتفاظ", p: "نحتفظ ببيانات الحساب طوال فعالية حسابك. البيانات المحلية في متصفحك يمكنك حذفها في أي وقت من لوحة التحكم أو بمسح تخزين المتصفح." },
-      { h: "حقوق المستخدم", p: "لك حق الوصول إلى بياناتك وتصحيحها وحذفها والاعتراض على معالجتها، بما يتوافق مع الأنظمة المعمول بها (مثل نظام حماية البيانات الشخصية في السعودية)." },
-      { h: "وسيلة التواصل", p: "لأي استفسار حول الخصوصية أو لطلب حذف بياناتك، تواصل معنا عبر قنوات التواصل المعلنة في المنصة." },
+      {
+        h: "نطاق الـBeta الحالية",
+        p: "سافر بوعي أداة تجريبية مغلقة لتحليل عروض السفر النصية. لا يوجد تسجيل دخول أو حسابات مستخدمين مفعّلة في تدفق الـBeta الحالي.",
+      },
+      {
+        h: "المصادر المدعومة",
+        p: "تدعم الواجهة تحليل النص فقط. رفع ملفات PDF أو الصور وتحليل الروابط غير مدعوم حاليًا، ولا تُرسل هذه المصادر إلى API التحليل.",
+      },
+      {
+        h: "معالجة نص العرض",
+        p: "عند طلب التحليل، يُرسل نص العرض إلى API التحليل لتنفيذ الطلب بواسطة محرك حتمي قائم على قواعد، دون AI أو LLM.",
+      },
+      {
+        h: "التخزين والتسجيل",
+        p: "لا يحفظ التطبيق نص العرض أو نتيجة التحليل في قاعدة بيانات، ولا يُسجل نص العرض أو الدليل المختصر في سجلات التشغيل.",
+      },
+      {
+        h: "الدليل والنسخ",
+        p: "قد يظهر دليل مختصر مأخوذ من نص العرض داخل نتيجة التحليل الحالية. لا يدخل هذا الدليل في نص نسخ الأسئلة أو الملخص، ولا يُخزّن.",
+      },
+      {
+        h: "معرّف الطلب",
+        p: "قد يظهر Request ID عند بعض أخطاء التطبيق لأغراض الدعم. لا يتضمن معرّف الطلب نص العرض أو الدليل.",
+      },
+      {
+        h: "الملاحظات والتحليلات",
+        p: "Feedback غير مفعّل ولا يُسجل. لا يستخدم التطبيق حاليًا Analytics أو أدوات تتبع تسويقي.",
+      },
+      {
+        h: "تفضيلات المتصفح",
+        p: "قد تبقى تفضيلات اللغة والمظهر محليًا في متصفحك لتطبيق اختيارك عند الزيارات اللاحقة.",
+      },
+      {
+        h: "سلامة الإدخال",
+        p: "لا تُدخل بيانات شخصية أو معلومات دفع ضمن نص العرض. استخدم نصًا غير حساس أو مجهّلًا.",
+      },
     ],
     en: [
-      { h: "Experimental product", p: "SafrBwai is an experimental platform under development. The results shown are generated to demonstrate the user experience and are not currently based on real data or external sources." },
-      { h: "Account data", p: "When you sign up we may process your email, name and account ID via our authentication provider (Supabase) to create your account and secure sign-in." },
-      { h: "Files you upload", p: "You may upload files (PDF or images) for demonstration. In the current version the system does not read file content or perform extraction; files stay in your browser and are not uploaded to our servers." },
-      { h: "Analyses", p: "Your analysis history is currently stored locally in your browser (Local Storage) and is temporary; it will be linked to your account once the database is enabled." },
-      { h: "Cookies", p: "We use essential cookies for session, language and theme preferences. We do not currently use marketing tracking tools." },
-      { h: "Service providers", p: "We may rely on providers such as Supabase (authentication) and cloud hosting. Your data is also subject to their policies alongside ours." },
-      { h: "Retention", p: "We retain account data for the lifetime of your account. Local browser data can be deleted at any time from the dashboard or by clearing your browser storage." },
-      { h: "Your rights", p: "You have the right to access, correct, delete and object to the processing of your data, in line with applicable regulations (e.g. Saudi PDPL)." },
-      { h: "Contact", p: "For privacy questions or deletion requests, contact us through the channels published on the platform." },
+      {
+        h: "Current Beta scope",
+        p: "SafrBwai is a closed experimental tool for analyzing text travel offers. Sign-in and user accounts are not enabled in the current Beta flow.",
+      },
+      {
+        h: "Supported sources",
+        p: "The interface supports text analysis only. PDF uploads, image uploads, and link analysis are not currently supported, and those sources are not sent to the analysis API.",
+      },
+      {
+        h: "Offer-text processing",
+        p: "When analysis is requested, the offer text is sent to the analysis API and processed by a deterministic rule-based engine, without AI or an LLM.",
+      },
+      {
+        h: "Storage and logging",
+        p: "The application does not store the offer text or analysis result in a database, and it does not log the offer text or short evidence in operational logs.",
+      },
+      {
+        h: "Evidence and copied output",
+        p: "Short evidence taken from the offer text may appear in the current analysis result. It is excluded from copied questions and summaries and is not stored.",
+      },
+      {
+        h: "Request ID",
+        p: "A Request ID may appear for some application errors to support troubleshooting. The identifier does not contain the offer text or evidence.",
+      },
+      {
+        h: "Feedback and analytics",
+        p: "Feedback is not enabled and is not recorded. The application currently uses no analytics or marketing tracking tools.",
+      },
+      {
+        h: "Browser preferences",
+        p: "Language and theme preferences may remain locally in your browser so the application can remember your choices.",
+      },
+      {
+        h: "Input safety",
+        p: "Do not enter personal or payment information in the offer text. Use non-sensitive or anonymized text.",
+      },
     ],
   },
   terms: {
     ar: [
-      { h: "طبيعة الخدمة", p: "سافر بوعي أداة استشارية وتعليمية تساعدك على التفكير قبل الحجز. المحتوى الحالي تجريبي ولا يمثّل نصيحة نهائية أو ضمانًا." },
-      { h: "لا ضمان للسعر أو التوفّر", p: "لا نضمن دقة أي سعر أو توفّر أو سياسة. النتائج استشارية وقد تتغيّر، ويجب عليك التحقق من المصدر الرسمي قبل أي التزام مالي." },
-      { h: "العلاقة مع Sky Global Holidays", p: "سافر بوعي جهة تحليل محايدة؛ وعند رغبتك في تنفيذ حجز قد نوجّهك إلى Sky Global Holidays كجهة تنفيذ منفصلة. لا يؤثّر ذلك على حياد التحليل، وأي حجز يخضع لشروط تلك الجهة." },
-      { h: "الاستخدام المقبول", p: "توافق على عدم إساءة استخدام المنصة أو رفع محتوى غير قانوني أو ضار أو انتهاك حقوق الغير." },
-      { h: "الملكية الفكرية", p: "جميع حقوق المنصة وتصميمها ومحتواها محفوظة، ولا يجوز إعادة استخدامها دون إذن." },
-      { h: "حدود المسؤولية", p: "تُقدَّم الخدمة «كما هي» دون ضمانات. لا نتحمّل مسؤولية أي قرار سفر أو خسارة تنتج عن الاعتماد على النتائج التجريبية." },
-      { h: "التعديلات", p: "قد نحدّث هذه الشروط أو الخدمة في أي وقت، ويسري التحديث فور نشره." },
-      { h: "التواصل", p: "لأي استفسار حول الشروط، تواصل معنا عبر القنوات المعلنة في المنصة." },
+      {
+        h: "طبيعة الخدمة",
+        p: "سافر بوعي أداة استشارية وتجريبية تحلل النص الذي يقدمه المستخدم فقط. النتائج تساعد على مراجعة المعلومات المذكورة ولا تمثّل نصيحة نهائية أو ضمانًا.",
+      },
+      {
+        h: "نطاق الخدمة الحالي",
+        p: "تحليل النص هو المصدر الوحيد المدعوم في الـBeta الحالية. ملفات PDF والصور والروابط وميزات الحسابات غير مفعّلة.",
+      },
+      {
+        h: "التحقق من البائع",
+        p: "لا تتحقق سافر بوعي من هوية البائع أو صفته أو قدرته على تنفيذ العرض.",
+      },
+      {
+        h: "لا حجز أو دفع",
+        p: "لا تنفذ سافر بوعي حجزًا أو دفعًا. يجب التحقق من المصدر الرسمي قبل أي حجز أو التزام مالي.",
+      },
+      {
+        h: "لا ضمان للسعر أو العرض",
+        p: "لا نضمن دقة السعر أو التوفّر أو السياسات أو صحة العرض. قد تكون المعلومات ناقصة أو متغيرة، والنتائج استشارية فقط.",
+      },
+      {
+        h: "سلامة الإدخال",
+        p: "لا تُدخل بيانات شخصية أو معلومات دفع. استخدم نصًا غير حساس أو مجهّلًا عند تجربة الخدمة.",
+      },
+      {
+        h: "الاستخدام المقبول",
+        p: "توافق على عدم إساءة استخدام الخدمة أو تقديم محتوى غير قانوني أو ضار أو منتهك لحقوق الغير.",
+      },
+      {
+        h: "الملكية الفكرية",
+        p: "جميع حقوق الخدمة وتصميمها ومحتواها محفوظة، ولا يجوز إعادة استخدامها دون إذن.",
+      },
+      {
+        h: "حدود المسؤولية",
+        p: "تُقدَّم الخدمة «كما هي» دون ضمانات. لا نتحمّل مسؤولية قرار سفر أو خسارة تنتج عن الاعتماد على النتائج التجريبية.",
+      },
+      {
+        h: "التعديلات",
+        p: "قد نحدّث هذه الشروط أو الخدمة، ويظهر أي تحديث عند نشره.",
+      },
     ],
     en: [
-      { h: "Nature of the service", p: "SafrBwai is an advisory and educational tool to help you think before booking. The current content is experimental and does not constitute final advice or a guarantee." },
-      { h: "No price or availability guarantee", p: "We do not guarantee the accuracy of any price, availability or policy. Results are advisory and may change; verify with the official source before any financial commitment." },
-      { h: "Relationship with Sky Global Holidays", p: "SafrBwai is a neutral analysis party; when you wish to book we may refer you to Sky Global Holidays as a separate fulfillment party. This does not affect analysis neutrality, and any booking is subject to that party's terms." },
-      { h: "Acceptable use", p: "You agree not to misuse the platform, upload unlawful or harmful content, or infringe others' rights." },
-      { h: "Intellectual property", p: "All platform rights, design and content are reserved and may not be reused without permission." },
-      { h: "Limitation of liability", p: "The service is provided \"as is\" without warranties. We are not liable for any travel decision or loss arising from reliance on the experimental results." },
-      { h: "Changes", p: "We may update these terms or the service at any time; updates take effect once published." },
-      { h: "Contact", p: "For questions about these terms, contact us through the channels published on the platform." },
+      {
+        h: "Nature of the service",
+        p: "SafrBwai is an advisory experimental tool that analyzes only the text provided by the user. Results help review the stated information and do not constitute final advice or a guarantee.",
+      },
+      {
+        h: "Current service scope",
+        p: "Text analysis is the only supported source in the current Beta. PDF files, images, links, and account features are not enabled.",
+      },
+      {
+        h: "Seller verification",
+        p: "SafrBwai does not verify the seller’s identity, status, or ability to fulfill the offer.",
+      },
+      {
+        h: "No booking or payment",
+        p: "SafrBwai does not make bookings or process payments. Verify with the official source before booking or making a financial commitment.",
+      },
+      {
+        h: "No price or offer guarantee",
+        p: "We do not guarantee the accuracy of a price, availability, policy, or offer. Information may be incomplete or change, and results are advisory only.",
+      },
+      {
+        h: "Input safety",
+        p: "Do not enter personal or payment information. Use non-sensitive or anonymized text when trying the service.",
+      },
+      {
+        h: "Acceptable use",
+        p: "You agree not to misuse the service or submit unlawful, harmful, or rights-infringing content.",
+      },
+      {
+        h: "Intellectual property",
+        p: "All service rights, design, and content are reserved and may not be reused without permission.",
+      },
+      {
+        h: "Limitation of liability",
+        p: "The service is provided \"as is\" without warranties. We are not liable for a travel decision or loss arising from reliance on experimental results.",
+      },
+      {
+        h: "Changes",
+        p: "We may update these terms or the service, and any update appears when published.",
+      },
     ],
   },
 };
@@ -69,7 +187,7 @@ const CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
 export function LegalPage({ doc }: { doc: Doc }) {
   const { locale } = useLanguage();
   const title = TITLES[doc][locale];
-  const sections = CONTENT[doc][locale];
+  const sections = LEGAL_CONTENT[doc][locale];
 
   return (
     <>

@@ -5,13 +5,13 @@ import { HowItWorks } from "@/components/home/how-it-works";
 import { Pillars } from "@/components/home/pillars";
 import { CTA } from "@/components/home/cta";
 
-// Neutral, non-AI, non-claim structured data for the experimental project.
-const jsonLd = {
+// Neutral structured data for the experimental text-analysis tool.
+const HOME_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "SafrBwai — سافر بوعي",
   description:
-    "An experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+    "An experimental rule-based tool that helps travelers review information stated in text travel offers before booking.",
   inLanguage: ["ar", "en"],
 };
 
@@ -20,7 +20,7 @@ export default function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(HOME_JSON_LD) }}
       />
       <Hero />
       <Benefits />

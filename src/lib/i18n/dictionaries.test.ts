@@ -71,6 +71,7 @@ describe("demo dictionary", () => {
       "src/app/manifest.ts",
       "src/app/page.tsx",
       "src/components/legal-page.tsx",
+      "src/lib/i18n/dictionaries.ts",
       "src/lib/seo.ts",
     ];
 
