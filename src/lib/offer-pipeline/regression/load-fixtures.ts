@@ -15,7 +15,6 @@ const FIXTURES: readonly RegressionFixture[] = Object.freeze([
  * PR resolves the documented gap.
  */
 export const KNOWN_REGRESSION_GAPS = Object.freeze({
-  "ar-conflicting-prices": ["mustDetectContradictions"],
   "ar-conflicting-nights": ["mustDetectContradictions"],
 } as const);
 

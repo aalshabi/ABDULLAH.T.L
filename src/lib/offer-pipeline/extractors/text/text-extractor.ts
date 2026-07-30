@@ -8,8 +8,9 @@
  * This module performs NO network, disk, OCR, PDF parsing, or persistence.
  */
 
-import type { Bi, ExtractedOfferFacts, ExtractionResult, RawOfferSource } from "@/lib/offer-pipeline/types";
-import type { OfferExtractor } from "../types";
+import type { Bi, ExtractedOfferFacts, RawOfferSource } from "@/lib/offer-pipeline/types";
+import type { OfferObservations } from "@/lib/offer-pipeline/analysis/types";
+import type { OfferExtractionResult, OfferExtractor } from "../types";
 import { createDefaultRuleRegistry, RuleRegistry } from "./rule-registry";
 
 /**
@@ -20,17 +21,28 @@ import { createDefaultRuleRegistry, RuleRegistry } from "./rule-registry";
 export function extractFactsFromText(
   text: string,
   registry: RuleRegistry = createDefaultRuleRegistry()
-): { facts: ExtractedOfferFacts; warnings: Bi[] } {
+): { facts: ExtractedOfferFacts; warnings: Bi[]; observations?: OfferObservations } {
   const facts: ExtractedOfferFacts = {};
   const warnings: Bi[] = [];
+  const prices: NonNullable<OfferObservations["prices"]> = [];
+  const currencies: NonNullable<OfferObservations["currencies"]> = [];
 
   for (const rule of registry.list()) {
     const result = rule.apply(text);
     Object.assign(facts, result.facts);
     warnings.push(...result.warnings);
+    prices.push(...(result.observations?.prices ?? []));
+    currencies.push(...(result.observations?.currencies ?? []));
   }
 
-  return { facts, warnings };
+  const observations =
+    prices.length > 0 || currencies.length > 0
+      ? {
+          ...(prices.length > 0 ? { prices } : {}),
+          ...(currencies.length > 0 ? { currencies } : {}),
+        }
+      : undefined;
+  return { facts, warnings, observations };
 }
 
 /**
@@ -45,12 +57,12 @@ export function createTextExtractor(registry: RuleRegistry = createDefaultRuleRe
   return {
     type: "text",
     enabled: true,
-    extract(source: RawOfferSource): ExtractionResult {
+    extract(source: RawOfferSource): OfferExtractionResult {
       if (source.type !== "text") return { ok: false, reason: "unsupported" };
       if (source.text.trim().length === 0) return { ok: false, reason: "empty" };
 
-      const { facts, warnings } = extractFactsFromText(source.text, registry);
-      return { ok: true, facts, warnings };
+      const { facts, warnings, observations } = extractFactsFromText(source.text, registry);
+      return { ok: true, facts, warnings, observations };
     },
   } satisfies OfferExtractor;
 }
