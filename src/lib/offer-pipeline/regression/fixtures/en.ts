@@ -1,0 +1,152 @@
+import { defineRegressionFixture } from "../types";
+
+const COMPLETE_BASE =
+  "Trip to Dubai for 5 nights for 2 adults at a 4-star hotel with bed and breakfast, total SAR 4200 including all taxes and fees, airport transfers included, 23 kg baggage, free cancellation.";
+
+export const ENGLISH_REGRESSION_FIXTURES = [
+  defineRegressionFixture(
+    {
+      id: "en-baggage",
+      locale: "en",
+      category: "baggage",
+      description: "Explicit checked-baggage allowance",
+      syntheticInput: "Package to Dubai for 4 nights includes 23 kg baggage, total price SAR 4200.",
+    },
+    {
+      mustConfirm: ["totalPrice", "currency", "nights", "destination", "baggage"],
+      mustNotMarkMissing: ["baggage"],
+      mustNotAsk: ["baggage", "visa", "insurance"],
+      expectedValues: { baggage: "23kg" },
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-airport-transfers",
+      locale: "en",
+      category: "airport_transfers",
+      description: "Airport transfers explicitly included",
+      syntheticInput: "Trip to Doha for 3 nights, total USD 1500, airport transfers included.",
+    },
+    {
+      mustConfirm: ["totalPrice", "currency", "nights", "destination", "transfers"],
+      mustNotMarkMissing: ["transfers"],
+      mustNotAsk: ["transfers", "visa", "insurance"],
+      expectedValues: { transfers: { included: true } },
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-travellers",
+      locale: "en",
+      category: "travellers",
+      description: "Adults and children stated with explicit counts",
+      syntheticInput: "Trip to Dubai for 5 nights for 2 adults and 1 child, total SAR 5100.",
+    },
+    {
+      mustConfirm: ["totalPrice", "currency", "nights", "destination", "travellers"],
+      mustNotMarkMissing: ["travellers"],
+      expectedValues: { travellers: { adults: 2, children: 1 } },
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-insurance-context",
+      locale: "en",
+      category: "insurance_context",
+      description: "Insurance is raised without an inclusion decision",
+      syntheticInput: `${COMPLETE_BASE} Travel insurance details will be confirmed later.`,
+    },
+    {
+      mustNotConfirm: ["insurance"],
+      mustMarkMissing: ["insurance"],
+      mustAsk: ["insurance"],
+      mustNotAsk: ["visa"],
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-insurance-absent",
+      locale: "en",
+      category: "insurance_absent",
+      description: "No insurance context in an otherwise rich offer",
+      syntheticInput: COMPLETE_BASE,
+    },
+    {
+      mustNotConfirm: ["insurance"],
+      mustNotAsk: ["insurance", "visa"],
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-visa-context",
+      locale: "en",
+      category: "visa_context",
+      description: "Visa is raised without an inclusion decision",
+      syntheticInput: `${COMPLETE_BASE} Visa requirements will be confirmed later.`,
+    },
+    {
+      mustNotConfirm: ["visa"],
+      mustMarkMissing: ["visa"],
+      mustAsk: ["visa"],
+      mustNotAsk: ["insurance"],
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-visa-absent",
+      locale: "en",
+      category: "visa_absent",
+      description: "No visa context in an otherwise rich offer",
+      syntheticInput: COMPLETE_BASE,
+    },
+    {
+      mustNotConfirm: ["visa"],
+      mustNotAsk: ["visa", "insurance"],
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-short-analyzable",
+      locale: "en",
+      category: "short_analyzable",
+      description: "Short but analyzable text with three core values",
+      syntheticInput: "Dubai, 3 nights, SAR 900.",
+    },
+    {
+      mustConfirm: ["totalPrice", "currency", "nights", "destination"],
+      expectedValues: {
+        totalPrice: { amount: 900, currency: "SAR" },
+        nights: 3,
+      },
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-noisy-safe",
+      locale: "en",
+      category: "noisy_safe",
+      description: "Noisy punctuation around a safe synthetic offer",
+      syntheticInput: "LIMITED OFFER *** trip to Lisbon !!! 6 nights --- total USD 1800 --- bed and breakfast.",
+    },
+    {
+      mustConfirm: ["totalPrice", "currency", "nights", "destination", "board"],
+      mustNotMarkMissing: ["board"],
+      expectedValues: { totalPrice: { amount: 1800, currency: "USD" }, nights: 6, board: "BB" },
+    }
+  ),
+  defineRegressionFixture(
+    {
+      id: "en-insufficient",
+      locale: "en",
+      category: "insufficient",
+      description: "Non-empty text without analyzable offer facts",
+      syntheticInput: "A special travel offer is available.",
+    },
+    {
+      mustNotConfirm: ["totalPrice", "currency", "nights", "destination", "travellers"],
+      mustMarkMissing: ["totalPrice", "currency", "nights", "destination", "travellers"],
+      mustAsk: ["totalPrice", "currency", "nights"],
+      mustNotAsk: ["visa", "insurance"],
+    }
+  ),
+] as const;
