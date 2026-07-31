@@ -134,4 +134,19 @@ describe("current closed Beta product integrity", () => {
     expect(isServerBetaFeedbackEnabled("false")).toBe(false);
     expect(KNOWN_REGRESSION_GAPS).toEqual({});
   });
+
+  it("keeps account entry points disabled across navigation, CTA, and the auth page", () => {
+    const navbarSource = readSource("src/components/layout/navbar.tsx");
+    const ctaSource = readSource("src/components/home/cta.tsx");
+    const authPageSource = readSource("src/app/auth/page.tsx");
+    const unavailableSource = readSource("src/components/auth-unavailable.tsx");
+
+    expect(navbarSource).not.toContain('href="/auth"');
+    expect(navbarSource).not.toContain('href="/auth?mode=signup"');
+    expect(ctaSource).toContain('href="/analyze-offer"');
+    expect(ctaSource).not.toContain("/auth");
+    expect(authPageSource).toContain("AuthUnavailable");
+    expect(authPageSource).not.toContain("AuthForm");
+    expect(unavailableSource).not.toMatch(/supabase|createClient|fetch\s*\(|<form/i);
+  });
 });

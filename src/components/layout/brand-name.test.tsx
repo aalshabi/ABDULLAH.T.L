@@ -21,8 +21,6 @@ const HEADER_LINKS = [
   "/compare-hotels",
   "/knowledge",
   "/dashboard",
-  "/auth",
-  "/auth?mode=signup",
 ];
 
 const FOOTER_LINKS = [
@@ -90,12 +88,15 @@ describe("visible brand name", () => {
     expect(footer!.textContent).not.toContain(UNAPPROVED_ENGLISH_NAME);
   });
 
-  it("keeps header and footer navigation links unchanged", () => {
+  it("keeps non-account navigation routes and removes account entry points", () => {
     const { container } = renderLayout();
     const header = container.querySelector("header");
     const footer = container.querySelector("footer");
+    const headerHrefs = hrefs(header!);
 
-    expect(Array.from(new Set(hrefs(header!)))).toEqual(HEADER_LINKS);
+    expect(Array.from(new Set(headerHrefs))).toEqual(HEADER_LINKS);
+    expect(headerHrefs).not.toContain("/auth");
+    expect(headerHrefs).not.toContain("/auth?mode=signup");
     expect(hrefs(footer!)).toEqual(FOOTER_LINKS);
   });
 

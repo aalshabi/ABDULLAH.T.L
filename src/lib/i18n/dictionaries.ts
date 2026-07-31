@@ -126,9 +126,9 @@ export const dictionaries = {
       ],
     },
     cta: {
-      title: "تابع تطوّر سافر بوعي",
-      subtitle: "مشروع تجريبي قيد التطوير — جرّب الواجهة الآن وكن أول من يجرّب الأدوات الحقيقية عند جاهزيتها.",
-      button: "أنشئ حسابك الآن",
+      title: "راجع عرض سفرك النصي",
+      subtitle: "ألصق نص العرض لتحصل على مراجعة حتمية للنقاط المذكورة والناقصة قبل الحجز.",
+      button: "حلّل عرضًا نصيًا",
     },
     footer: {
       tagline: "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز.",
@@ -568,6 +568,10 @@ export const dictionaries = {
       },
     },
     auth: {
+      unavailableTitle: "الحسابات غير متاحة في الـBeta الحالية",
+      unavailableBody:
+        "تسجيل الدخول وإنشاء الحسابات غير مفعّلين في الـBeta المغلقة الحالية. يمكنك تحليل عرض سفر نصي دون حساب.",
+      unavailableAction: "حلّل عرضًا نصيًا",
       signInTitle: "تسجيل الدخول",
       signUpTitle: "إنشاء حساب",
       signInSubtitle: "أهلاً بعودتك إلى سافر بوعي.",
@@ -710,9 +714,10 @@ export const dictionaries = {
       ],
     },
     cta: {
-      title: "Follow SafrBwai as it develops",
-      subtitle: "An experimental project under development — try the interface now and be among the first to use the real tools once they're ready.",
-      button: "Create your account",
+      title: "Review your text travel offer",
+      subtitle:
+        "Paste the offer text for a deterministic review of the stated and missing information before booking.",
+      button: "Analyze a text offer",
     },
     footer: {
       tagline: "An experimental project building tools to help you review your travel decision before booking.",
@@ -1151,6 +1156,10 @@ export const dictionaries = {
       },
     },
     auth: {
+      unavailableTitle: "Accounts are unavailable in the current Beta",
+      unavailableBody:
+        "Sign-in and account creation are not enabled in the current Closed Beta. You can analyze a text travel offer without an account.",
+      unavailableAction: "Analyze a text offer",
       signInTitle: "Sign in",
       signUpTitle: "Create account",
       signInSubtitle: "Welcome back to SafrBwai.",
