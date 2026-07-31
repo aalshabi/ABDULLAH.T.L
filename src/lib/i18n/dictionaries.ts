@@ -1,7 +1,7 @@
 import type { Locale } from "./config";
 
 /**
- * Central translation dictionary for Safer Bewae.
+ * Central translation dictionary for SafrBwai.
  * Arabic is the source of truth (arabic-first); English mirrors it.
  */
 export const dictionaries = {
@@ -9,7 +9,7 @@ export const dictionaries = {
     meta: {
       title: "سافر بوعي — قبل لا تدفع… افهم قرار سفرك",
       description:
-        "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز.",
+        "سافر بوعي أداة تجريبية لتحليل عروض السفر النصية بقواعد حتمية قبل الحجز.",
     },
     brand: {
       name: "سافر بوعي",
@@ -126,9 +126,9 @@ export const dictionaries = {
       ],
     },
     cta: {
-      title: "تابع تطوّر سافر بوعي",
-      subtitle: "مشروع تجريبي قيد التطوير — جرّب الواجهة الآن وكن أول من يجرّب الأدوات الحقيقية عند جاهزيتها.",
-      button: "أنشئ حسابك الآن",
+      title: "راجع عرض سفرك النصي",
+      subtitle: "ألصق نص العرض لتحصل على مراجعة حتمية للنقاط المذكورة والناقصة قبل الحجز.",
+      button: "حلّل عرض سفر",
     },
     footer: {
       tagline: "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز.",
@@ -568,6 +568,10 @@ export const dictionaries = {
       },
     },
     auth: {
+      unavailableTitle: "الحسابات غير متاحة في النسخة التجريبية الحالية.",
+      unavailableBody:
+        "تسجيل الدخول وإنشاء الحسابات غير مفعّلين في الـBeta المغلقة الحالية. يمكنك تحليل عرض سفر نصي دون حساب.",
+      unavailableAction: "حلّل عرض سفر",
       signInTitle: "تسجيل الدخول",
       signUpTitle: "إنشاء حساب",
       signInSubtitle: "أهلاً بعودتك إلى سافر بوعي.",
@@ -591,12 +595,12 @@ export const dictionaries = {
 
   en: {
     meta: {
-      title: "Safer Bewae — Understand your travel decision before you pay",
+      title: "SafrBwai — Understand your travel decision before you pay",
       description:
-        "Safer Bewae is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+        "SafrBwai is an experimental rule-based tool for reviewing text travel offers before booking.",
     },
     brand: {
-      name: "Safer Bewae",
+      name: "SafrBwai",
       tagline: "Understand your travel decision before you pay.",
     },
     nav: {
@@ -647,13 +651,13 @@ export const dictionaries = {
       badge: "Experimental project — under development",
       title: "Understand your travel decision before you pay.",
       subtitle:
-        "Safer Bewae is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+        "SafrBwai is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
       ctaPrimary: "Try the interface",
       ctaSecondary: "See how it will work",
       trustLine: "The current version demonstrates the product experience while real verification tools are still under development.",
     },
     benefits: {
-      title: "Why Safer Bewae?",
+      title: "Why SafrBwai?",
       subtitle: "The idea we're building: helping you reach a clearer travel decision before booking.",
       clearer: "A clearer decision",
       gaps: "Missing points surfaced",
@@ -710,9 +714,10 @@ export const dictionaries = {
       ],
     },
     cta: {
-      title: "Follow Safer Bewae as it develops",
-      subtitle: "An experimental project under development — try the interface now and be among the first to use the real tools once they're ready.",
-      button: "Create your account",
+      title: "Review your text travel offer",
+      subtitle:
+        "Paste the offer text for a deterministic review of the stated and missing information before booking.",
+      button: "Analyze a travel offer",
     },
     footer: {
       tagline: "An experimental project building tools to help you review your travel decision before booking.",
@@ -1151,9 +1156,13 @@ export const dictionaries = {
       },
     },
     auth: {
+      unavailableTitle: "Accounts are not available in the current Beta.",
+      unavailableBody:
+        "Sign-in and account creation are not enabled in the current Closed Beta. You can analyze a text travel offer without an account.",
+      unavailableAction: "Analyze a travel offer",
       signInTitle: "Sign in",
       signUpTitle: "Create account",
-      signInSubtitle: "Welcome back to Safer Bewae.",
+      signInSubtitle: "Welcome back to SafrBwai.",
       signUpSubtitle: "Start your journey toward conscious travel.",
       email: "Email",
       password: "Password",

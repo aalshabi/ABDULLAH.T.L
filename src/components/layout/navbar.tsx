@@ -71,14 +71,6 @@ export function Navbar() {
         <div className="flex items-center gap-1">
           <LanguageToggle />
           <ThemeToggle />
-          <div className="hidden items-center gap-2 sm:flex">
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/auth">{t.nav.signIn}</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/auth?mode=signup">{t.nav.getStarted}</Link>
-            </Button>
-          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -115,14 +107,6 @@ export function Navbar() {
               </Link>
             </li>
           ))}
-          <li className="mt-2 flex gap-2">
-            <Button asChild variant="outline" className="flex-1">
-              <Link href="/auth">{t.nav.signIn}</Link>
-            </Button>
-            <Button asChild className="flex-1">
-              <Link href="/auth?mode=signup">{t.nav.getStarted}</Link>
-            </Button>
-          </li>
         </ul>
       </div>
     </header>

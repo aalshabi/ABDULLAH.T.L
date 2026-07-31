@@ -25,20 +25,20 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "سافر بوعي — Safer Bewae | قبل لا تدفع، افهم قرار سفرك",
+    default: "سافر بوعي — SafrBwai | قبل لا تدفع، افهم قرار سفرك",
     template: "%s | سافر بوعي",
   },
   description:
-    "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز. Safer Bewae is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
+    "سافر بوعي أداة تجريبية لتحليل عروض السفر النصية بقواعد حتمية قبل الحجز. SafrBwai is an experimental rule-based tool for reviewing text travel offers before booking.",
   keywords: [
     "سافر بوعي",
-    "Safer Bewae",
-    "مراجعة الفنادق",
+    "SafrBwai",
+    "تحليل عرض سفر نصي",
     "قرار السفر",
-    "مقارنة الفنادق",
+    "مراجعة عرض السفر",
     "travel decisions",
-    "hotel review",
-    "conscious travel",
+    "text travel offer",
+    "rule-based analysis",
   ],
   authors: [{ name: "Abdullah Travel Lab" }],
   creator: "Abdullah Travel Lab",
@@ -47,16 +47,16 @@ export const metadata: Metadata = {
     locale: "ar_SA",
     alternateLocale: "en_US",
     url: SITE_URL,
-    title: "سافر بوعي — Safer Bewae",
+    title: "سافر بوعي — SafrBwai",
     description:
-      "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
-    siteName: "Safer Bewae",
+      "أداة تجريبية لمراجعة عروض السفر النصية قبل الحجز. An experimental tool for reviewing text travel offers before booking.",
+    siteName: "SafrBwai",
   },
   twitter: {
     card: "summary_large_image",
-    title: "سافر بوعي — Safer Bewae",
+    title: "سافر بوعي — SafrBwai",
     description:
-      "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز. An experimental project — under development.",
+      "أداة تجريبية لمراجعة عروض السفر النصية قبل الحجز. An experimental tool for reviewing text travel offers before booking.",
   },
   robots: DEMO_ROBOTS,
   alternates: {

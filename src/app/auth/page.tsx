@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { AuthForm } from "@/components/auth-form";
+import { AuthUnavailable } from "@/components/auth-unavailable";
 
 export const metadata: Metadata = {
-  title: "تسجيل الدخول — Authentication",
-  description: "سجّل الدخول أو أنشئ حساباً للبدء في سافر بوعي.",
+  title: "الحسابات غير متاحة — Accounts unavailable",
+  description:
+    "الحسابات غير مفعّلة في الـBeta المغلقة الحالية. Accounts are not enabled in the current Closed Beta.",
   alternates: { canonical: "/auth" },
   robots: { index: false, follow: false },
 };
 
 export default function Page() {
-  return (
-    <Suspense fallback={<div className="min-h-[60vh]" />}>
-      <AuthForm />
-    </Suspense>
-  );
+  return <AuthUnavailable />;
 }

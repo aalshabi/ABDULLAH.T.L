@@ -26,7 +26,7 @@ export function CTA() {
               </h2>
               <p className="mt-4 text-white/70">{t.cta.subtitle}</p>
               <Button asChild size="lg" className="mt-8">
-                <Link href="/auth?mode=signup">
+                <Link href="/analyze-offer">
                   {t.cta.button}
                   <ArrowLeft className="size-4 ltr:rotate-180" />
                 </Link>

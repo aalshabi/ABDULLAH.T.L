@@ -1,108 +1,68 @@
-# سافر بوعي — Safer Bewae
+# سافر بوعي — SafrBwai
 
-**منصة الذكاء الاصطناعي التي تكشف خدع السفر قبل أن تدفع.**
-_An AI travel-intelligence platform that exposes hotel, destination and travel-offer tricks before you pay._
+سافر بوعي أداة تجريبية تساعد المسافر على مراجعة المعلومات المذكورة في عرض السفر النصي قبل الحجز.
 
-Arabic-first (RTL), English-second (LTR). Built to feel premium, load fast, and be SEO-ready.
+SafrBwai is an experimental tool that helps travelers review the information stated in a text travel offer before booking.
 
----
+## نطاق الـBeta المغلقة
 
-## ✨ Features
+- تحليل عروض السفر النصية فقط.
+- تحليل حتمي قائم على قواعد.
+- لا يستخدم AI أو LLM.
+- يدعم العربية والإنجليزية.
+- ملفات PDF والصور والروابط غير مدعومة.
+- لا توجد حسابات مستخدمين مفعّلة في تدفق الـBeta الحالي.
+- لا تُحفظ نصوص العروض أو نتائج التحليل في قاعدة بيانات.
+- Feedback معطّل، ولا توجد Analytics أو أدوات تتبع تسويقي.
+- النتائج استشارية ولا تضمن صحة العرض أو البائع.
 
-- **Home** — premium bilingual landing with hero, stats, features, how-it-works, editorial pillars and CTA.
-- **Analyze Hotel** — trust score + red/green flags + metric breakdown (review authenticity, price transparency, photo accuracy, location honesty, hidden fees).
-- **Analyze Destination** — safety, best season, cost level, tourist traps and conscious-traveler tips.
-- **Analyze Travel Offer** — real-vs-advertised price reveal, hidden costs, transit quality and the catches.
-- **Compare Hotels** — up to four hotels side by side with a "best value" winner.
-- **Travel Knowledge** — filterable library of practical anti-scam guides.
-- **Dashboard** — saved analyses, estimated savings and quick actions (persisted locally).
-- **Authentication** — email/password + Google OAuth via Supabase, with a graceful demo mode.
+## Closed Beta scope
 
-## 🧱 Tech stack
+- Text analysis only.
+- Deterministic rule-based analysis.
+- No AI or LLM.
+- Arabic and English are supported.
+- PDF files, images, and links are not supported.
+- User accounts are not enabled in the current Beta flow.
+- Offer text and analysis results are not stored in a database.
+- Feedback is disabled, with no analytics or marketing tracking.
+- Results are advisory and are not a guarantee of the offer or seller.
 
-| Layer | Choice |
-| --- | --- |
-| Framework | **Next.js 15** (App Router, RSC) |
-| Language | **TypeScript** (strict) |
-| Styling | **Tailwind CSS** + CSS variables |
-| Components | **shadcn/ui** (Radix primitives) |
-| Auth & data | **Supabase** (`@supabase/ssr`) |
-| Animation | Framer Motion + progressive-enhancement CSS |
-| Icons | lucide-react · Toasts: sonner · Theme: next-themes |
+## طريقة العمل
 
-### Brand
+يلصق المستخدم نص عرض السفر في صفحة تحليل العرض. يُرسل النص إلى API التحليل لتنفيذ الطلب باستخدام المحرك الحتمي القائم على القواعد. قد تعرض النتيجة دليلًا مختصرًا مأخوذًا من النص، لكن هذا الدليل لا يدخل في نصوص النسخ ولا يُخزّن.
 
-- Navy `#0D1B3A` · Teal `#00A7B6` · White
-- Display font: **Tajawal** · Body font: **IBM Plex Sans Arabic** (both cover Arabic + Latin)
+The user pastes a travel-offer text into the offer-analysis page. The text is sent to the analysis API and processed by the deterministic rule-based engine. The result may show short evidence taken from the text, but that evidence is excluded from copied output and is not stored.
 
-## 🚀 Getting started
+لا تُدخل بيانات شخصية أو معلومات دفع. تحقّق من المصدر الرسمي قبل أي حجز أو التزام مالي.
+
+Do not enter personal or payment information. Verify with the official source before booking or making a financial commitment.
+
+## التشغيل المحلي
 
 ```bash
 npm install
-cp .env.example .env.local   # optional — see below
-npm run dev                  # http://localhost:3000
+npm run dev
 ```
 
-### Environment variables
+يفتح التطبيق افتراضيًا على:
 
-The app runs in a fully-functional **demo mode** with no configuration — every
-analysis feature works out of the box. To enable real authentication, add a
-Supabase project's keys to `.env.local`:
+```text
+http://localhost:3000
+```
+
+## الفحوص
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+npm run typecheck
+npm run lint
+npm test
+npm run test:regression
+npm run build
 ```
 
-When these are absent, sign-up is disabled and a notice is shown; all other
-pages remain fully usable.
+## الحالة
 
-## 📜 Scripts
+هذه Closed Beta محدودة. ملفات الخصوصية والشروط مسودات أولية تحتاج مراجعة قانونية قبل أي إطلاق تجاري.
 
-```bash
-npm run dev        # development server
-npm run build      # production build
-npm run start      # serve the production build
-npm run lint       # eslint
-npm run typecheck  # tsc --noEmit
-```
-
-## 🗂️ Structure
-
-```
-src/
-├── app/                    # routes (home, analyze-*, compare-hotels, knowledge, dashboard, auth)
-│   ├── sitemap.ts robots.ts manifest.ts   # SEO
-│   └── layout.tsx globals.css
-├── components/
-│   ├── ui/                 # shadcn primitives
-│   ├── layout/             # navbar, footer
-│   ├── home/               # landing sections
-│   ├── analyzers/          # hotel / destination / offer / compare
-│   └── shared/             # logo, score ring, reveal, page header, blocks
-├── lib/
-│   ├── analysis/engine.ts  # deterministic seeded analysis (swap-in point for a real LLM)
-│   ├── i18n/               # ar/en dictionaries + provider
-│   ├── supabase/           # browser + server clients
-│   └── knowledge.ts storage.ts utils.ts
-└── hooks/use-auth.ts
-```
-
-## 🔌 Swapping in a real AI backend
-
-`src/lib/analysis/engine.ts` exposes `analyzeHotel`, `analyzeDestination`,
-`analyzeOffer` and `compareHotels`. They currently return deterministic,
-seeded results so the UX is fully functional offline. Replace their internals
-with calls to an LLM + data providers while keeping the same return types — the
-UI needs no changes.
-
-## ⚡ Performance & SEO
-
-- Static prerendering for all content pages, `~105 kB` shared JS.
-- `metadata`, Open Graph, Twitter cards, JSON-LD, sitemap, robots and PWA manifest.
-- Theme-aware (light/dark), responsive, and `prefers-reduced-motion` friendly.
-
----
-
-© 2026 سافر بوعي · Safer Bewae — Abdullah Travel Lab
+© 2026 سافر بوعي · SafrBwai — Abdullah Travel Lab
