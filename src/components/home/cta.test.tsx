@@ -28,8 +28,9 @@ describe("closed Beta CTA", () => {
   it("sends the Arabic CTA to text offer analysis without an account claim", () => {
     renderCta();
 
-    const link = screen.getByRole("link", { name: /حلّل عرضًا نصيًا/ });
+    const link = screen.getByRole("link", { name: "حلّل عرض سفر" });
     expect(link.getAttribute("href")).toBe("/analyze-offer");
+    expect(screen.queryByText("حلّل عرضًا نصيًا")).toBeNull();
     expect(screen.queryByText("أنشئ حسابك الآن")).toBeNull();
   });
 
@@ -37,8 +38,9 @@ describe("closed Beta CTA", () => {
     window.localStorage.setItem("safer-bewae-locale", "en");
     renderCta();
 
-    const link = await screen.findByRole("link", { name: /Analyze a text offer/ });
+    const link = await screen.findByRole("link", { name: "Analyze a travel offer" });
     expect(link.getAttribute("href")).toBe("/analyze-offer");
+    expect(screen.queryByText("Analyze a text offer")).toBeNull();
     expect(screen.queryByText("Create your account")).toBeNull();
   });
 });

@@ -18,6 +18,22 @@ describe("demo dictionary", () => {
     expect(getDictionary("en").brand.name).toBe("SafrBwai");
   });
 
+  it("uses the approved closed Beta CTA and unavailable-account copy", () => {
+    const ar = getDictionary("ar");
+    const en = getDictionary("en");
+
+    expect(ar.cta.button).toBe("حلّل عرض سفر");
+    expect(en.cta.button).toBe("Analyze a travel offer");
+    expect(ar.auth.unavailableTitle).toBe(
+      "الحسابات غير متاحة في النسخة التجريبية الحالية."
+    );
+    expect(en.auth.unavailableTitle).toBe(
+      "Accounts are not available in the current Beta."
+    );
+    expect(ar.auth.unavailableAction).toBe("حلّل عرض سفر");
+    expect(en.auth.unavailableAction).toBe("Analyze a travel offer");
+  });
+
   it("exposes the exact demo badge in both languages", () => {
     expect(getDictionary("ar").demo.badge).toContain("نسخة تجريبية");
     expect(getDictionary("en").demo.badge).toContain("Demo version");

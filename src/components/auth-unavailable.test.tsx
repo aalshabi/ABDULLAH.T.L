@@ -28,12 +28,16 @@ describe("disabled account page", () => {
     const { container } = renderUnavailable();
 
     expect(
-      screen.getByRole("heading", { name: "الحسابات غير متاحة في الـBeta الحالية" })
+      screen.getByRole("heading", {
+        name: "الحسابات غير متاحة في النسخة التجريبية الحالية.",
+      })
     ).toBeTruthy();
     expect(screen.getByText(/تسجيل الدخول وإنشاء الحسابات غير مفعّلين/)).toBeTruthy();
-    expect(screen.getByRole("link", { name: /حلّل عرضًا نصيًا/ }).getAttribute("href")).toBe(
+    expect(screen.getByRole("link", { name: "حلّل عرض سفر" }).getAttribute("href")).toBe(
       "/analyze-offer"
     );
+    expect(screen.queryByText("الحسابات غير متاحة في الـBeta الحالية")).toBeNull();
+    expect(screen.queryByText("حلّل عرضًا نصيًا")).toBeNull();
     expect(container.querySelector("form")).toBeNull();
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -45,13 +49,15 @@ describe("disabled account page", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: "Accounts are unavailable in the current Beta",
+        name: "Accounts are not available in the current Beta.",
       })
     ).toBeTruthy();
     expect(screen.getByText(/Sign-in and account creation are not enabled/)).toBeTruthy();
     expect(
-      screen.getByRole("link", { name: /Analyze a text offer/ }).getAttribute("href")
+      screen.getByRole("link", { name: "Analyze a travel offer" }).getAttribute("href")
     ).toBe("/analyze-offer");
+    expect(screen.queryByText("Accounts are unavailable in the current Beta")).toBeNull();
+    expect(screen.queryByText("Analyze a text offer")).toBeNull();
     expect(container.querySelector("form")).toBeNull();
     expect(screen.queryByLabelText(/email|password/i)).toBeNull();
   });

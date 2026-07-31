@@ -128,7 +128,7 @@ export const dictionaries = {
     cta: {
       title: "راجع عرض سفرك النصي",
       subtitle: "ألصق نص العرض لتحصل على مراجعة حتمية للنقاط المذكورة والناقصة قبل الحجز.",
-      button: "حلّل عرضًا نصيًا",
+      button: "حلّل عرض سفر",
     },
     footer: {
       tagline: "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز.",
@@ -568,10 +568,10 @@ export const dictionaries = {
       },
     },
     auth: {
-      unavailableTitle: "الحسابات غير متاحة في الـBeta الحالية",
+      unavailableTitle: "الحسابات غير متاحة في النسخة التجريبية الحالية.",
       unavailableBody:
         "تسجيل الدخول وإنشاء الحسابات غير مفعّلين في الـBeta المغلقة الحالية. يمكنك تحليل عرض سفر نصي دون حساب.",
-      unavailableAction: "حلّل عرضًا نصيًا",
+      unavailableAction: "حلّل عرض سفر",
       signInTitle: "تسجيل الدخول",
       signUpTitle: "إنشاء حساب",
       signInSubtitle: "أهلاً بعودتك إلى سافر بوعي.",
@@ -717,7 +717,7 @@ export const dictionaries = {
       title: "Review your text travel offer",
       subtitle:
         "Paste the offer text for a deterministic review of the stated and missing information before booking.",
-      button: "Analyze a text offer",
+      button: "Analyze a travel offer",
     },
     footer: {
       tagline: "An experimental project building tools to help you review your travel decision before booking.",
@@ -1156,10 +1156,10 @@ export const dictionaries = {
       },
     },
     auth: {
-      unavailableTitle: "Accounts are unavailable in the current Beta",
+      unavailableTitle: "Accounts are not available in the current Beta.",
       unavailableBody:
         "Sign-in and account creation are not enabled in the current Closed Beta. You can analyze a text travel offer without an account.",
-      unavailableAction: "Analyze a text offer",
+      unavailableAction: "Analyze a travel offer",
       signInTitle: "Sign in",
       signUpTitle: "Create account",
       signInSubtitle: "Welcome back to SafrBwai.",
