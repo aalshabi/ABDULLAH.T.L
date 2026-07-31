@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     template: "%s | سافر بوعي",
   },
   description:
-    "سافر بوعي أداة تجريبية لتحليل عروض السفر النصية بقواعد حتمية قبل الحجز. SafrBwai is an experimental rule-based tool for reviewing text travel offers before booking.",
+    "سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز. SafrBwai helps you review the information stated in travel offers and make a clearer decision before booking.",
   keywords: [
     "سافر بوعي",
     "SafrBwai",
@@ -49,14 +49,14 @@ export const metadata: Metadata = {
     url: SITE_URL,
     title: "سافر بوعي — SafrBwai",
     description:
-      "أداة تجريبية لمراجعة عروض السفر النصية قبل الحجز. An experimental tool for reviewing text travel offers before booking.",
+      "أداة لمراجعة المعلومات الواردة في عروض السفر قبل الحجز. A tool for reviewing information stated in travel offers before booking.",
     siteName: "SafrBwai",
   },
   twitter: {
     card: "summary_large_image",
     title: "سافر بوعي — SafrBwai",
     description:
-      "أداة تجريبية لمراجعة عروض السفر النصية قبل الحجز. An experimental tool for reviewing text travel offers before booking.",
+      "أداة لمراجعة المعلومات الواردة في عروض السفر قبل الحجز. A tool for reviewing information stated in travel offers before booking.",
   },
   robots: DEMO_ROBOTS,
   alternates: {

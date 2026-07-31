@@ -56,7 +56,7 @@ export function Hero() {
             style={{ animationDelay: "240ms" }}
           >
             <Button asChild size="lg" className="w-full sm:w-auto">
-              <Link href="/analyze-hotel">
+              <Link href="/analyze-offer">
                 {t.hero.ctaPrimary}
                 <ArrowLeft className="size-4 ltr:rotate-180" />
               </Link>

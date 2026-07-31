@@ -29,7 +29,7 @@ describe("disabled account page", () => {
 
     expect(
       screen.getByRole("heading", {
-        name: "الحسابات غير متاحة في النسخة التجريبية الحالية.",
+        name: "الحسابات غير متاحة في إصدار ما قبل الإطلاق الحالي.",
       })
     ).toBeTruthy();
     expect(screen.getByText(/تسجيل الدخول وإنشاء الحسابات غير مفعّلين/)).toBeTruthy();
@@ -49,14 +49,16 @@ describe("disabled account page", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: "Accounts are not available in the current Beta.",
+        name: "Accounts are not available in the current pre-launch release.",
       })
     ).toBeTruthy();
-    expect(screen.getByText(/Sign-in and account creation are not enabled/)).toBeTruthy();
+    expect(screen.getByText(/Sign-in and account creation are not currently enabled/)).toBeTruthy();
     expect(
       screen.getByRole("link", { name: "Analyze a travel offer" }).getAttribute("href")
     ).toBe("/analyze-offer");
-    expect(screen.queryByText("Accounts are unavailable in the current Beta")).toBeNull();
+    expect(
+      screen.queryByText("Accounts are unavailable in the current pre-launch release")
+    ).toBeNull();
     expect(screen.queryByText("Analyze a text offer")).toBeNull();
     expect(container.querySelector("form")).toBeNull();
     expect(screen.queryByLabelText(/email|password/i)).toBeNull();

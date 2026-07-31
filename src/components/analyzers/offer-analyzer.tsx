@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { TravelOfferInputSelector } from "@/components/offer-input/travel-offer-input-selector";
-import { ClosedBetaNotice } from "@/components/offer-input/closed-beta-notice";
+import { ProductStageNotice } from "@/components/shared/product-stage-notice";
 import { TextOfferInput } from "@/components/offer-input/text-offer-input";
 import { FileOfferInput } from "@/components/offer-input/file-offer-input";
 import { ImageOfferInput } from "@/components/offer-input/image-offer-input";
@@ -268,7 +268,7 @@ export function OfferAnalyzer() {
       <div className="container mt-4 pb-20 sm:-mt-4">
         {phase === "input" && (
           <>
-            <ClosedBetaNotice />
+            <ProductStageNotice />
             <Card className="mx-auto max-w-2xl shadow-xl">
               <CardContent className="p-6 md:p-8">
                 <form onSubmit={onStart} className="space-y-5">

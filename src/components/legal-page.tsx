@@ -21,8 +21,8 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
   privacy: {
     ar: [
       {
-        h: "نطاق الـBeta الحالية",
-        p: "سافر بوعي أداة تجريبية مغلقة لتحليل عروض السفر النصية. لا يوجد تسجيل دخول أو حسابات مستخدمين مفعّلة في تدفق الـBeta الحالي.",
+        h: "نطاق ما قبل الإطلاق",
+        p: "سافر بوعي أداة لمراجعة عروض السفر النصية في إصدار ما قبل الإطلاق. لا يوجد تسجيل دخول أو حسابات مستخدمين مفعّلة في التدفق الحالي.",
       },
       {
         h: "المصادر المدعومة",
@@ -59,8 +59,8 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
     ],
     en: [
       {
-        h: "Current Beta scope",
-        p: "SafrBwai is a closed experimental tool for analyzing text travel offers. Sign-in and user accounts are not enabled in the current Beta flow.",
+        h: "Current pre-launch scope",
+        p: "SafrBwai is a pre-launch tool for reviewing text travel offers. Sign-in and user accounts are not enabled in the current flow.",
       },
       {
         h: "Supported sources",
@@ -100,11 +100,11 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
     ar: [
       {
         h: "طبيعة الخدمة",
-        p: "سافر بوعي أداة استشارية وتجريبية تحلل النص الذي يقدمه المستخدم فقط. النتائج تساعد على مراجعة المعلومات المذكورة ولا تمثّل نصيحة نهائية أو ضمانًا.",
+        p: "سافر بوعي أداة استشارية تحلل النص الذي يقدمه المستخدم فقط. النتائج تساعد على مراجعة المعلومات المذكورة ولا تمثّل نصيحة نهائية أو ضمانًا.",
       },
       {
         h: "نطاق الخدمة الحالي",
-        p: "تحليل النص هو المصدر الوحيد المدعوم في الـBeta الحالية. ملفات PDF والصور والروابط وميزات الحسابات غير مفعّلة.",
+        p: "تحليل النص هو المصدر الوحيد المدعوم في إصدار ما قبل الإطلاق. ملفات PDF والصور والروابط وميزات الحسابات غير مفعّلة.",
       },
       {
         h: "التحقق من البائع",
@@ -132,7 +132,7 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
       },
       {
         h: "حدود المسؤولية",
-        p: "تُقدَّم الخدمة «كما هي» دون ضمانات. لا نتحمّل مسؤولية قرار سفر أو خسارة تنتج عن الاعتماد على النتائج التجريبية.",
+        p: "تُقدَّم الخدمة «كما هي» دون ضمانات. لا نتحمّل مسؤولية قرار سفر أو خسارة تنتج عن الاعتماد على النتائج.",
       },
       {
         h: "التعديلات",
@@ -142,11 +142,11 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
     en: [
       {
         h: "Nature of the service",
-        p: "SafrBwai is an advisory experimental tool that analyzes only the text provided by the user. Results help review the stated information and do not constitute final advice or a guarantee.",
+        p: "SafrBwai is an advisory tool that analyzes only the text provided by the user. Results help review the stated information and do not constitute final advice or a guarantee.",
       },
       {
         h: "Current service scope",
-        p: "Text analysis is the only supported source in the current Beta. PDF files, images, links, and account features are not enabled.",
+        p: "Text analysis is the only supported source in the current pre-launch release. PDF files, images, links, and account features are not enabled.",
       },
       {
         h: "Seller verification",
@@ -174,7 +174,7 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
       },
       {
         h: "Limitation of liability",
-        p: "The service is provided \"as is\" without warranties. We are not liable for a travel decision or loss arising from reliance on experimental results.",
+        p: "The service is provided \"as is\" without warranties. We are not liable for a travel decision or loss arising from reliance on the results.",
       },
       {
         h: "Changes",

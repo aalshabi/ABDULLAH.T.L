@@ -1,29 +1,29 @@
 # سافر بوعي — SafrBwai
 
-سافر بوعي أداة تجريبية تساعد المسافر على مراجعة المعلومات المذكورة في عرض السفر النصي قبل الحجز.
+سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز.
 
-SafrBwai is an experimental tool that helps travelers review the information stated in a text travel offer before booking.
+SafrBwai helps you review the information stated in travel offers and make a clearer decision before booking.
 
-## نطاق الـBeta المغلقة
+## نطاق ما قبل الإطلاق
 
 - تحليل عروض السفر النصية فقط.
 - تحليل حتمي قائم على قواعد.
 - لا يستخدم AI أو LLM.
 - يدعم العربية والإنجليزية.
 - ملفات PDF والصور والروابط غير مدعومة.
-- لا توجد حسابات مستخدمين مفعّلة في تدفق الـBeta الحالي.
+- لا توجد حسابات مستخدمين مفعّلة في التدفق الحالي.
 - لا تُحفظ نصوص العروض أو نتائج التحليل في قاعدة بيانات.
 - Feedback معطّل، ولا توجد Analytics أو أدوات تتبع تسويقي.
 - النتائج استشارية ولا تضمن صحة العرض أو البائع.
 
-## Closed Beta scope
+## Pre-launch scope
 
 - Text analysis only.
 - Deterministic rule-based analysis.
 - No AI or LLM.
 - Arabic and English are supported.
 - PDF files, images, and links are not supported.
-- User accounts are not enabled in the current Beta flow.
+- User accounts are not enabled in the current flow.
 - Offer text and analysis results are not stored in a database.
 - Feedback is disabled, with no analytics or marketing tracking.
 - Results are advisory and are not a guarantee of the offer or seller.
@@ -63,6 +63,6 @@ npm run build
 
 ## الحالة
 
-هذه Closed Beta محدودة. ملفات الخصوصية والشروط مسودات أولية تحتاج مراجعة قانونية قبل أي إطلاق تجاري.
+هذا إصدار ما قبل الإطلاق. ملفات الخصوصية والشروط مسودات أولية تحتاج مراجعة قانونية قبل أي إطلاق تجاري.
 
 © 2026 سافر بوعي · SafrBwai — Abdullah Travel Lab

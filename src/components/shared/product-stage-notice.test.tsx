@@ -1,13 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { LanguageProvider } from "@/lib/i18n/provider";
-import { CLOSED_BETA_VERSION } from "@/lib/beta/version";
-import { ClosedBetaNotice } from "./closed-beta-notice";
+import { ProductStageNotice } from "./product-stage-notice";
 
 function renderNotice() {
   return render(
     <LanguageProvider>
-      <ClosedBetaNotice />
+      <ProductStageNotice />
     </LanguageProvider>
   );
 }
@@ -21,11 +20,17 @@ afterEach(() => {
   window.localStorage.clear();
 });
 
-describe("ClosedBetaNotice", () => {
-  it("shows the Arabic Limited Beta notice, text-only scope, safety warning, and policy links", () => {
+describe("ProductStageNotice", () => {
+  it("shows the Arabic pre-launch notice, text-only scope, safety warning, and policy links", () => {
     renderNotice();
 
-    expect(screen.getByRole("heading", { name: "نسخة تجريبية محدودة" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "إصدار ما قبل الإطلاق" })).toBeTruthy();
+    expect(screen.getByText("ما قبل الإطلاق")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "إصدار ما قبل الإطلاق — تحقق دائمًا من المصدر الرسمي قبل أي التزام مالي."
+      )
+    ).toBeTruthy();
     expect(
       screen.getByText("تحليل النص متاح حاليًا. ملفات PDF والصور والروابط غير مدعومة بعد.")
     ).toBeTruthy();
@@ -34,7 +39,6 @@ describe("ClosedBetaNotice", () => {
         "سافر بوعي يساعدك على مراجعة المعلومات المذكورة في العرض، لكنه لا يتحقق من هوية البائع ولا يضمن صحة العرض. لا تُدخل بيانات شخصية أو معلومات دفع."
       )
     ).toBeTruthy();
-    expect(screen.getByText(CLOSED_BETA_VERSION)).toBeTruthy();
     expect(screen.getByRole("link", { name: "سياسة الخصوصية" }).getAttribute("href")).toBe(
       "/privacy"
     );
@@ -43,11 +47,17 @@ describe("ClosedBetaNotice", () => {
     );
   });
 
-  it("shows the English Limited Beta notice and safety warning", async () => {
+  it("shows the English pre-launch notice and safety warning", async () => {
     window.localStorage.setItem("safer-bewae-locale", "en");
     renderNotice();
 
-    expect(await screen.findByRole("heading", { name: "Limited Beta" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Pre-launch release" })).toBeTruthy();
+    expect(screen.getByText("Pre-launch")).toBeTruthy();
+    expect(
+      screen.getByText(
+        "Pre-launch release — always verify with the official source before making a financial commitment."
+      )
+    ).toBeTruthy();
     expect(
       screen.getByText(
         "Text analysis is currently available. PDF files, images, and links are not supported yet."
@@ -58,11 +68,5 @@ describe("ClosedBetaNotice", () => {
         "SafrBwai helps you review the information stated in an offer. It does not verify the seller or guarantee the offer’s accuracy. Do not enter personal or payment information."
       )
     ).toBeTruthy();
-  });
-
-  it("reads the displayed beta version from the single beta version constant", () => {
-    renderNotice();
-    expect(CLOSED_BETA_VERSION).toBe("Beta 0.1");
-    expect(screen.getByText(CLOSED_BETA_VERSION)).toBeTruthy();
   });
 });

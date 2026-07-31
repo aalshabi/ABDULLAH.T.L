@@ -22,6 +22,70 @@ const homeText = [
   .join(" ");
 
 describe("home page integrity", () => {
+  it("uses the approved pre-launch product description in both languages", () => {
+    expect(ar.hero.subtitle).toBe(
+      "سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز."
+    );
+    expect(en.hero.subtitle).toBe(
+      "SafrBwai helps you review the information stated in travel offers and make a clearer decision before booking."
+    );
+    expect(ar.productStage.prelaunchNotice).toBe(
+      "إصدار ما قبل الإطلاق — تحقق دائمًا من المصدر الرسمي قبل أي التزام مالي."
+    );
+    expect(en.productStage.prelaunchNotice).toBe(
+      "Pre-launch release — always verify with the official source before making a financial commitment."
+    );
+  });
+
+  it("does not expose stale demo or closed-Beta wording on current launch surfaces", () => {
+    const launchSurfaceText = JSON.stringify({
+      ar: {
+        meta: ar.meta,
+        hero: ar.hero,
+        footer: ar.footer,
+        currentNotice: ar.productStage.prelaunchNotice,
+      },
+      en: {
+        meta: en.meta,
+        hero: en.hero,
+        footer: en.footer,
+        currentNotice: en.productStage.prelaunchNotice,
+      },
+    });
+
+    for (const staleText of [
+      "مشروع تجريبي",
+      "نسخة تجريبية محدودة",
+      "experimental project",
+      "Limited Beta",
+      "Demo version",
+    ]) {
+      expect(launchSurfaceText).not.toContain(staleText);
+    }
+  });
+
+  it("describes only current text-analysis behavior on the home page", () => {
+    expect(ar.how.step1Desc).toContain("نص عرض سفر");
+    expect(en.how.step1Desc).toContain("travel-offer text");
+    expect(ar.how.step2Desc).toContain("المحرك الحتمي");
+    expect(en.how.step2Desc).toContain("deterministic engine");
+
+    const currentHowAndPillars = JSON.stringify({
+      ar: { how: ar.how, pillars: ar.pillars },
+      en: { how: en.how, pillars: en.pillars },
+    });
+    for (const inactiveClaim of [
+      "رابط العرض",
+      "تنبيهات سريعة",
+      "الحجز الذكي",
+      "offer link",
+      "Fast alerts",
+      "Smart booking",
+    ]) {
+      expect(currentHowAndPillars).not.toContain(inactiveClaim);
+    }
+  });
+
   // (1) no fabricated stat numbers
   it("contains none of the fabricated stats (96%, 250k, 12k, 40k)", () => {
     for (const token of ["96%", "٩٦", "250k", "٢٥٠", "12k", "١٢ ألف", "40k", "٤٠ ألف"]) {

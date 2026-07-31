@@ -3,27 +3,24 @@
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/provider";
 import { Logo } from "@/components/shared/logo";
+import { getNavigableCapabilities } from "@/lib/product/capabilities";
 
 export function Footer() {
-  const { t } = useLanguage();
+  const { locale, t } = useLanguage();
   const year = 2026;
+  const productLinks = getNavigableCapabilities().map((capability) => ({
+    href: capability.route,
+    label: capability.title[locale],
+  }));
 
   const columns = [
     {
       title: t.footer.product,
-      links: [
-        { href: "/analyze-hotel", label: t.nav.analyzeHotel },
-        { href: "/analyze-destination", label: t.nav.analyzeDestination },
-        { href: "/analyze-offer", label: t.nav.analyzeOffer },
-        { href: "/compare-hotels", label: t.nav.compareHotels },
-      ],
+      links: productLinks,
     },
     {
       title: t.footer.company,
       links: [
-        { href: "/knowledge", label: t.nav.knowledge },
-        { href: "/dashboard", label: t.nav.dashboard },
-        { href: "/admin", label: t.admin.title },
         { href: "/#about", label: t.footer.about },
         { href: "/#contact", label: t.footer.contact },
       ],

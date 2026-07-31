@@ -6,23 +6,21 @@ import { DemoNotice, DemoUnavailable } from "./demo-notice";
 afterEach(cleanup);
 
 describe("DemoNotice", () => {
-  // (4) an analysis result shows the Demo badge — the notice renders the exact
-  // demo text (default locale is Arabic).
-  it("renders the demo badge text", () => {
+  it("renders accurate pre-launch preview text", () => {
     render(
       <LanguageProvider>
         <DemoNotice />
       </LanguageProvider>
     );
-    expect(screen.getByText(/نسخة تجريبية/)).toBeTruthy();
+    expect(screen.getByText(/معاينة قبل الإطلاق/)).toBeTruthy();
   });
 
-  it("DemoUnavailable renders the neutral 'not available' text", () => {
+  it("DemoUnavailable renders the neutral current-unavailability text", () => {
     render(
       <LanguageProvider>
         <DemoUnavailable />
       </LanguageProvider>
     );
-    expect(screen.getByText(/غير متاح في النسخة التجريبية/)).toBeTruthy();
+    expect(screen.getByText(/غير متاح حاليًا/)).toBeTruthy();
   });
 });

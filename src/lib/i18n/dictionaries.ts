@@ -9,11 +9,25 @@ export const dictionaries = {
     meta: {
       title: "سافر بوعي — قبل لا تدفع… افهم قرار سفرك",
       description:
-        "سافر بوعي أداة تجريبية لتحليل عروض السفر النصية بقواعد حتمية قبل الحجز.",
+        "سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز.",
     },
     brand: {
       name: "سافر بوعي",
       tagline: "افهم قرار سفرك قبل أن تدفع.",
+    },
+    productStage: {
+      labels: {
+        closed_beta: "نسخة تجريبية مغلقة",
+        prelaunch: "ما قبل الإطلاق",
+        public: "إصدار عام",
+      },
+      prelaunchNotice:
+        "إصدار ما قبل الإطلاق — تحقق دائمًا من المصدر الرسمي قبل أي التزام مالي.",
+      status: {
+        enabled: "متاح",
+        preview: "معاينة",
+        disabled: "غير متاح",
+      },
     },
     nav: {
       home: "الرئيسية",
@@ -35,7 +49,7 @@ export const dictionaries = {
       score: "معاينة",
       verdict: "معاينة",
       loading: "جارٍ التحميل…",
-      demoMode: "الوضع التجريبي",
+      demoMode: "وضع المعاينة",
       poweredByAI: "قيد التطوير",
       seconds: "ثانية",
       of: "من",
@@ -50,8 +64,8 @@ export const dictionaries = {
     },
     demo: {
       badge:
-        "نسخة تجريبية — هذه النتيجة مولّدة لأغراض عرض تجربة المستخدم، ولا تعتمد حاليًا على بيانات حقيقية أو مصادر خارجية.",
-      unavailable: "غير متاح في النسخة التجريبية — يتطلب بيانات ومصادر فعلية.",
+        "معاينة قبل الإطلاق — لا توجد نتيجة فعلية أو بيانات خارجية لهذه الأداة بعد.",
+      unavailable: "غير متاح حاليًا — يتطلب تنفيذًا وبيانات فعلية قبل التفعيل.",
       offerTitle: "استخراج المحتوى غير مفعّل بعد",
       offerBody:
         "النظام الحالي لا يقرأ محتوى ملف PDF أو الصورة، ولا ينفّذ OCR، ولا يستخرج أي بيانات فعلية من العرض. تجربة الرفع معروضة لأغراض العرض فقط، ولن يُنتَج تقرير تحليلي مبني على اسم الملف أو حجمه.",
@@ -60,13 +74,13 @@ export const dictionaries = {
       futureNote: "لن نعرض أي أرقام أو أسماء أو توصيات قبل توفّر بيانات ومصادر فعلية.",
     },
     hero: {
-      badge: "مشروع تجريبي قيد التطوير",
+      badge: "إصدار ما قبل الإطلاق",
       title: "قبل لا تدفع… افهم قرار سفرك.",
       subtitle:
-        "سافر بوعي مشروع تجريبي لتطوير أدوات تساعد المسافر على مراجعة الفنادق والوجهات وعروض السفر قبل الحجز.",
-      ctaPrimary: "جرّب الواجهة",
-      ctaSecondary: "شاهد كيف ستعمل",
-      trustLine: "نعرض حاليًا تجربة المنتج، بينما أدوات التحقق الفعلية ما زالت قيد التطوير.",
+        "سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز.",
+      ctaPrimary: "حلّل عرض سفر",
+      ctaSecondary: "تعرّف على الأدوات",
+      trustLine: "النتائج استشارية وتستند إلى النص الذي تدخله فقط.",
     },
     benefits: {
       title: "لماذا سافر بوعي؟",
@@ -77,8 +91,8 @@ export const dictionaries = {
       questions: "أسئلة أفضل قبل الحجز",
     },
     features: {
-      title: "الأدوات التي نطوّرها",
-      subtitle: "أدوات لمساعدتك على مراجعة قرارك قبل الحجز — قيد التطوير.",
+      title: "حالة الأدوات",
+      subtitle: "نوضّح ما هو متاح الآن وما يبقى للمعاينة قبل الإطلاق.",
       hotel: {
         title: "مراجعة الفنادق",
         desc: "أداة لمراجعة إشارات الفندق قبل الحجز — قيد التطوير.",
@@ -105,24 +119,24 @@ export const dictionaries = {
       },
     },
     how: {
-      title: "كيف ستعمل؟",
-      subtitle: "ثلاث خطوات نطوّرها لمساعدتك على قرار سفر أوضح.",
-      step1Title: "أدخل التفاصيل",
-      step1Desc: "اسم الفندق، الوجهة، أو رابط العرض — أي شيء تريد مراجعته.",
-      step2Title: "تستعرض الأداة",
-      step2Desc: "الإصدار الحقيقي سيراجع العوامل المهمة ويبرز النقاط الناقصة — قيد التطوير.",
-      step3Title: "افهم قرارك",
-      step3Desc: "صورة أوضح وأسئلة أفضل قبل أن تدفع — بدل أرقام غير موثّقة.",
+      title: "كيف تعمل مراجعة العرض النصي؟",
+      subtitle: "ثلاث خطوات واضحة تستخدم النص الذي تدخله فقط.",
+      step1Title: "ألصق نص العرض",
+      step1Desc: "أدخل نص عرض سفر غير حساس أو مجهّل، دون بيانات شخصية أو دفع.",
+      step2Title: "راجع النتيجة",
+      step2Desc: "يفحص المحرك الحتمي المعلومات المذكورة والناقصة والتناقضات الواضحة.",
+      step3Title: "تحقق قبل الالتزام",
+      step3Desc: "استخدم الأسئلة المقترحة، وتحقق دائمًا من المصدر الرسمي قبل الحجز أو الدفع.",
     },
     pillars: {
-      title: "الركائز الخمس التحريرية",
-      subtitle: "المبادئ التي تقود كل تحليل على المنصة.",
+      title: "مبادئ مراجعة العرض",
+      subtitle: "ما الذي تعرضه نتيجة التحليل النصي الحالية.",
       items: [
-        { title: "كشف الخدع", desc: "الفنادق، الطيران، الأسعار الخادعة." },
-        { title: "السياحة الداخلية", desc: "تطوير الوجهات المحلية ورؤية 2030." },
-        { title: "تحليل السمعة الرقمية", desc: "قراءة التقييمات وكشف المزيّف." },
-        { title: "الأخبار والأزمات", desc: "تنبيهات سريعة في النوافذ الحرجة." },
-        { title: "الحجز الذكي", desc: "أدوات وتذاكر قابلة للاسترداد." },
+        { title: "حقائق مؤكدة", desc: "معلومات صريحة مستخرجة من النص نفسه." },
+        { title: "معلومات ناقصة", desc: "نقاط مهمة لم يذكرها العرض بوضوح." },
+        { title: "تناقضات واضحة", desc: "اختلافات حتمية يمكن إثباتها داخل النص." },
+        { title: "أسئلة مقترحة", desc: "حتى خمسة أسئلة عملية قبل الحجز." },
+        { title: "تحقق رسمي", desc: "تذكير بالرجوع إلى المصدر الرسمي قبل أي التزام مالي." },
       ],
     },
     cta: {
@@ -131,7 +145,7 @@ export const dictionaries = {
       button: "حلّل عرض سفر",
     },
     footer: {
-      tagline: "مشروع تجريبي لأدوات تساعدك على مراجعة قرار سفرك قبل الحجز.",
+      tagline: "أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر قبل الحجز.",
       product: "المنتج",
       company: "الشركة",
       legal: "قانوني",
@@ -386,8 +400,8 @@ export const dictionaries = {
       v2: {
         comingSoon: "قريبًا — هذا المصدر غير مفعّل بعد. المتاح الآن هو تحليل النص فقط.",
         unsupportedInputLabel: "قريبًا",
-        closedBeta: {
-          title: "نسخة تجريبية محدودة",
+        releaseScope: {
+          title: "إصدار ما قبل الإطلاق",
           supportedSources:
             "تحليل النص متاح حاليًا. ملفات PDF والصور والروابط غير مدعومة بعد.",
           safetyNotice:
@@ -568,9 +582,9 @@ export const dictionaries = {
       },
     },
     auth: {
-      unavailableTitle: "الحسابات غير متاحة في النسخة التجريبية الحالية.",
+      unavailableTitle: "الحسابات غير متاحة في إصدار ما قبل الإطلاق الحالي.",
       unavailableBody:
-        "تسجيل الدخول وإنشاء الحسابات غير مفعّلين في الـBeta المغلقة الحالية. يمكنك تحليل عرض سفر نصي دون حساب.",
+        "تسجيل الدخول وإنشاء الحسابات غير مفعّلين حاليًا. يمكنك تحليل عرض سفر نصي دون حساب.",
       unavailableAction: "حلّل عرض سفر",
       signInTitle: "تسجيل الدخول",
       signUpTitle: "إنشاء حساب",
@@ -597,11 +611,25 @@ export const dictionaries = {
     meta: {
       title: "SafrBwai — Understand your travel decision before you pay",
       description:
-        "SafrBwai is an experimental rule-based tool for reviewing text travel offers before booking.",
+        "SafrBwai helps you review the information stated in travel offers and make a clearer decision before booking.",
     },
     brand: {
       name: "SafrBwai",
       tagline: "Understand your travel decision before you pay.",
+    },
+    productStage: {
+      labels: {
+        closed_beta: "Closed Beta",
+        prelaunch: "Pre-launch",
+        public: "Public release",
+      },
+      prelaunchNotice:
+        "Pre-launch release — always verify with the official source before making a financial commitment.",
+      status: {
+        enabled: "Available",
+        preview: "Preview",
+        disabled: "Unavailable",
+      },
     },
     nav: {
       home: "Home",
@@ -623,7 +651,7 @@ export const dictionaries = {
       score: "Preview",
       verdict: "Preview",
       loading: "Loading…",
-      demoMode: "Demo mode",
+      demoMode: "Preview mode",
       poweredByAI: "Under development",
       seconds: "sec",
       of: "of",
@@ -638,8 +666,8 @@ export const dictionaries = {
     },
     demo: {
       badge:
-        "Demo version — this result is generated to demonstrate the user experience and is not currently based on verified external data.",
-      unavailable: "Not available in the demo — requires real data and sources.",
+        "Pre-launch preview — this tool has no real result or external data yet.",
+      unavailable: "Not currently available — implementation and real data are required before enabling.",
       offerTitle: "Content extraction is not enabled yet",
       offerBody:
         "The current system does not read PDF or image content, does not run OCR, and does not extract any real data from the offer. The upload experience is shown for demonstration only, and no analytical report is produced from the file name or size.",
@@ -648,13 +676,13 @@ export const dictionaries = {
       futureNote: "We won't show any numbers, names or recommendations before real data and sources are available.",
     },
     hero: {
-      badge: "Experimental project — under development",
+      badge: "Pre-launch release",
       title: "Understand your travel decision before you pay.",
       subtitle:
-        "SafrBwai is an experimental project developing tools to help travelers review hotels, destinations and travel offers before booking.",
-      ctaPrimary: "Try the interface",
-      ctaSecondary: "See how it will work",
-      trustLine: "The current version demonstrates the product experience while real verification tools are still under development.",
+        "SafrBwai helps you review the information stated in travel offers and make a clearer decision before booking.",
+      ctaPrimary: "Analyze a travel offer",
+      ctaSecondary: "Explore the tools",
+      trustLine: "Results are advisory and based only on the text you provide.",
     },
     benefits: {
       title: "Why SafrBwai?",
@@ -665,8 +693,8 @@ export const dictionaries = {
       questions: "Better questions before booking",
     },
     features: {
-      title: "The tools we're building",
-      subtitle: "Tools to help you review your decision before booking — under development.",
+      title: "Tool status",
+      subtitle: "A clear view of what is available now and what remains a pre-launch preview.",
       hotel: {
         title: "Hotel review",
         desc: "A tool to review a hotel's signals before booking — under development.",
@@ -693,24 +721,24 @@ export const dictionaries = {
       },
     },
     how: {
-      title: "How it will work",
-      subtitle: "Three steps we're building to help you reach a clearer decision.",
-      step1Title: "Enter the details",
-      step1Desc: "A hotel name, destination or offer link — anything you want to review.",
-      step2Title: "The tool reviews",
-      step2Desc: "The real version will review the important factors and surface missing points — under development.",
-      step3Title: "Understand your decision",
-      step3Desc: "A clearer picture and better questions before you pay — instead of unverified numbers.",
+      title: "How does text-offer review work?",
+      subtitle: "Three clear steps that use only the text you provide.",
+      step1Title: "Paste the offer text",
+      step1Desc: "Enter non-sensitive or anonymized travel-offer text without personal or payment data.",
+      step2Title: "Review the result",
+      step2Desc: "The deterministic engine checks stated information, missing details, and clear contradictions.",
+      step3Title: "Verify before committing",
+      step3Desc: "Use the suggested questions and always verify with the official source before booking or paying.",
     },
     pillars: {
-      title: "The five editorial pillars",
-      subtitle: "The principles that drive every analysis on the platform.",
+      title: "Offer-review principles",
+      subtitle: "What the current text-analysis result presents.",
       items: [
-        { title: "Trick exposure", desc: "Hotels, flights and deceptive pricing." },
-        { title: "Domestic tourism", desc: "Developing local destinations & Vision 2030." },
-        { title: "Digital reputation", desc: "Reading reviews and detecting fakes." },
-        { title: "News & crises", desc: "Fast alerts in critical windows." },
-        { title: "Smart booking", desc: "Tools and refundable tickets." },
+        { title: "Confirmed facts", desc: "Explicit information extracted from the text itself." },
+        { title: "Missing information", desc: "Important points the offer does not clearly state." },
+        { title: "Clear contradictions", desc: "Deterministic differences that can be proven within the text." },
+        { title: "Suggested questions", desc: "Up to five practical questions before booking." },
+        { title: "Official verification", desc: "A reminder to check the official source before any financial commitment." },
       ],
     },
     cta: {
@@ -720,7 +748,7 @@ export const dictionaries = {
       button: "Analyze a travel offer",
     },
     footer: {
-      tagline: "An experimental project building tools to help you review your travel decision before booking.",
+      tagline: "A tool that helps you review the information stated in travel offers before booking.",
       product: "Product",
       company: "Company",
       legal: "Legal",
@@ -974,8 +1002,8 @@ export const dictionaries = {
       v2: {
         comingSoon: "Coming soon — this source is not enabled yet. Only text analysis is available now.",
         unsupportedInputLabel: "Coming soon",
-        closedBeta: {
-          title: "Limited Beta",
+        releaseScope: {
+          title: "Pre-launch release",
           supportedSources:
             "Text analysis is currently available. PDF files, images, and links are not supported yet.",
           safetyNotice:
@@ -1156,9 +1184,9 @@ export const dictionaries = {
       },
     },
     auth: {
-      unavailableTitle: "Accounts are not available in the current Beta.",
+      unavailableTitle: "Accounts are not available in the current pre-launch release.",
       unavailableBody:
-        "Sign-in and account creation are not enabled in the current Closed Beta. You can analyze a text travel offer without an account.",
+        "Sign-in and account creation are not currently enabled. You can analyze a text travel offer without an account.",
       unavailableAction: "Analyze a travel offer",
       signInTitle: "Sign in",
       signUpTitle: "Create account",

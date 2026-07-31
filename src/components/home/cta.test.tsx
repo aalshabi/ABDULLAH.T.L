@@ -24,7 +24,7 @@ afterEach(() => {
   window.localStorage.clear();
 });
 
-describe("closed Beta CTA", () => {
+describe("pre-launch CTA", () => {
   it("sends the Arabic CTA to text offer analysis without an account claim", () => {
     renderCta();
 

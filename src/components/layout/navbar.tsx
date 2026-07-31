@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/logo";
 import { LanguageToggle } from "@/components/shared/language-toggle";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { getNavigableCapabilities } from "@/lib/product/capabilities";
 
 export function Navbar() {
-  const { t } = useLanguage();
+  const { locale, t } = useLanguage();
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
@@ -26,14 +27,7 @@ export function Navbar() {
 
   React.useEffect(() => setOpen(false), [pathname]);
 
-  const links = [
-    { href: "/analyze-hotel", label: t.nav.analyzeHotel },
-    { href: "/analyze-destination", label: t.nav.analyzeDestination },
-    { href: "/analyze-offer", label: t.nav.analyzeOffer },
-    { href: "/compare-hotels", label: t.nav.compareHotels },
-    { href: "/knowledge", label: t.nav.knowledge },
-    { href: "/dashboard", label: t.nav.dashboard },
-  ];
+  const links = getNavigableCapabilities();
 
   return (
     <header
@@ -49,19 +43,24 @@ export function Navbar() {
 
         <ul className="hidden items-center gap-1 lg:flex">
           {links.map((link) => {
-            const active = pathname === link.href;
+            const active = pathname === link.route;
             return (
-              <li key={link.href}>
+              <li key={link.key}>
                 <Link
-                  href={link.href}
+                  href={link.route}
                   className={cn(
-                    "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                    "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
                     active
                       ? "text-teal"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
-                  {link.label}
+                  <span>{link.title[locale]}</span>
+                  {link.status === "preview" && (
+                    <span className="hidden rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] text-amber-700 dark:text-amber-300 xl:inline">
+                      {t.productStage.status.preview}
+                    </span>
+                  )}
                 </Link>
               </li>
             );
@@ -93,17 +92,22 @@ export function Navbar() {
       >
         <ul className="container flex flex-col gap-1 py-4">
           {links.map((link) => (
-            <li key={link.href}>
+            <li key={link.key}>
               <Link
-                href={link.href}
+                href={link.route}
                 className={cn(
-                  "block rounded-lg px-4 py-3 text-base font-semibold transition-colors",
-                  pathname === link.href
+                  "flex items-center justify-between gap-3 rounded-lg px-4 py-3 text-base font-semibold transition-colors",
+                  pathname === link.route
                     ? "bg-teal/10 text-teal"
                     : "text-foreground hover:bg-muted"
                 )}
               >
-                {link.label}
+                <span>{link.title[locale]}</span>
+                {link.status === "preview" && (
+                  <span className="rounded bg-amber-500/10 px-2 py-1 text-xs text-amber-700 dark:text-amber-300">
+                    {t.productStage.status.preview}
+                  </span>
+                )}
               </Link>
             </li>
           ))}

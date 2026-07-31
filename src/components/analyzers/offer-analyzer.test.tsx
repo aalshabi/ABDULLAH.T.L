@@ -87,7 +87,7 @@ describe("OfferAnalyzer text → API integration", () => {
     renderAnalyzer();
 
     const betaHeading = screen.getByRole("heading", {
-      name: d.analyzeOffer.v2.closedBeta.title,
+      name: d.analyzeOffer.v2.releaseScope.title,
     });
     const layoutContainer = betaHeading.closest(".container");
     const classTokens = layoutContainer?.className.split(/\s+/) ?? [];
