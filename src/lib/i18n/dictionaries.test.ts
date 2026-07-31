@@ -43,6 +43,25 @@ describe("product dictionary", () => {
     );
   });
 
+  it("describes the enabled text-analysis confirmation step accurately", () => {
+    const arReview = getDictionary("ar").analyzeOffer.v1.review;
+    const enReview = getDictionary("en").analyzeOffer.v1.review;
+
+    expect(arReview.statusText).toBe("جاهز للتحليل — سيبدأ التحليل عند التأكيد.");
+    expect(arReview.confirmDisabledTip).toBe("أكمل إدخال نص صالح قبل التأكيد.");
+    expect(enReview.statusText).toBe(
+      "Ready for analysis — analysis will start after confirmation."
+    );
+    expect(enReview.confirmDisabledTip).toBe(
+      "Complete a valid text input before confirming."
+    );
+
+    const reviewCopy = JSON.stringify({ arReview, enReview });
+    expect(reviewCopy).not.toContain("المرحلة التالية");
+    expect(reviewCopy).not.toContain("next phase");
+    expect(reviewCopy).not.toContain("not enabled yet");
+  });
+
   it("exposes the offer 'extraction not enabled' message", () => {
     expect(getDictionary("ar").demo.offerTitle).toContain("غير مفعّل");
     expect(getDictionary("en").demo.offerBody).toMatch(/does not|OCR/i);
