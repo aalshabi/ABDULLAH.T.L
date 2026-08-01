@@ -16,6 +16,10 @@ function legalText(doc: "privacy" | "terms", locale: "ar" | "en"): string {
   return LEGAL_CONTENT[doc][locale].map(({ h, p }) => `${h} ${p}`).join(" ");
 }
 
+function legalLinks(doc: "privacy" | "terms", locale: "ar" | "en"): string[] {
+  return LEGAL_CONTENT[doc][locale].flatMap(({ links = [] }) => links.map(({ href }) => href));
+}
+
 const readme = readSource("README.md");
 const privacyAr = legalText("privacy", "ar");
 const privacyEn = legalText("privacy", "en");
@@ -68,6 +72,16 @@ describe("current pre-launch product integrity", () => {
     expect(privacyEn).toContain("Feedback is not enabled and is not recorded");
     expect(privacyAr).toContain("تفضيلات اللغة والمظهر");
     expect(privacyEn).toContain("Language and theme preferences");
+    expect(privacyAr).toContain("لا يرسل اسم الفندق أو المدينة إلى Google حاليًا");
+    expect(privacyEn).toContain("does not currently send a hotel name or city to Google");
+    expect(privacyAr).toContain("اسم الفندق، والمدينة الاختيارية، ولغة الواجهة المختارة");
+    expect(privacyEn).toContain("hotel name, optional city, and selected interface language");
+    expect(privacyAr).toContain("لا يُرسل نص عرض السفر إلى Google");
+    expect(privacyEn).toContain("Travel-offer text is not sent to Google");
+    expect(privacyAr).toContain("لن يحفظ الإصدار الأول استعلام بحث الفندق أو استجابة Google الخام");
+    expect(privacyEn).toContain("will not persist the hotel-search query, raw Google response");
+    expect(legalLinks("privacy", "ar")).toContain("https://policies.google.com/privacy");
+    expect(legalLinks("privacy", "en")).toContain("https://policies.google.com/privacy");
 
     for (const removedClaim of [
       "Supabase",
@@ -95,6 +109,20 @@ describe("current pre-launch product integrity", () => {
     expect(termsEn).toContain("Verify with the official source");
     expect(termsAr).toContain("لا تُدخل بيانات شخصية أو معلومات دفع");
     expect(termsEn).toContain("Do not enter personal or payment information");
+    expect(termsAr).toContain("بحث هوية الفندق ما زال معاينة معطلة ولا يرسل بيانات إلى Google");
+    expect(termsEn).toContain("Hotel identity search remains a disabled preview and does not send data to Google");
+    expect(termsAr).toContain("التقييم وعدد المراجعات والمراجعات والصور والأسعار والتوفر ليست ضمن الإصدار الأول");
+    expect(termsEn).toContain("Ratings, review counts, reviews, photos, prices, and availability are not included");
+    expect(termsAr).toContain("لا تمثل تحققًا مستقلًا أو توصية من سافر بوعي");
+    expect(termsEn).toContain("not independent verification or a recommendation by SafrBwai");
+    expect(legalLinks("terms", "ar")).toEqual([
+      "https://cloud.google.com/maps-platform/terms",
+      "https://policies.google.com/privacy",
+    ]);
+    expect(legalLinks("terms", "en")).toEqual([
+      "https://cloud.google.com/maps-platform/terms",
+      "https://policies.google.com/privacy",
+    ]);
 
     for (const removedClaim of [
       "العلاقة مع",
