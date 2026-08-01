@@ -15,23 +15,20 @@ const UNAPPROVED_ENGLISH_NAME = ["Safer", "Bewae"].join(" ");
 
 const HEADER_LINKS = [
   "/",
+  "/analyze-offer",
   "/analyze-hotel",
   "/analyze-destination",
-  "/analyze-offer",
   "/compare-hotels",
   "/knowledge",
-  "/dashboard",
 ];
 
 const FOOTER_LINKS = [
   "/",
+  "/analyze-offer",
   "/analyze-hotel",
   "/analyze-destination",
-  "/analyze-offer",
   "/compare-hotels",
   "/knowledge",
-  "/dashboard",
-  "/admin",
   "/#about",
   "/#contact",
   "/privacy",
@@ -88,7 +85,7 @@ describe("visible brand name", () => {
     expect(footer!.textContent).not.toContain(UNAPPROVED_ENGLISH_NAME);
   });
 
-  it("keeps non-account navigation routes and removes account entry points", () => {
+  it("derives navigation from visible capabilities and removes disabled entry points", () => {
     const { container } = renderLayout();
     const header = container.querySelector("header");
     const footer = container.querySelector("footer");
@@ -97,6 +94,8 @@ describe("visible brand name", () => {
     expect(Array.from(new Set(headerHrefs))).toEqual(HEADER_LINKS);
     expect(headerHrefs).not.toContain("/auth");
     expect(headerHrefs).not.toContain("/auth?mode=signup");
+    expect(headerHrefs).not.toContain("/dashboard");
+    expect(headerHrefs).not.toContain("/admin");
     expect(hrefs(footer!)).toEqual(FOOTER_LINKS);
   });
 

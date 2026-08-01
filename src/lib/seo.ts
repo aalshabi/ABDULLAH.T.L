@@ -1,9 +1,8 @@
 /**
- * SEO constants for the experimental (demo) phase.
+ * SEO constants for the pre-launch phase.
  *
- * The whole site is kept OUT of search indexes until a real commercial
- * launch — the demo generates illustrative UX and must not be archived or
- * presented publicly as a working, verified product.
+ * The whole site remains out of search indexes until the public launch gate
+ * has passed. Stage 6A intentionally does not alter these controls.
  */
 export const DEMO_ROBOTS = {
   index: false,
@@ -14,4 +13,4 @@ export const SITE_TITLE_AR = "قبل لا تدفع… افهم قرار سفرك
 export const SITE_TITLE_EN = "Understand your travel decision before you pay.";
 
 export const SITE_DESCRIPTION =
-  "سافر بوعي أداة تجريبية لتحليل عروض السفر النصية بقواعد حتمية قبل الحجز. SafrBwai is an experimental rule-based tool for reviewing text travel offers before booking.";
+  "سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز. SafrBwai helps you review the information stated in travel offers and make a clearer decision before booking.";

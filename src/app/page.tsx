@@ -4,14 +4,15 @@ import { Features } from "@/components/home/features";
 import { HowItWorks } from "@/components/home/how-it-works";
 import { Pillars } from "@/components/home/pillars";
 import { CTA } from "@/components/home/cta";
+import { ProductStageNotice } from "@/components/shared/product-stage-notice";
 
-// Neutral structured data for the experimental text-analysis tool.
+// Neutral structured data for the pre-launch travel-offer review tool.
 const HOME_JSON_LD = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "SafrBwai — سافر بوعي",
   description:
-    "An experimental rule-based tool that helps travelers review information stated in text travel offers before booking.",
+    "A tool that helps travelers review information stated in travel offers before booking.",
   inLanguage: ["ar", "en"],
 };
 
@@ -23,6 +24,9 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(HOME_JSON_LD) }}
       />
       <Hero />
+      <div className="container pt-8">
+        <ProductStageNotice />
+      </div>
       <Benefits />
       <Features />
       <HowItWorks />

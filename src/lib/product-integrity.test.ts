@@ -22,17 +22,19 @@ const privacyEn = legalText("privacy", "en");
 const termsAr = legalText("terms", "ar");
 const termsEn = legalText("terms", "en");
 
-describe("current closed Beta product integrity", () => {
-  it("describes a text-only closed Beta without claiming AI, scoring, or inactive tools", () => {
-    expect(readme).toContain("سافر بوعي أداة تجريبية");
+describe("current pre-launch product integrity", () => {
+  it("describes a text-only pre-launch release without claiming AI, scoring, or inactive tools", () => {
     expect(readme).toContain(
-      "SafrBwai is an experimental tool that helps travelers review the information stated in a text travel offer before booking."
+      "سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز."
+    );
+    expect(readme).toContain(
+      "SafrBwai helps you review the information stated in travel offers and make a clearer decision before booking."
     );
     expect(readme).toContain("Text analysis only.");
     expect(readme).toContain("Deterministic rule-based analysis.");
     expect(readme).toContain("No AI or LLM.");
     expect(readme).toContain("PDF files, images, and links are not supported.");
-    expect(readme).toContain("Closed Beta");
+    expect(readme).toContain("Pre-launch scope");
     expect(readme).toContain("Results are advisory");
 
     for (const unsupportedClaim of [
@@ -49,7 +51,7 @@ describe("current closed Beta product integrity", () => {
     }
   });
 
-  it("keeps the privacy draft aligned with the current Arabic and English Beta flow", () => {
+  it("keeps the privacy draft aligned with the current Arabic and English pre-launch flow", () => {
     expect(privacyAr).toContain("لا يوجد تسجيل دخول أو حسابات مستخدمين مفعّلة");
     expect(privacyEn).toContain("Sign-in and user accounts are not enabled");
     expect(privacyAr).toContain("رفع ملفات PDF أو الصور وتحليل الروابط غير مدعوم");
@@ -117,10 +119,10 @@ describe("current closed Beta product integrity", () => {
     const appManifest = manifest();
 
     expect(metadataSources).toContain("SafrBwai");
-    expect(metadataSources).toContain("text travel offers");
-    expect(SITE_DESCRIPTION).toContain("تحليل عروض السفر النصية");
+    expect(metadataSources).toContain("travel offers");
+    expect(SITE_DESCRIPTION).toContain("مراجعة المعلومات الواردة في عروض السفر");
     expect(appManifest.name).toBe("سافر بوعي — SafrBwai");
-    expect(appManifest.description).toContain("عروض السفر النصية");
+    expect(appManifest.description).toContain("عروض السفر");
     expect(metadataSources).not.toContain("ذكاء اصطناعي");
     expect(metadataSources.toLowerCase()).not.toMatch(/\bai\b/);
     expect(metadataSources.toLowerCase()).not.toContain("scoring");

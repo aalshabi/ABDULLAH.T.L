@@ -12,31 +12,54 @@ function dictionaryKeyPaths(value: unknown, prefix = ""): string[] {
   });
 }
 
-describe("demo dictionary", () => {
+describe("product dictionary", () => {
   it("uses the approved product name in both languages", () => {
     expect(getDictionary("ar").brand.name).toBe("سافر بوعي");
     expect(getDictionary("en").brand.name).toBe("SafrBwai");
   });
 
-  it("uses the approved closed Beta CTA and unavailable-account copy", () => {
+  it("uses the approved CTA and pre-launch unavailable-account copy", () => {
     const ar = getDictionary("ar");
     const en = getDictionary("en");
 
     expect(ar.cta.button).toBe("حلّل عرض سفر");
     expect(en.cta.button).toBe("Analyze a travel offer");
     expect(ar.auth.unavailableTitle).toBe(
-      "الحسابات غير متاحة في النسخة التجريبية الحالية."
+      "الحسابات غير متاحة في إصدار ما قبل الإطلاق الحالي."
     );
     expect(en.auth.unavailableTitle).toBe(
-      "Accounts are not available in the current Beta."
+      "Accounts are not available in the current pre-launch release."
     );
     expect(ar.auth.unavailableAction).toBe("حلّل عرض سفر");
     expect(en.auth.unavailableAction).toBe("Analyze a travel offer");
   });
 
-  it("exposes the exact demo badge in both languages", () => {
-    expect(getDictionary("ar").demo.badge).toContain("نسخة تجريبية");
-    expect(getDictionary("en").demo.badge).toContain("Demo version");
+  it("exposes the exact pre-launch notice in both languages", () => {
+    expect(getDictionary("ar").productStage.prelaunchNotice).toBe(
+      "إصدار ما قبل الإطلاق — تحقق دائمًا من المصدر الرسمي قبل أي التزام مالي."
+    );
+    expect(getDictionary("en").productStage.prelaunchNotice).toBe(
+      "Pre-launch release — always verify with the official source before making a financial commitment."
+    );
+  });
+
+  it("describes the enabled text-analysis confirmation step accurately", () => {
+    const arReview = getDictionary("ar").analyzeOffer.v1.review;
+    const enReview = getDictionary("en").analyzeOffer.v1.review;
+
+    expect(arReview.statusText).toBe("جاهز للتحليل — سيبدأ التحليل عند التأكيد.");
+    expect(arReview.confirmDisabledTip).toBe("أكمل إدخال نص صالح قبل التأكيد.");
+    expect(enReview.statusText).toBe(
+      "Ready for analysis — analysis will start after confirmation."
+    );
+    expect(enReview.confirmDisabledTip).toBe(
+      "Complete a valid text input before confirming."
+    );
+
+    const reviewCopy = JSON.stringify({ arReview, enReview });
+    expect(reviewCopy).not.toContain("المرحلة التالية");
+    expect(reviewCopy).not.toContain("next phase");
+    expect(reviewCopy).not.toContain("not enabled yet");
   });
 
   it("exposes the offer 'extraction not enabled' message", () => {
@@ -44,9 +67,9 @@ describe("demo dictionary", () => {
     expect(getDictionary("en").demo.offerBody).toMatch(/does not|OCR/i);
   });
 
-  it("exposes the neutral 'not available in demo' replacement text", () => {
+  it("exposes the neutral current-unavailability replacement text", () => {
     expect(getDictionary("ar").demo.unavailable).toContain("غير متاح");
-    expect(getDictionary("en").demo.unavailable).toContain("Not available");
+    expect(getDictionary("en").demo.unavailable).toContain("Not currently available");
   });
 
   it("exposes beta feedback messages and reasons in both languages", () => {
@@ -97,15 +120,15 @@ describe("demo dictionary", () => {
     }
   });
 
-  it("exposes the closed beta scope and safety copy in both languages", () => {
-    const ar = getDictionary("ar").analyzeOffer.v2.closedBeta;
-    const en = getDictionary("en").analyzeOffer.v2.closedBeta;
+  it("exposes the pre-launch scope and safety copy in both languages", () => {
+    const ar = getDictionary("ar").analyzeOffer.v2.releaseScope;
+    const en = getDictionary("en").analyzeOffer.v2.releaseScope;
 
-    expect(ar.title).toBe("نسخة تجريبية محدودة");
+    expect(ar.title).toBe("إصدار ما قبل الإطلاق");
     expect(ar.supportedSources).toBe(
       "تحليل النص متاح حاليًا. ملفات PDF والصور والروابط غير مدعومة بعد."
     );
-    expect(en.title).toBe("Limited Beta");
+    expect(en.title).toBe("Pre-launch release");
     expect(en.supportedSources).toBe(
       "Text analysis is currently available. PDF files, images, and links are not supported yet."
     );

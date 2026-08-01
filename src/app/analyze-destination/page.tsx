@@ -4,7 +4,7 @@ import { DestinationAdvisor } from "@/components/analyzers/destination-advisor";
 export const metadata: Metadata = {
   title: "مراجعة وجهة — Destination review (preview)",
   description:
-    "معاينة أداة لمراجعة عوامل الوجهة قبل السفر — مشروع تجريبي قيد التطوير، لم يتم التحقق بعد. Preview of a destination-review tool — experimental, under development.",
+    "معاينة قبل الإطلاق لقائمة مراجعة الوجهة؛ القائمة الفعلية غير مفعّلة بعد. Pre-launch preview of a destination checklist; the real checklist is not enabled yet.",
   alternates: { canonical: "/analyze-destination" },
 };
 
