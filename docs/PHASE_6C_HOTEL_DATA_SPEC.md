@@ -2,7 +2,7 @@
 
 ## Status
 
-- Decision status: Proposed for review.
+- Decision status: Provider and first-release cost tier approved on 2026-08-01.
 - Implementation status: Not started.
 - Stable production baseline: `production-2026-08-01-phase-6b`.
 - Baseline commit: `e0922a0aa544108a22833f6c11f162a729a72bc9`.
@@ -13,7 +13,7 @@ This document defines the source, boundaries, architecture, privacy controls, co
 
 ## Decision summary
 
-Use **Google Places API (New)** as the official source for hotel identity and place facts.
+Use **Google Places API (New)** as the approved official source for hotel identity and place facts.
 
 The first implementation should use:
 
@@ -21,6 +21,7 @@ The first implementation should use:
 2. **Place Details (New)** for the selected Place ID when an alternate-locale name or selected-place details are needed.
 3. A SafrBwai server endpoint as the only caller of Google Places.
 4. Explicit field masks, server-side rate limits, restricted credentials, visible Google Maps attribution, and no persistent storage of Places content other than Place IDs.
+5. Pro identity fields only in the first release; rating and user rating count are deferred.
 
 Do not scrape Google Maps pages. Do not expose a Google credential to the browser. Do not invent a translated hotel name or present a generated result as sourced data.
 
@@ -34,7 +35,6 @@ The phase must answer only what the source supports:
 - What name did the source return for the active language?
 - Is an alternate Arabic or English name available from the same source?
 - Where is the hotel?
-- What is its current Google rating and rating count, if those paid fields are approved?
 - Where can the user open the source record?
 
 Finding a place is not, by itself, a complete review of value, review authenticity, hidden fees, room quality, cancellation terms, or booking safety.
@@ -61,7 +61,6 @@ The implementation must extend the existing product boundaries instead of creati
 - A short result list with explicit user selection when more than one plausible hotel is returned.
 - Source-backed localized hotel name, address, location, status, place type, and Google Maps link.
 - Arabic and English source names when Google returns distinct localized names.
-- Google rating and user rating count only after the Enterprise-field cost is explicitly approved.
 - Clear source attribution and a direct source link.
 - Deterministic normalization and validation of the provider response.
 - Safe, localized empty, ambiguous, unavailable, quota, and rate-limit states.
@@ -75,6 +74,7 @@ The implementation must extend the existing product boundaries instead of creati
 - Review sentiment, review authenticity, generated summaries, or scoring.
 - Photos, individual reviews, phone numbers, opening hours, or hotel websites in the first release.
 - Autocomplete while the user types.
+- Google rating and user rating count; they require a separate cost decision after the Pro identity release is measured.
 - Hotel comparison.
 - User accounts or saved hotel lists.
 - Persistent storage of search queries or provider content.
@@ -83,7 +83,7 @@ The implementation must extend the existing product boundaries instead of creati
 
 ## Why Google Places API (New)
 
-Google Places supports text search, Place IDs, localized display names, addresses, location, place types, business status, Google Maps links, ratings, and rating counts. It also publishes explicit rules for field selection, attribution, caching, key security, quotas, and billing.
+Google Places supports text search, Place IDs, localized display names, addresses, location, place types, business status, and Google Maps links within the approved Pro identity scope. The provider also offers higher-tier fields, but those are outside the first release. It publishes explicit rules for field selection, attribution, caching, key security, quotas, and billing.
 
 This is preferable to:
 
@@ -164,8 +164,6 @@ type SourcedHotel = Readonly<{
   longitude?: number;
   primaryType?: string;
   businessStatus?: "OPERATIONAL" | "CLOSED_TEMPORARILY" | "CLOSED_PERMANENTLY";
-  rating?: number;
-  userRatingCount?: number;
   googleMapsUri?: string;
   source: HotelDataSource;
 }>;
@@ -216,7 +214,7 @@ This design limits the bilingual lookup to the selected hotel instead of doublin
 
 Google requires a field mask. Billing follows the highest SKU tier triggered by any requested field.
 
-### Core identity result — Pro ceiling
+### Approved first release — Pro ceiling
 
 Proposed Text Search field mask:
 
@@ -232,7 +230,7 @@ places.googleMapsUri
 
 `displayName`, `businessStatus`, `primaryType`, and `googleMapsUri` place Text Search in the Pro tier. At the price-list snapshot reviewed on 2026-08-01, Text Search Pro has a 5,000-call monthly free-usage cap, then a listed first paid tier of USD 32 per 1,000 calls. This is planning information, not a price guarantee.
 
-### Rating expansion — Enterprise ceiling
+### Deferred rating expansion — separate cost decision
 
 The following fields raise the request to Enterprise:
 
@@ -241,7 +239,7 @@ places.rating,
 places.userRatingCount
 ```
 
-At the same snapshot, Text Search Enterprise has a 1,000-call monthly free-usage cap, then a listed first paid tier of USD 35 per 1,000 calls. The implementation PR must not add these fields until the product owner approves the higher SKU and a budget alert is configured.
+At the same snapshot, Text Search Enterprise has a 1,000-call monthly free-usage cap, then a listed first paid tier of USD 35 per 1,000 calls. Rating and user rating count are not part of the first release. A future, independent cost decision and budget control are required before either field can be requested or displayed.
 
 ### Excluded fields
 
@@ -417,7 +415,7 @@ At minimum, the implementation must prove:
 10. No result produces a real empty state, never demo output.
 11. Provider disablement makes zero external calls and returns 503.
 12. Provider failure returns only the safe application error and Request ID.
-13. Rating and count are absent unless the Enterprise-field gate is approved.
+13. Rating and user rating count are absent from the first-release field mask, adapter, public API, and UI.
 14. The field mask contains no unused field.
 15. The public response contains no raw provider fields.
 16. The browser bundle contains no provider secret.
@@ -426,16 +424,23 @@ At minimum, the implementation must prove:
 19. Feedback stays hidden and disabled.
 20. `noindex, nofollow`, robots blocking, and `ProductStage = prelaunch` remain unchanged.
 
-## Operational gates before implementation
+## Operational gates
 
-- [ ] Product owner approves Google Places API (New) as the provider.
-- [ ] Product owner approves whether rating/count justify the Enterprise SKU.
+- [x] Google Places API (New) approved as the provider.
+- [x] Pro identity fields approved as the first-release cost ceiling.
+- [x] Rating and user rating count deferred to a separate cost decision.
+
+Phase 6C-1 is blocked until both items are complete:
+
+- [ ] A viable server-side credential restriction or authentication model is documented and approved for the deployment architecture.
+- [ ] Privacy and Terms are updated and approved for the Google Places data transfer, policies, and attribution obligations.
+
+Before any real provider request is enabled in Preview or Production:
+
 - [ ] Current pricing and terms are re-checked.
 - [ ] Google Cloud billing owner is identified.
 - [ ] Preview and Production credential model is approved.
-- [ ] A viable server-side credential restriction is proven for the deployment architecture.
 - [ ] Initial quotas, budget, and billing alerts are documented.
-- [ ] Privacy and Terms changes are drafted and reviewed.
 - [ ] Google Maps attribution design is reviewed in Arabic, English, and at 390px.
 - [ ] The capability wording decision is approved.
 
@@ -469,7 +474,7 @@ Each delivery should be a separate reviewed PR. No step authorizes the next auto
 - explicit production activation decision;
 - post-deployment smoke test and rollback check.
 
-Rating and user rating count should be a separate cost-approved addition if they are not approved before 6C-1.
+Rating and user rating count require a separate cost-approved phase after the Pro identity release; they must not be added within 6C-1, 6C-2, or 6C-3.
 
 ## Rollback
 
@@ -485,11 +490,17 @@ Rollback must not replace failed real data with preview or synthetic results.
 
 ## Approval record
 
-The following decisions are intentionally unresolved and must be recorded in the implementation PR before development begins:
+Approved on 2026-08-01:
 
-1. **Cost tier:** Pro identity fields only, or Enterprise rating fields.
-2. **Credential restriction:** the proven restriction/authentication model for server-side deployment.
-3. **Capability wording:** a narrower hotel lookup capability, or revised route promise.
-4. **Terms review owner:** who approves the Google-specific Privacy and Terms changes.
+1. **Official provider:** Google Places API (New).
+2. **First-release cost tier:** Pro identity fields only.
+3. **Deferred fields:** rating and user rating count require a separate cost decision.
 
-Until those decisions are approved, `/analyze-hotel` remains a non-factual Preview and Phase 6C remains specification-only.
+Phase 6C-1 must not begin until both pre-development gates are complete:
+
+1. **Server credential restriction:** document and approve a restriction or authentication model that is viable for the deployment architecture.
+2. **Privacy and Terms:** update and approve both pages for the Google Places data transfer, policies, and attribution obligations.
+
+The implementation must still choose accurate capability wording before exposing the UI. This choice belongs to the reviewed 6C implementation plan and cannot expand the approved Pro-only data scope.
+
+Until the two pre-development gates are complete, `/analyze-hotel` remains a non-factual Preview and Phase 6C remains specification-only.
