@@ -29,19 +29,21 @@ import {
 
 function Section({
   id,
+  guideId,
   icon: Icon,
   title,
   action,
   children,
 }: {
   id: string;
+  guideId?: string;
   icon: LucideIcon;
   title: string;
   action?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={id}>
+    <section aria-labelledby={id} data-guide-id={guideId}>
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <h3
           id={id}
@@ -63,18 +65,20 @@ function Section({
  * per-field detail is one click away instead of a wall of text.
  */
 function FoldableSection({
+  guideId,
   icon: Icon,
   title,
   count,
   children,
 }: {
+  guideId?: string;
   icon: LucideIcon;
   title: string;
   count?: number;
   children: React.ReactNode;
 }) {
   return (
-    <details className="group rounded-xl border border-border">
+    <details data-guide-id={guideId} className="group rounded-xl border border-border">
       <summary className="flex cursor-pointer items-center gap-2 rounded-xl px-4 py-3 font-display text-base font-bold text-foreground hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         <Icon className="size-4 shrink-0 text-teal" aria-hidden />
         <span>{title}</span>
@@ -158,6 +162,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
         {analysis.suggestedQuestions.length > 0 && (
           <Section
             id="oa-questions"
+            guideId="result-questions"
             icon={HelpCircle}
             title={r.questionsTitle}
             action={
@@ -176,7 +181,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
         )}
 
         {/* Confirmed facts (secondary detail — collapsed) */}
-        <FoldableSection icon={ClipboardCheck} title={r.confirmedTitle} count={analysis.confirmedFacts.length}>
+        <FoldableSection guideId="result-confirmed" icon={ClipboardCheck} title={r.confirmedTitle} count={analysis.confirmedFacts.length}>
           {analysis.confirmedFacts.length === 0 ? (
             <p className="text-sm text-muted-foreground">{r.confirmedEmpty}</p>
           ) : (
@@ -222,7 +227,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
         </FoldableSection>
 
         {/* Missing fields (secondary detail — collapsed) */}
-        <FoldableSection icon={XCircle} title={r.missingTitle} count={analysis.missingFields.length}>
+        <FoldableSection guideId="result-missing" icon={XCircle} title={r.missingTitle} count={analysis.missingFields.length}>
           {analysis.missingFields.length === 0 ? (
             <p className="text-sm text-muted-foreground">{r.missingEmpty}</p>
           ) : (
@@ -238,7 +243,7 @@ export function OfferAnalysisResult({ analysis }: { analysis: OfferAnalysis }) {
         </FoldableSection>
 
         {/* Contradictions */}
-        <Section id="oa-contradictions" icon={AlertTriangle} title={r.contradictionsTitle}>
+        <Section id="oa-contradictions" guideId="result-contradictions" icon={AlertTriangle} title={r.contradictionsTitle}>
           {analysis.contradictions.length === 0 ? (
             <p className="text-sm text-muted-foreground">{r.contradictionsEmpty}</p>
           ) : (

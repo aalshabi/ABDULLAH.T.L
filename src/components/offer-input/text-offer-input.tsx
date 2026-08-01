@@ -44,6 +44,7 @@ export function TextOfferInput({
       </div>
       <Textarea
         id="offer-text"
+        data-guide-id="offer-textarea"
         dir="auto"
         lang={locale}
         value={value}

@@ -25,7 +25,12 @@ export function TravelOfferInputSelector({
   const methods: TravelOfferInputType[] = ["text", "pdf", "image", "url"];
 
   return (
-    <div role="tablist" aria-label={t.analyzeOffer.v1.title} className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div
+      role="tablist"
+      aria-label={t.analyzeOffer.v1.title}
+      data-guide-id="offer-source-text"
+      className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+    >
       {methods.map((m) => {
         const Icon = ICONS[m];
         const active = m === method;

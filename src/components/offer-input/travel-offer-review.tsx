@@ -53,7 +53,7 @@ export function TravelOfferReview({
   const canConfirm = isExtractionEnabledFor(input.type);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-guide-id="offer-review">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -132,6 +132,7 @@ export function TravelOfferReview({
         <span title={canConfirm ? undefined : v2.comingSoon}>
           <Button
             type="button"
+            data-guide-id="offer-submit"
             onClick={onConfirm}
             disabled={!canConfirm || submitting}
             aria-disabled={!canConfirm || submitting}

@@ -99,6 +99,7 @@ export function ResultCopyAction({
     <div dir={dir} className="min-w-0">
       <Button
         type="button"
+        data-guide-id={kind === "questions" ? "copy-questions" : "copy-summary"}
         variant="outline"
         size="sm"
         className="w-full sm:w-auto"

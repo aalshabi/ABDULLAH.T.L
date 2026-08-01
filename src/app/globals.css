@@ -68,6 +68,21 @@
   }
 }
 
+[data-guide-active="true"] {
+  position: relative;
+  z-index: 50;
+  border-radius: 0.75rem;
+  outline: 4px solid hsl(var(--ring) / 0.9);
+  outline-offset: 4px;
+  scroll-margin-block: 8rem 22rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-guide-active="true"] {
+    scroll-behavior: auto;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
