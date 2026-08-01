@@ -3,7 +3,7 @@ import { LegalPage } from "@/components/legal-page";
 
 export const metadata: Metadata = {
   title: "الشروط والأحكام — Terms & Conditions",
-  description: "مسودة أولية للشروط والأحكام في منصة سافر بوعي التجريبية. Preliminary terms & conditions draft.",
+  description: "شروط سافر بوعي لنطاق ما قبل الإطلاق وبيانات الفنادق الرسمية المخططة. SafrBwai pre-launch terms.",
   alternates: { canonical: "/terms" },
 };
 
