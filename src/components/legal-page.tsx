@@ -53,6 +53,10 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
         p: "قد تبقى تفضيلات اللغة والمظهر محليًا في متصفحك لتطبيق اختيارك عند الزيارات اللاحقة.",
       },
       {
+        h: "مساعد الاستخدام",
+        p: "قد يحفظ مساعد الاستخدام محليًا حالة إكمال الجولة أو تخطيها على هذا الجهاز. لا يحفظ نص العرض أو نتيجة التحليل أو أي بيانات شخصية.",
+      },
+      {
         h: "سلامة الإدخال",
         p: "لا تُدخل بيانات شخصية أو معلومات دفع ضمن نص العرض. استخدم نصًا غير حساس أو مجهّلًا.",
       },
@@ -89,6 +93,10 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
       {
         h: "Browser preferences",
         p: "Language and theme preferences may remain locally in your browser so the application can remember your choices.",
+      },
+      {
+        h: "Usage guide",
+        p: "The usage guide may store only the guide completion or skip state locally on this device. It does not store offer text, analysis results, or personal data.",
       },
       {
         h: "Input safety",

@@ -581,6 +581,20 @@ export const dictionaries = {
         knowledge: "محرك المعرفة",
       },
     },
+    guide: {
+      name: "مساعد سافر بوعي",
+      launcher: "افتح مساعد سافر بوعي",
+      previous: "السابق",
+      next: "التالي",
+      skip: "تخطي الجولة",
+      finish: "إنهاء الجولة",
+      close: "إغلاق المساعد",
+      restart: "إعادة الجولة",
+      progress: "الخطوة {current} من {total}",
+      targetUnavailable:
+        "هذا الجزء غير ظاهر في المرحلة الحالية من الصفحة. يمكنك متابعة الجولة بأمان أو تنفيذ الخطوة المطلوبة لإظهاره.",
+      openAnalyzer: "افتح تحليل عرض السفر",
+    },
     auth: {
       unavailableTitle: "الحسابات غير متاحة في إصدار ما قبل الإطلاق الحالي.",
       unavailableBody:
@@ -1182,6 +1196,20 @@ export const dictionaries = {
         compare: "Compare Hotels",
         knowledge: "Knowledge Engine",
       },
+    },
+    guide: {
+      name: "SafrBwai Guide",
+      launcher: "Open SafrBwai Guide",
+      previous: "Previous",
+      next: "Next",
+      skip: "Skip tour",
+      finish: "Finish tour",
+      close: "Close guide",
+      restart: "Restart guide",
+      progress: "Step {current} of {total}",
+      targetUnavailable:
+        "This part is not visible in the page's current state. You can safely continue or complete the required action to reveal it.",
+      openAnalyzer: "Open travel offer analysis",
     },
     auth: {
       unavailableTitle: "Accounts are not available in the current pre-launch release.",
