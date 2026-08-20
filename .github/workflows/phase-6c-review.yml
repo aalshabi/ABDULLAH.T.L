@@ -1,0 +1,45 @@
+name: Phase 6C review gate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - codex/phase-6c-consolidated-review
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase-6c-review-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: lint, typecheck, tests, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run complete test suite
+        run: npm test
+
+      - name: Build production application
+        run: npm run build

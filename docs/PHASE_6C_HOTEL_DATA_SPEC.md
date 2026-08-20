@@ -2,7 +2,7 @@
 
 ## Status
 
-- Decision status: Provider and first-release cost tier approved on 2026-08-01.
+- Decision status: Provider, first-release cost tier, OIDC design, and bilingual legal copy approved by the Product Owner; consolidated approval recorded on 2026-08-21 (Asia/Riyadh).
 - Implementation status: Not started.
 - Stable production baseline: `production-2026-08-01-phase-6b`.
 - Baseline commit: `e0922a0aa544108a22833f6c11f162a729a72bc9`.
@@ -430,10 +430,12 @@ At minimum, the implementation must prove:
 - [x] Pro identity fields approved as the first-release cost ceiling.
 - [x] Rating and user rating count deferred to a separate cost decision.
 
-Phase 6C-1 is blocked until both items are complete:
+The two pre-development design gates were completed by the consolidated Product Owner approval on 2026-08-21:
 
-- [ ] A viable server-side credential restriction or authentication model is documented and approved for the deployment architecture.
-- [ ] Privacy and Terms are updated and approved for the Google Places data transfer, policies, and attribution obligations.
+- [x] A viable server-side credential restriction or authentication model is documented and approved for the deployment architecture.
+- [x] Privacy and Terms are updated and approved for the Google Places data transfer, policies, and attribution obligations.
+
+Phase 6C-1 implementation may begin only after the consolidated review PR passes its required `lint`, `typecheck`, full test suite, and production `build` checks. This approval does not satisfy the separate activation gates below.
 
 Before any real provider request is enabled in Preview or Production:
 
@@ -496,11 +498,11 @@ Approved on 2026-08-01:
 2. **First-release cost tier:** Pro identity fields only.
 3. **Deferred fields:** rating and user rating count require a separate cost decision.
 
-Phase 6C-1 must not begin until both pre-development gates are complete:
+The Product Owner completed both pre-development gates on 2026-08-21 (Asia/Riyadh):
 
-1. **Server credential restriction:** document and approve a restriction or authentication model that is viable for the deployment architecture.
-2. **Privacy and Terms:** update and approve both pages for the Google Places data transfer, policies, and attribution obligations.
+1. **Server credential restriction:** the Vercel OIDC to Google Cloud Workload Identity Federation design is approved.
+2. **Privacy and Terms:** the Arabic and English disclosures are approved as the Phase 6C product copy and implementation basis.
 
-The implementation must still choose accurate capability wording before exposing the UI. This choice belongs to the reviewed 6C implementation plan and cannot expand the approved Pro-only data scope.
+The approval is scoped by `docs/PHASE_6C_APPROVAL_RECORD.md`. It is Product Owner approval and does not represent independent external legal advice. The implementation must still choose accurate capability wording before exposing the UI. This choice belongs to the reviewed 6C implementation plan and cannot expand the approved Pro-only data scope.
 
-Until the two pre-development gates are complete, `/analyze-hotel` remains a non-factual Preview and Phase 6C remains specification-only.
+Until the required consolidated PR checks pass, `/analyze-hotel` remains a non-factual Preview and Phase 6C remains specification-only. Passing those checks authorizes implementation review only; it does not authorize provider activation, production data transfer, indexing, or public launch.

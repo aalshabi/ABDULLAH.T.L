@@ -3,6 +3,7 @@
 ## Status
 
 - Review date: 2026-08-01.
+- Product Owner approval date: 2026-08-21 (Asia/Riyadh).
 - Scope: read-only review and authentication decision.
 - Vercel project: `safrbwai`.
 - Product stage: `prelaunch`.
@@ -10,7 +11,7 @@
 - Phase 6C-1 has not started.
 - No Vercel setting, environment variable, Google Cloud resource, credential, domain, WAF rule, or deployment was changed during this review.
 
-This document closes the design review for authenticating SafrBwai server functions to Google Places API (New). It does not authorize creating Google Cloud resources, enabling billing, adding Vercel configuration, making a real Places request, or exposing the hotel feature.
+This document closes and records Product Owner approval of the design review for authenticating SafrBwai server functions to Google Places API (New). It does not authorize creating Google Cloud resources, enabling billing, adding Vercel configuration, making a real Places request, or exposing the hotel feature.
 
 ## Practical Vercel findings
 
@@ -131,12 +132,12 @@ No real provider request belongs in this documentation PR.
 
 ## Approval gate
 
-Phase 6C-1 remains blocked until both are approved:
+The Product Owner approved both pre-development design gates on 2026-08-21 (Asia/Riyadh):
 
-- [ ] This OIDC federation design.
-- [ ] The accompanying Arabic and English Privacy and Terms updates.
+- [x] This OIDC federation design.
+- [x] The accompanying Arabic and English Privacy and Terms updates.
 
-Approval of this PR permits only the next implementation review. It does not enable Google Places API (New), create credentials, add Vercel variables, activate hotel search, change `ProductStage`, remove `noindex, nofollow`, or start a public launch.
+This approval is scoped by `docs/PHASE_6C_APPROVAL_RECORD.md` and is Product Owner approval, not a representation that independent external legal counsel reviewed the text. Phase 6C-1 may begin only after the consolidated review PR passes `lint`, `typecheck`, the full test suite, and the production `build`. Approval of this PR permits only the next implementation review. It does not enable Google Places API (New), create credentials, add Vercel variables, activate hotel search, change `ProductStage`, remove `noindex, nofollow`, or start a public launch.
 
 ## Official references
 
