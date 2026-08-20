@@ -3,7 +3,7 @@
 ## Status
 
 - Decision status: Provider, first-release cost tier, OIDC design, and bilingual legal copy approved by the Product Owner; consolidated approval recorded on 2026-08-21 (Asia/Riyadh).
-- Implementation status: Not started.
+- Implementation status: Phase 6C-1 provider boundary is implemented for review, disabled by default, with no visible feature activation.
 - Stable production baseline: `production-2026-08-01-phase-6b`.
 - Baseline commit: `e0922a0aa544108a22833f6c11f162a729a72bc9`.
 - Product stage remains `prelaunch`.
@@ -457,6 +457,8 @@ Each delivery should be a separate reviewed PR. No step authorizes the next auto
 - mocked unit and integration tests;
 - server feature disabled by default;
 - no visible feature activation.
+
+Implementation record: `docs/PHASE_6C_1_IMPLEMENTATION.md`.
 
 ### 6C-2 — Source-backed selection UI
 
