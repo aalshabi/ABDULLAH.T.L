@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import manifest from "@/app/manifest";
-import { LEGAL_CONTENT } from "@/components/legal-page";
+import { LEGAL_APPROVAL_NOTICE, LEGAL_CONTENT } from "@/components/legal-page";
 import { isPublicBetaFeedbackEnabled, isServerBetaFeedbackEnabled } from "@/lib/feedback/config";
 import { KNOWN_REGRESSION_GAPS } from "@/lib/offer-pipeline/regression/load-fixtures";
 import { SAFRBWAI_URL } from "@/lib/result-actions/format-questions";
@@ -27,6 +27,13 @@ const termsAr = legalText("terms", "ar");
 const termsEn = legalText("terms", "en");
 
 describe("current pre-launch product integrity", () => {
+  it("states the scoped Product Owner approval without claiming independent legal review", () => {
+    expect(LEGAL_APPROVAL_NOTICE.ar).toContain("معتمدة من مالك المنتج");
+    expect(LEGAL_APPROVAL_NOTICE.ar).toContain("لا تمثل مراجعة قانونية مستقلة");
+    expect(LEGAL_APPROVAL_NOTICE.en).toContain("Approved by the Product Owner");
+    expect(LEGAL_APPROVAL_NOTICE.en).toContain("not independent legal review");
+  });
+
   it("describes a text-only pre-launch release without claiming AI, scoring, or inactive tools", () => {
     expect(readme).toContain(
       "سافر بوعي أداة تساعدك على مراجعة المعلومات الواردة في عروض السفر واتخاذ قرار أوضح قبل الحجز."

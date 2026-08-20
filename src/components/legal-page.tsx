@@ -8,9 +8,9 @@ type Doc = "privacy" | "terms";
 type LegalLink = { href: string; label: string };
 type Section = { h: string; p: string; links?: readonly LegalLink[] };
 
-const DRAFT_NOTICE = {
-  ar: "مسودة أولية تحتاج مراجعة قانونية قبل الإطلاق التجاري.",
-  en: "Preliminary draft — requires legal review before commercial launch.",
+export const LEGAL_APPROVAL_NOTICE = {
+  ar: "معتمدة من مالك المنتج لنطاق ما قبل الإطلاق. لا تمثل مراجعة قانونية مستقلة أو تصريحًا بالإطلاق التجاري.",
+  en: "Approved by the Product Owner for the pre-launch scope. This is not independent legal review or authorization for commercial launch.",
 };
 
 const TITLES: Record<Doc, { ar: string; en: string }> = {
@@ -267,7 +267,7 @@ export function LegalPage({ doc }: { doc: Doc }) {
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm font-medium text-amber-800 dark:text-amber-300">
             <AlertTriangle className="mt-0.5 size-5 shrink-0" />
-            <span>{DRAFT_NOTICE[locale]}</span>
+            <span>{LEGAL_APPROVAL_NOTICE[locale]}</span>
           </div>
 
           <div className="space-y-6 rounded-2xl border border-border bg-card p-6 md:p-8">
