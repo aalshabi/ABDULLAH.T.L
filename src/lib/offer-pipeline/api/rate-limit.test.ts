@@ -29,4 +29,25 @@ describe("in-memory rate limiter", () => {
     expect(rl.check("b").allowed).toBe(true);
     expect(rl.check("a").allowed).toBe(false);
   });
+
+  it("bounds distinct keys and admits new callers after the oldest window expires", () => {
+    let now = 0;
+    const limiter = createInMemoryRateLimiter({
+      max: 2,
+      windowMs: 1_000,
+      maxKeys: 2,
+      now: () => now,
+    });
+
+    expect(limiter.check("client-a").allowed).toBe(true);
+    now = 100;
+    expect(limiter.check("client-b").allowed).toBe(true);
+    expect(limiter.check("client-c")).toEqual({
+      allowed: false,
+      retryAfterSeconds: 1,
+    });
+
+    now = 1_001;
+    expect(limiter.check("client-c").allowed).toBe(true);
+  });
 });

@@ -28,21 +28,50 @@ export interface RateLimiter {
 export interface RateLimitOptions {
   max: number;
   windowMs: number;
+  /** Hard memory bound for distinct caller keys in one warm instance. */
+  maxKeys?: number;
   /** Injectable clock for deterministic tests. */
   now?: () => number;
 }
 
 export function createInMemoryRateLimiter(opts: RateLimitOptions): RateLimiter {
-  const { max, windowMs } = opts;
+  const { max, windowMs, maxKeys = 10_000 } = opts;
   const now = opts.now ?? (() => Date.now());
   const buckets = new Map<string, { count: number; start: number }>();
+  const expiryQueue: Array<{ key: string; start: number }> = [];
+  let queueHead = 0;
+
+  function pruneExpired(t: number): void {
+    while (queueHead < expiryQueue.length) {
+      const entry = expiryQueue[queueHead];
+      if (t - entry.start < windowMs) break;
+      const current = buckets.get(entry.key);
+      if (current?.start === entry.start) buckets.delete(entry.key);
+      queueHead += 1;
+    }
+
+    if (queueHead > 1_024 && queueHead * 2 > expiryQueue.length) {
+      expiryQueue.splice(0, queueHead);
+      queueHead = 0;
+    }
+  }
 
   return {
     check(key: string): RateDecision {
       const t = now();
+      pruneExpired(t);
       const bucket = buckets.get(key);
-      if (!bucket || t - bucket.start >= windowMs) {
+      if (!bucket) {
+        if (buckets.size >= maxKeys) {
+          const oldest = expiryQueue[queueHead];
+          const retryAfterMs = oldest ? oldest.start + windowMs - t : windowMs;
+          return {
+            allowed: false,
+            retryAfterSeconds: Math.max(1, Math.ceil(retryAfterMs / 1000)),
+          };
+        }
         buckets.set(key, { count: 1, start: t });
+        expiryQueue.push({ key, start: t });
         return { allowed: true, retryAfterSeconds: 0 };
       }
       if (bucket.count < max) {
@@ -53,6 +82,8 @@ export function createInMemoryRateLimiter(opts: RateLimitOptions): RateLimiter {
     },
     reset(): void {
       buckets.clear();
+      expiryQueue.length = 0;
+      queueHead = 0;
     },
   };
 }
