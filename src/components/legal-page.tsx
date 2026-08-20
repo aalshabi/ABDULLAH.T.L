@@ -5,11 +5,12 @@ import { useLanguage } from "@/lib/i18n/provider";
 import { PageHeader } from "@/components/shared/page-header";
 
 type Doc = "privacy" | "terms";
-type Section = { h: string; p: string };
+type LegalLink = { href: string; label: string };
+type Section = { h: string; p: string; links?: readonly LegalLink[] };
 
-const DRAFT_NOTICE = {
-  ar: "مسودة أولية تحتاج مراجعة قانونية قبل الإطلاق التجاري.",
-  en: "Preliminary draft — requires legal review before commercial launch.",
+export const LEGAL_APPROVAL_NOTICE = {
+  ar: "معتمدة من مالك المنتج لنطاق ما قبل الإطلاق. لا تمثل مراجعة قانونية مستقلة أو تصريحًا بالإطلاق التجاري.",
+  en: "Approved by the Product Owner for the pre-launch scope. This is not independent legal review or authorization for commercial launch.",
 };
 
 const TITLES: Record<Doc, { ar: string; en: string }> = {
@@ -26,7 +27,22 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
       },
       {
         h: "المصادر المدعومة",
-        p: "تدعم الواجهة تحليل النص فقط. رفع ملفات PDF أو الصور وتحليل الروابط غير مدعوم حاليًا، ولا تُرسل هذه المصادر إلى API التحليل.",
+        p: "تدعم الواجهة العاملة تحليل النص فقط. بحث هوية الفندق ما زال في وضع المعاينة وغير مفعّل، ولا يرسل اسم الفندق أو المدينة إلى Google حاليًا. رفع ملفات PDF أو الصور وتحليل الروابط غير مدعوم، ولا تُرسل هذه المصادر إلى API التحليل.",
+      },
+      {
+        h: "بحث هوية الفندق المخطط",
+        p: "إذا فُعّل بحث الفنادق الرسمي بعد المراجعة، سيرسل خادم سافر بوعي اسم الفندق، والمدينة الاختيارية، ولغة الواجهة المختارة إلى Google Places API (New) لإرجاع معلومات هوية المكان. لا يُرسل نص عرض السفر إلى Google ضمن هذا البحث، ولا يتصل المتصفح بـGoogle Places مباشرة.",
+      },
+      {
+        h: "معالجة Google والمرجع القانوني",
+        p: "عند تفعيل البحث الرسمي، تعالج Google مدخلات بحث الفندق وبيانات المكان وفق سياسة الخصوصية الخاصة بها. استخدم بحث الفندق فقط ببيانات غير حساسة، ولا تُدخل أسماء أشخاص أو بيانات حجز أو دفع أو هوية.",
+        links: [
+          { href: "https://policies.google.com/privacy", label: "سياسة خصوصية Google" },
+        ],
+      },
+      {
+        h: "تخزين وسجلات بحث الفندق",
+        p: "لن يحفظ الإصدار الأول استعلام بحث الفندق أو استجابة Google الخام أو أسماء الفنادق أو العناوين أو الإحداثيات أو Place ID في قاعدة بيانات. قد تُسجل فقط بيانات تشغيلية عامة مثل Request ID وفئة الحالة والمدة وعدد النتائج واللغة، دون اسم الفندق أو المدينة أو محتوى الاستجابة.",
       },
       {
         h: "معالجة نص العرض",
@@ -68,7 +84,22 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
       },
       {
         h: "Supported sources",
-        p: "The interface supports text analysis only. PDF uploads, image uploads, and link analysis are not currently supported, and those sources are not sent to the analysis API.",
+        p: "The working interface supports text analysis only. Hotel identity search remains a disabled preview and does not currently send a hotel name or city to Google. PDF uploads, image uploads, and link analysis are not currently supported, and those sources are not sent to the analysis API.",
+      },
+      {
+        h: "Planned hotel identity search",
+        p: "If official hotel search is enabled after review, the SafrBwai server will send the hotel name, optional city, and selected interface language to Google Places API (New) to return place identity information. Travel-offer text is not sent to Google as part of this search, and the browser does not call Google Places directly.",
+      },
+      {
+        h: "Google processing and legal reference",
+        p: "When official search is enabled, Google processes the hotel-search input and place data under its Privacy Policy. Use hotel search only with non-sensitive information, and do not enter personal names, booking data, payment data, or identity information.",
+        links: [
+          { href: "https://policies.google.com/privacy", label: "Google Privacy Policy" },
+        ],
+      },
+      {
+        h: "Hotel-search storage and logs",
+        p: "The first release will not persist the hotel-search query, raw Google response, hotel names, addresses, coordinates, or Place ID in a database. Only general operational metadata such as the SafrBwai Request ID, status category, latency, result count, and locale may be logged, without the hotel name, city, or response content.",
       },
       {
         h: "Offer-text processing",
@@ -108,11 +139,27 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
     ar: [
       {
         h: "طبيعة الخدمة",
-        p: "سافر بوعي أداة استشارية تحلل النص الذي يقدمه المستخدم فقط. النتائج تساعد على مراجعة المعلومات المذكورة ولا تمثّل نصيحة نهائية أو ضمانًا.",
+        p: "سافر بوعي أداة استشارية تحلل النص الذي يقدمه المستخدم فقط في التدفق العامل حاليًا. النتائج تساعد على مراجعة المعلومات المذكورة ولا تمثّل نصيحة نهائية أو ضمانًا.",
       },
       {
         h: "نطاق الخدمة الحالي",
-        p: "تحليل النص هو المصدر الوحيد المدعوم في إصدار ما قبل الإطلاق. ملفات PDF والصور والروابط وميزات الحسابات غير مفعّلة.",
+        p: "تحليل النص هو المصدر الوحيد المدعوم في إصدار ما قبل الإطلاق. بحث هوية الفندق ما زال معاينة معطلة ولا يرسل بيانات إلى Google. ملفات PDF والصور والروابط وميزات الحسابات غير مفعّلة.",
+      },
+      {
+        h: "بيانات الفندق الرسمية المخططة",
+        p: "إذا فُعّل بحث الفنادق بعد الاعتماد، ستعرض سافر بوعي حقول هوية مكان محدودة مصدرها Google Places API (New)، مثل الاسم والعنوان والموقع وحالة النشاط ورابط المصدر. التقييم وعدد المراجعات والمراجعات والصور والأسعار والتوفر ليست ضمن الإصدار الأول.",
+      },
+      {
+        h: "شروط Google والإسناد",
+        p: "تظل بيانات المكان من Google خاضعة لشروط Google Maps Platform وسياسة خصوصية Google. سيظهر إسناد Google Maps ورابط المصدر مع البيانات عند تفعيل الميزة. لا تكشط سافر بوعي صفحات Google Maps ولا تعرض بيانات تجريبية على أنها بيانات حقيقية.",
+        links: [
+          { href: "https://cloud.google.com/maps-platform/terms", label: "شروط Google Maps Platform" },
+          { href: "https://policies.google.com/privacy", label: "سياسة خصوصية Google" },
+        ],
+      },
+      {
+        h: "حدود بيانات الفندق",
+        p: "المعلومات المصدرية قد تكون ناقصة أو متغيرة أو غير محدثة، ولا تمثل تحققًا مستقلًا أو توصية من سافر بوعي. تحقّق من اسم الفندق وموقعه وحالته مع الفندق أو مصدره الرسمي قبل اتخاذ قرار.",
       },
       {
         h: "التحقق من البائع",
@@ -150,11 +197,27 @@ export const LEGAL_CONTENT: Record<Doc, Record<"ar" | "en", Section[]>> = {
     en: [
       {
         h: "Nature of the service",
-        p: "SafrBwai is an advisory tool that analyzes only the text provided by the user. Results help review the stated information and do not constitute final advice or a guarantee.",
+        p: "SafrBwai is an advisory tool that analyzes only the text provided by the user in the current working flow. Results help review the stated information and do not constitute final advice or a guarantee.",
       },
       {
         h: "Current service scope",
-        p: "Text analysis is the only supported source in the current pre-launch release. PDF files, images, links, and account features are not enabled.",
+        p: "Text analysis is the only supported source in the current pre-launch release. Hotel identity search remains a disabled preview and does not send data to Google. PDF files, images, links, and account features are not enabled.",
+      },
+      {
+        h: "Planned official hotel data",
+        p: "If hotel search is enabled after approval, SafrBwai will display limited place-identity fields sourced from Google Places API (New), such as the name, address, location, business status, and source link. Ratings, review counts, reviews, photos, prices, and availability are not included in the first release.",
+      },
+      {
+        h: "Google terms and attribution",
+        p: "Google-sourced place data remains subject to the Google Maps Platform Terms and Google Privacy Policy. Google Maps attribution and a source link will appear with the data when the feature is enabled. SafrBwai does not scrape Google Maps pages or present preview data as real data.",
+        links: [
+          { href: "https://cloud.google.com/maps-platform/terms", label: "Google Maps Platform Terms" },
+          { href: "https://policies.google.com/privacy", label: "Google Privacy Policy" },
+        ],
+      },
+      {
+        h: "Hotel-data limitations",
+        p: "Source information may be incomplete, change, or become outdated, and it is not independent verification or a recommendation by SafrBwai. Verify the hotel name, location, and status with the hotel or its official source before deciding.",
       },
       {
         h: "Seller verification",
@@ -204,7 +267,7 @@ export function LegalPage({ doc }: { doc: Doc }) {
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm font-medium text-amber-800 dark:text-amber-300">
             <AlertTriangle className="mt-0.5 size-5 shrink-0" />
-            <span>{DRAFT_NOTICE[locale]}</span>
+            <span>{LEGAL_APPROVAL_NOTICE[locale]}</span>
           </div>
 
           <div className="space-y-6 rounded-2xl border border-border bg-card p-6 md:p-8">
@@ -214,6 +277,22 @@ export function LegalPage({ doc }: { doc: Doc }) {
                   <span className="ltr-nums text-teal">{i + 1}.</span> {s.h}
                 </h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">{s.p}</p>
+                {s.links && (
+                  <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+                    {s.links.map((link) => (
+                      <li key={link.href}>
+                        <a
+                          className="font-medium text-teal underline underline-offset-4 hover:text-teal/80"
+                          href={link.href}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </section>
             ))}
           </div>
